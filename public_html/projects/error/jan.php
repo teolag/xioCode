@@ -1,2 +1,0 @@
-pelle
-sd
