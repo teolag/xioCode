@@ -12,6 +12,8 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 ?>
 
 <!doctype html>
+
+<!-- hej hej -->
 <html>
 	<head>
 		<title><?php echo $pageTitle; if(isLocal()) echo "(local)";?></title>
