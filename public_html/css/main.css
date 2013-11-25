@@ -1,0 +1,594 @@
+
+ul li{
+	list-style-type:none;
+}
+
+
+html, body {
+	height:100%;
+}
+
+body {
+	margin: 0;
+	overflow:hidden;
+	background-color:#eee;
+	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(229,229,229,1) 100%);
+}
+
+body, textarea, input, button, select {
+	font-family: arial, sans-serif;
+}
+
+button {
+	padding: 5px 10px;
+	/*background-color: #bbb;
+	border-radius: 5px;
+	border: 0;*/
+	cursor: pointer;
+}
+button:hover {
+	/*background-color: #FFD697;	*/
+}
+
+
+#header {
+	width:100%;
+	height:33px;
+	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(43,43,43)),color-stop(1, rgb(82,82,82)));
+	background-image: -moz-linear-gradient(center bottom,rgb(43,43,43) 0%,rgb(82,82,82) 100%);
+	margin-bottom:5px;
+	text-align:center;
+	box-shadow: 0 0 3px 2px rgba(0,0,0,0.4);
+	color:#888;
+}
+
+#header h1 {
+	font-size: 22px;
+	margin: 3px 0 3px 15px;
+	float:left;
+	cursor:pointer;
+}
+#header h1 .first {
+	color: #E79D00;
+}
+#header h1 .second {
+	color: #999;
+}
+
+#header .header-local {
+	float:left;
+	margin: 8px 0 0 10px;	
+	font-variant:small-caps;	
+}
+
+#header #pageTitle {
+	font-size: 1.2em;
+	margin-top: 5px;
+	display: inline-block;
+}
+
+#header .menuButtons {
+	float: right;
+	margin-right: 0.5em;
+}
+
+
+.button24 {
+	border:0 none;
+	cursor:pointer;
+	width:24px;
+	height:24px;
+	background: transparent url('/images/code_sprite.png') no-repeat 0 0;
+}
+
+#btnNewProject		{background-position: -48px -16px;}
+#btnLogout 			{background-position: -24px -16px;}
+#btnChangePassword	{background-position: 0 -16px;}
+#btnChangeSkin 		{background-position: -72px -16px;}
+#btnExportAllZip 	{background-position: -96px -16px;}
+
+
+.button32 {
+	display: inline-block;
+	width:32px;
+	height:32px;
+	background:transparent url('/images/code_sprite.png') no-repeat 0 -40px;
+}
+
+#btnNew .button32				{background-position: 0 -40px;}
+#btnPreviewFile .button32		{background-position: -32px -40px;}
+#btnSave .button32				{background-position: -64px -40px;}
+#btnPreviewProject .button32		{background-position: -96px -40px;}
+#btnExportZip .button32			{background-position: -128px -40px;}
+#btnRevert .button32				{background-position: -160px -40px;}
+#btnColorPicker .button32		{background-position: -192px -40px;}
+#btnProjectConfig .button32		{background-position: -224px -40px;}
+
+
+
+#logo {
+	height:35px;
+}
+
+#writer {
+	overflow:auto;
+}
+
+#editorWrapper {
+	margin-top: 10px;
+}
+
+#fileList {
+	float:left;
+	border:1px solid #aaa;
+	border-radius:5px;
+	background-color:#ddd;
+	margin:5px 10px;
+	overflow:auto;
+	font-size:11px;
+	padding: 3px;
+}
+
+#fileList ul{
+	list-style:none;
+	padding: 0;
+}
+
+#fileList ul ul{
+	display:none;
+	margin-left:20px;
+}
+
+#fileList  li{
+	cursor: pointer;
+}
+
+#fileList span.fileName {	
+	margin-left:2px;
+}
+
+#fileList  li.selected{
+	background-color: #bbb;
+}
+
+#fileList  li.changed{
+	text-decoration:underline;
+}
+
+#fileList span.fileIcon {
+	width:16px;
+	height:16px;
+	background: transparent url('/images/code_sprite.png') no-repeat -80px 0px;
+	display:inline-block;
+	vertical-align: middle;
+	margin: 3px;
+}
+
+#fileList.dropTo, #fileList li.dropTo {
+	background-color:red;
+}
+
+#fileList span.fileIcon.folder.open { background-position: 0 0}
+#fileList span.fileIcon.folder { background-position: -16px 0}
+#fileList span.fileIcon.php { background-position: -32px 0}
+#fileList span.fileIcon.js { background-position: -48px 0}
+#fileList span.fileIcon.png { background-position: -64px 0}
+#fileList span.fileIcon.jpg { background-position: -64px 0}
+#fileList span.fileIcon.css { background-position: -96px 0}
+#fileList span.fileIcon.pdf { background-position: -112px 0}
+#fileList span.fileIcon.htm { background-position: -128px 0}
+#fileList span.fileIcon.xml { background-position: -144px 0}
+
+
+ .edit_fproject {
+	display:none;
+ }
+
+.file_spinner {
+	margin: 1px 0 0 5px;
+}
+.file_loader {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	margin: 1px 0 0 5px;
+	background: transparent url('/images/code_sprite.png') no-repeat -7px -97px;
+	-webkit-animation-name: file_loader_move;
+	-webkit-animation-duration: 1s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-iteration-count: infinite;	
+	animation-name: file_loader_move;
+	animation-duration: 1s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes file_loader_move {
+	from { background-position: -7px -97px }
+	to { background-position: 0 -97px }
+}
+@keyframes file_loader_move {
+	from { background-position: -7px -97px }
+	to { background-position: 0 -97px }
+}
+ 
+
+ 
+
+
+
+#toolbar {
+	padding-top:5px;
+	margin: 0;
+}
+
+#toolbar li {
+	display: inline-block;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	cursor: pointer;
+	padding: 5px;
+	margin: 0;
+	font-size:0;
+}
+
+#toolbar li:hover {
+	background-color:#FFD697;
+}
+
+#toolbar li.disabled:hover {
+	background-color:#ccc;
+}
+
+#toolbar li.disabled  {
+	opacity: 0.2;
+	cursor: default;
+}
+
+
+#imagePreview {
+	position:absolute;
+	box-shadow: 2px 4px 23px 4px rgba(0, 0, 0, 0.47);
+	border: 5px solid white;
+	background-color: #0ae;
+	background-image: url(data:image/bmp;base64,Qk1GAAAAAAAAADYAAAAoAAAAAgAAAAIAAAABABgAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAqKiow8PDAADDw8OoqKgAAA==);
+	-webkit-background-size: 20px 20px;
+	-moz-background-size: 20px 20px;
+	background-size: 20px 20px;
+	z-index:10;
+}
+
+#imagePreviewImage {
+	width: 150px;
+	height: 150px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	float: left;
+}
+
+#imagePreviewInfo {
+	background-color: #fff;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	float: left;
+	height: 150px;
+	width: 190px;
+}
+
+#choose_project .button {
+	width:32px;
+	height:32px;
+	border:0 none;
+	cursor:pointer;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	background-position:center center;
+}
+
+#projectFilter {
+	padding:5px;
+	margin:10px;
+	font-weight:bold;
+	font-size:15px;
+	color:#444;
+	border-radius:10px;
+	border:2px solid gray;
+}
+#projectFilter:focus {
+	outline: 0;
+	border-color: #E79D00;
+}
+
+
+ul#projects {
+	margin: 0;
+	padding: 0;
+}
+
+#projects li {
+	width:220px;
+	border-radius:10px;
+	margin:6px;
+	background: -webkit-linear-gradient(top, #eee 0%,#ffffff 28%,#ffffff 44%,#ffffff 53%,#eee 100%);
+	box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, .16), inset 0px 0px 8px 4px rgba(255, 255, 255, 0.5);
+	padding: 10px 0;
+	cursor:pointer;
+	float:left;
+	text-align:center;
+}
+
+#projects li:hover {
+	box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, .4), inset 0px 0px 34px 0px rgba(0, 0, 0, 0.05);
+	margin:8px 5px 4px 7px;
+}
+
+#projects li h3 {
+	font-size: 20px;
+	font-weight: bold;
+	margin: 0;
+	color: #555;
+}
+
+#projects li a {
+	color: #aaa;
+	padding: 3px 5px;
+	text-decoration: none;
+	font-size: 0.6em;
+	text-transform: uppercase;
+}
+
+#projects li a:hover {
+	color:#000;
+}
+
+
+#fileListRightClickMenu {
+	position:absolute;
+	box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, .2);
+	border-radius:10px;
+	border:1px solid #aaa;
+	background-color:#eee;
+	padding:5px;	
+	z-index:10;
+}
+	#fileListRightClickMenu ul{
+		list-style:none;
+		padding: 0;
+		margin: 0;
+	}
+	
+	#fileListRightClickMenu li{
+		border-bottom:1px solid #eee;
+		font-size:12px;
+		cursor:pointer;
+	}
+	
+	#fileListRightClickMenu li:hover{
+		background-color:#E0D4A0;
+	}
+
+
+
+.hidden {
+	display:none;
+}
+
+
+
+
+
+/*************** CODEMIRROR *********************/
+
+.CodeMirror {
+	border:1px solid #ccc;
+	border-radius:5px;
+}
+.cm-s-default {background: #fff;}
+.cm-s-eclipse {background: #fff;}
+
+.CodeMirror-activeline-background {
+	background-color: rgba(150, 150, 150, 0.1);
+}
+
+.CodeMirror-focused .cm-matchhighlight {
+	background-color: rgba(150, 150, 150, 0.2);
+}
+
+div.CodeMirror span.CodeMirror-matchingbracket {
+	color: red;
+	font-weight: bold;
+}
+div.CodeMirror span.CodeMirror-nonmatchingbracket {
+	color: red;
+	font-weight: bold;
+	border-bottom: 1px solid red;
+}
+
+
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 10px;
+	height: 10px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    background-color: #ddd;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1); 
+}
+
+/*erger*/
+::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(0,0,0,0.1); 
+}
+
+
+
+
+
+
+
+/****************** LOGIN ***************************/
+#login h1 {
+	margin:10px auto;
+	background: transparent url('/images/code_sprite.png') no-repeat 0 -72px;
+	height:25px;
+	width:120px;
+	text-indent: -9999px;
+}
+
+#login {
+	text-align:center;
+	position:absolute;
+	left:50%;
+	top:45%;	
+	background-color:#fff;
+	width:300px;
+	height:150px;
+	border:2px solid white;
+	border-radius:20px;
+	margin-left:-150px;
+	margin-top:-75px;
+	-webkit-box-shadow: inset 0px 0px 3px #777, 0 0 550px black;	
+	z-index: 11;
+}
+
+#login form {
+	
+}
+
+#login input{
+	padding: 8px 10px;
+	margin: 9px 4px;
+	width: 100px;
+	border-radius: 5px;
+	border: 1px solid #bbb;
+	background-color: #eee;
+	color: #444;
+	font-size: 16px;
+}
+
+#login button {
+	display: block;
+	margin:10px auto;
+}
+
+
+/*************************** User Menu ***************************/
+#userMenu {
+	float: right;
+	text-align: right;
+}
+#userMenu>div {
+	display: inline-block;
+	padding: 6px 15px;
+}
+#userMenu:hover ul {
+	display: block;
+}
+#userMenu ul {
+	display: none;
+	margin: 0;
+	padding: 0;
+	background-color: #555;
+	position: absolute;
+	z-index: 2;
+	right: 0;
+}
+#userMenu ul  li{
+	padding: 4px 10px;
+	border-bottom: 1px solid #444;
+	cursor: pointer;
+}
+#userMenu ul  li:hover{
+	background-color: #444;
+}
+
+
+/*************************** Project Config ***************************/
+#frmProjectConfig {
+	width: 300px;
+}
+#frmProjectConfig h2 {
+	margin: 0 auto 1em;
+}
+#frmProjectConfig ul {
+	margin: 0;
+	padding: 0;
+}
+#frmProjectConfig li {
+	margin-bottom: 1em;
+}
+#frmProjectConfig label {
+	display: block;
+}
+#frmProjectConfig input,
+#frmProjectConfig textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.5em;
+}
+#frmProjectConfig textarea {
+	height: 8em;
+}
+#frmProjectConfig .buttonset {
+	text-align: right;
+}
+/**********************************************************************/
+
+
+
+
+.door {
+	position:fixed;
+	top:0;
+	height:100%;
+	width:50%;
+	background: #777;
+	background: -moz-linear-gradient(top, #b5b5b5 1%, #eff8ff 44%, #a3a3a3 100%);
+	background: -webkit-linear-gradient(top, #b5b5b5 1%,#eff8ff 44%,#a3a3a3 100%);
+	-webkit-transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+	-moz-transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+	transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+	z-index:10;
+}
+
+.door.left {
+	left: -10px;
+	background-position: center right;
+	border-right: 10px solid rgba(0,0,0,0.1);
+}
+.door.right {
+	right: -10px;
+	background-position: center left;
+	border-left: 10px solid rgba(255,255,255,0.2);
+}
+.door.open {			
+	width:0;			
+}
+
+
+
+
+
+
+
+@-webkit-keyframes shake {
+    0% { -webkit-transform: translate(0, 0); }
+    25% { -webkit-transform: translate(-10px, 0); }
+    50% { -webkit-transform: translate(0, 0); }
+    75% { -webkit-transform: translate(10px, 0); }
+    100% { -webkit-transform: translate(0, 0); }
+}
+ 
+.shake {     
+    -webkit-animation-name: shake;
+    -webkit-animation-duration: 500ms;
+    -webkit-animation-iteration-count: 3;
+    -webkit-animation-timing-function: linear;
+}
