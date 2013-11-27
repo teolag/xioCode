@@ -576,12 +576,12 @@ function saveFile() {
 		xhr.send(formData);
 		xhr.onload = function(e) {
 			if(e.target.status===200) {
-			$menuItem.children("img").fadeOutAndRemove();
-			fileNotChanged();
-			console.log("...saving complete");
+				fileNotChanged();
+				console.log("File saved");
 			} else {
 				console.error("Error saving file", e);
 			}
+			$menuItem.children("img").fadeOutAndRemove();
 		};		
 	}
 	else {	
