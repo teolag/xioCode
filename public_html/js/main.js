@@ -145,15 +145,15 @@ $("#btnChangePassword").on("click", function() {
 });
 	
 $("#btnPreviewFile").on("click", function() {
-	var path = projectsPath + activeProject.id +"/"+ activeFile;
-	console.log("Preview:", projectsPath + activeProject.id +"/"+ activeFile);
+	var path = projectsURL + activeProject.id +"/"+ activeFile;
+	console.log("Preview:", projectsURL + activeProject.id +"/"+ activeFile);
 	window.open(path, 'code_file_preview');
 });
 		
 $("#btnPreviewProject").on("click", function() {	
 	var url = activeProject.run_url;
 	if(!url) {
-		url = "/" + projectsPath + activeProject.id + "/";
+		url = projectsURL + activeProject.id + "/";
 	}	
 	window.open(url, 'code_project_preview');
 });
@@ -227,7 +227,7 @@ $("#fileList").on("click", "li", function(e) {
 			toggleFolder($(this));
 		} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
 			console.log("Open in new tab");
-			window.open(projectsPath + activeProject.id + "/" + uri);
+			window.open(projectsURL + activeProject.id + "/" + uri);
 		} else {		
 			console.log("Mime type text/* -> open in textarea");
 			openFile(uri);
@@ -419,7 +419,7 @@ function fixLayout() {
 }
 
 function showImagePreview(uri) {
-	var imgsrc = projectsPath + activeProject.id + "/" + uri;
+	var imgsrc = projectsURL + activeProject.id + "/" + uri;
 	var item = files[uri];
 	
 	console.log("showImagePreview");

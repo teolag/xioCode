@@ -16,7 +16,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 <!-- hej hej -->
 <html>
 	<head>
-		<title><?php echo $pageTitle; if(isLocal()) echo "(local)";?></title>
+		<title><?php echo $pageTitle;?></title>
 		<meta charset="utf-8" />	
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>lib/codemirror.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/ambiance.css" type="text/css" />
@@ -31,7 +31,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 	<body>
 		<div id="header" class="hidden">
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
-			<?php if(isLocal()) echo "<div class='header-local'>local</div>" ?>
 			<div id="userMenu">
 				<div id="username"></div>
 				<ul>
@@ -116,7 +115,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 				
 		<script src="http://xio.se/projects/xiopop/XioPop.js"></script>
 		<script>
-			var projectsPath = '<?php echo PROJECT_FOLDER; ?>';
+			var projectsURL = '<?php echo PROJECT_FOLDER; ?>';
 		</script>
 		<script src="/js/writer.js"></script>
 		<script src="/js/main.js"></script>

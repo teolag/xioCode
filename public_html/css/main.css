@@ -55,12 +55,6 @@ button:hover {
 	color: #999;
 }
 
-#header .header-local {
-	float:left;
-	margin: 8px 0 0 10px;	
-	font-variant:small-caps;	
-}
-
 #header #pageTitle {
 	font-size: 1.2em;
 	margin-top: 5px;
@@ -495,7 +489,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	display: none;
 	margin: 0;
 	padding: 0;
-	background-color: #555;
+	background-color: #333;
 	position: absolute;
 	z-index: 2;
 	right: 0;
@@ -507,6 +501,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 }
 #userMenu ul  li:hover{
 	background-color: #444;
+	color: #E79D00;
 }
 
 
