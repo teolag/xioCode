@@ -6,8 +6,10 @@ if(isset($_GET['do']) && $_GET['do']=="save") {
 	print_r($_POST);
 	
 	$configFile = PROJECT_PATH . $_POST['project_id'] . "/" . PROJECT_CONFIG_FILE;
-	file_put_contents($configFile, json_encode($_POST['config']));
-	
+	if(!file_put_contents($configFile, json_encode($_POST['config']))) {
+		http_response_code(400);
+		die("Could not write to config file: ". $configFile);
+	}	
 	exit;
 }
 
