@@ -17,8 +17,11 @@ foreach($items as $i) {
 		}
 			
 	} else {
-		$config = array();
-		file_put_contents($configFile, "");
+		$config = array("name"=>basename($i));
+		if(!file_put_contents($configFile, json_encode($config))) {
+			http_response_code(400);
+			die("could not save config file: ". $configFile);
+		}
 	}
 	$projects[basename($i)] = $config;
 }
