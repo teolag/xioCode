@@ -9,14 +9,19 @@ $doorState = (Gatekeeper::hasAccess())? 'open' : '';
 
 $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
+
+$lastCommit = Git::getLastCommit();
+
+echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\n" . $lastCommit['message'] . "\n-->";
+
+
+
 ?>
 
 <!doctype html>
-
-<!-- hej hej -->
 <html>
 	<head>
-		<title><?php echo $pageTitle;?></title>
+		<title><?php echo $pageTitle; ?></title>
 		<meta charset="utf-8" />	
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>lib/codemirror.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/ambiance.css" type="text/css" />

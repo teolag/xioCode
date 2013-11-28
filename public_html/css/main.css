@@ -231,7 +231,7 @@ button:hover {
 }
 
 #toolbar li.disabled:hover {
-	background-color:#ccc;
+	background-color:transparent;
 }
 
 #toolbar li.disabled  {
@@ -477,6 +477,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 #userMenu {
 	float: right;
 	text-align: right;
+	cursor: default;
 }
 #userMenu>div {
 	display: inline-block;

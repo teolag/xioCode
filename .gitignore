@@ -1,4 +1,5 @@
 config.json
 .DS_Store
 public_html/projects/
+public_html/scripts/export.zip
 public_html/scripts/style.mini*

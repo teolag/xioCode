@@ -60,12 +60,14 @@ $("#loginForm").submit(function() {
 });
 
 
-document.getElementsByTagName("h1")[0].addEventListener("click", gotoProjectsPage, false);
 
 
-function gotoProjectsPage() {
+document.querySelector("#header h1").addEventListener("click", function() {
 	setHash();
-}
+}, false);
+
+
+
 
 
 
@@ -113,26 +115,101 @@ $("#projects").on("click", ".lblRenameProject", function(e) {
 });
 
 
-$("#btnNew").on("click", function() {
-	var newFileName = prompt("Enter the filename");
-	if(newFileName) {
-		$.post("/scripts/save.php",  {'uri':encodeURI(newFileName), 'project_id':activeProject.id}, function() {
-			reloadFileList();
-			openFile(newFileName);
-		});
+
+
+/***************** TOOLBAR **********************************************************************/
+
+var toolbar = document.getElementById("toolbar");
+toolbar.addEventListener("click", function(e) {
+	if(e.button!==0) return false;
+	
+	var target = e.target;
+	while(target.nodeName!=="LI") {
+		if(target==toolbar) return;
+		target = target.parentElement;
 	}
-});
+	if(target.classList.contains("disabled")) return;
+	
+	switch(target.id) {
+	
+		case "btnNew":
+		var newFileName = prompt("Enter the filename");
+		if(newFileName) {
+			$.post("/scripts/save.php",  {'uri':encodeURI(newFileName), 'project_id':activeProject.id}, function() {
+				reloadFileList();
+				openFile(newFileName);
+			});
+		}
+		break;
+		
+		case "btnSave":
+		saveFile();
+		break;
+		
+		case "btnRevert":
+		revertFile();
+		break;
+		
+		case "btnPreviewFile":
+		var path = projectsURL + activeProject.id +"/"+ activeFile;
+		console.log("Preview:", projectsURL + activeProject.id +"/"+ activeFile);
+		window.open(path, 'code_file_preview');
+		break;
+		
+		case "btnPreviewProject":
+		var url = activeProject.run_url;
+		if(!url) {
+			url = projectsURL + activeProject.id + "/";
+		}	
+		window.open(url, activeProject.id+'_preview');
+		break;
+		
+		
+		case "btnProjectConfig":
+		XioPop.load("/scripts/project_config.php?project_id="+activeProject.id, function(e) {
+			var frmProjectConfig = document.getElementById("frmProjectConfig");
+			frmProjectConfig.addEventListener("submit", function(e) {
+				e.preventDefault();
+				console.log("Save project configurations");
+				var formData = new FormData(frmProjectConfig);
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', "/scripts/project_config.php?do=save", false);
+				xhr.onload = function(e) {
+					var xhr = e.target;
+					if(xhr.status===200) {
+						console.log("Sparat");
+						XioPop.close();
+					} else {
+						console.err("Error saving config", xhr);
+					}
+				}
+				xhr.send(formData);
+			}, false);
+			
+			var btnConfigCancel = document.getElementById("btnConfigCancel");
+			btnConfigCancel.addEventListener("click", function(e) {
+				XioPop.close();				
+			}, false);
+		});
+		break;
 
-$("#btnSave").on("click", function() {
-	saveFile();
-});
+		case "btnExportZip":
+			window.location="/scripts/export_zip.php?path=" + activeProject.id + "/";
+		break;
+		
+		default:
+		console.warn("Unknown button clicked");
+	}
 
-$("#btnRevert").on("click", function() {
-	revertFile();
-});
+}, false);
 
-$("#btnLogout").on("click", function() {
-	window.location="/scripts/gatekeeper_logout.php";
+
+
+/***************** USER MENU **********************************************************************/
+
+$("#btnExportAllZip").on("click", function() {
+	var d = new Date();
+	window.location="/scripts/export_zip.php?path=" + "&filename=Projects_"+d.toISOString().substring(0,10)+'.zip';
 });
 
 $("#btnChangePassword").on("click", function() {
@@ -143,58 +220,19 @@ $("#btnChangePassword").on("click", function() {
 		});
 	}
 });
-	
-$("#btnPreviewFile").on("click", function() {
-	var path = projectsURL + activeProject.id +"/"+ activeFile;
-	console.log("Preview:", projectsURL + activeProject.id +"/"+ activeFile);
-	window.open(path, 'code_file_preview');
-});
-		
-$("#btnPreviewProject").on("click", function() {	
-	var url = activeProject.run_url;
-	if(!url) {
-		url = projectsURL + activeProject.id + "/";
-	}	
-	window.open(url, 'code_project_preview');
+
+$("#btnLogout").on("click", function() {
+	window.location="/scripts/gatekeeper_logout.php";
 });
 
-$("#btnProjectConfig").on("click", function() {
-	XioPop.load("/scripts/project_config.php?project_id="+activeProject.id, function(e) {
-		var frmProjectConfig = document.getElementById("frmProjectConfig");
-		frmProjectConfig.addEventListener("submit", function(e) {
-			e.preventDefault();
-			console.log("Save project configurations");
-			var formData = new FormData(frmProjectConfig);
-			var xhr = new XMLHttpRequest();
-			xhr.open('POST', "/scripts/project_config.php?do=save", false);
-			xhr.onload = function(e) {
-				var xhr = e.target;
-				if(xhr.status===200) {
-					console.log("Sparat");
-					XioPop.close();
-				} else {
-					console.err("Error saving config", xhr);
-				}
-			}
-			xhr.send(formData);
-		}, false);
-		
-		var btnConfigCancel = document.getElementById("btnConfigCancel");
-		btnConfigCancel.addEventListener("click", function(e) {
-			XioPop.close();				
-		}, false);
-	});
-});
 
-$("#btnExportZip").on("click", function() {
-	window.location="/scripts/export_zip.php?path=" + activeProject.id + "/";
-});
 
-$("#btnExportAllZip").on("click", function() {
-	var d = new Date();
-	window.location="/scripts/export_zip.php?path=" + "&filename=Projects_"+d.toISOString().substring(0,10)+'.zip';
-});
 
+
+
+
+
+/***************** FILE LIST **********************************************************************/
 
 $("#fileList").on("contextmenu",function(e){
 	var $target = $(e.target);
@@ -774,7 +812,6 @@ function fileChanged() {
 	$("#btnSave").removeClass("disabled");
 	$("#btnRevert").removeClass("disabled");
 }
-
 function fileNotChanged() {
 	console.log(activeFile, "is now clean");
 	$("#btnSave").addClass("disabled");
