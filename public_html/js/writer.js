@@ -1,5 +1,4 @@
-var KEY_D = 688;
-var KEY_S = 83;
+
 
 var snippets = {
 	"html":		"<!doctype html>\n<html>\n\t<head>\n\t\t<title>Page Title</title>\n\t\t<meta charset=\"utf-8\" />\n\t\t<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n\t</head>\n\t<body>\n\t\t\n\t</body>\n</html>",
@@ -9,6 +8,7 @@ var snippets = {
 	"phperror":	"ini_set('display_errors',1);\nini_set('error_reporting', E_ALL ^ E_NOTICE);",
 	"xhr": "xhr = new XMLHttpRequest();"
 };
+
 
 function initWriter() {
 	if(codeMirror) return;

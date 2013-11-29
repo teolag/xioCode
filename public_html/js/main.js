@@ -9,6 +9,7 @@ var projects = new Array();
 
 var activeProject;
 var activeFile;
+var checkAccessInterval;
 var pageTitle;
 var hoverTimer;
 
@@ -401,12 +402,13 @@ function logout() {
 	document.body.classList.remove("authorized");
 	projectList.innerHTML="";
 	fileList.innerHTML="";
-	projects = null;
+	projects = new Array();
+	files = new Array();
 	activeProject = null;
 	activeFile = null;
-	files = null;
 	codeMirror.setValue("");
-	loginForm.elements['code_username'].focus();
+	loginForm.elements['code_username'].focus();	
+	clearInterval(checkAccessInterval);
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open("get", "/scripts/gatekeeper_logout.php", true);
@@ -438,11 +440,11 @@ function loginAccepted() {
 	$("#username").html(_USER.username);
 	
 	//Access check every minute
-	var checkAccessInterval = setInterval(checkAccess,60*1000);
+	checkAccessInterval = setInterval(checkAccess,60*1000);
 	
 	findProjects();
 	initWriter();
-	readHash(window.location.hash);
+	
 }
 
 function fixLayout() {
@@ -474,19 +476,12 @@ function showImagePreview(uri) {
 	);
 }
 
-/*
- * Get all projects from database
- * Async: false  AJAX request
-*/
+
 function findProjects() {
-	console.groupCollapsed("Get projects");
-	console.time("timing findProjects")
 	var url = "/scripts/get_all_projects.php";
-	console.log("Send ajax request to", url);
 	$.ajax({
 		url: url,
 		success: function(data) {
-			console.log("Incominig ajax response");
 			projects=data;
 			console.log(projects);
 			var projectsHTML=[];
@@ -500,20 +495,20 @@ function findProjects() {
 				projectsHTML.push("</div>");
 				projectsHTML.push("</li>");
 			});
-			console.log("%i projects found", data.length, data);
+			console.log("%i projects found", Object.keys(projects).length, data);
 			projectList.innerHTML = projectsHTML.join("");
 			filterProjects();
+			readHash(window.location.hash);
 		},
-		async:false,
+		async: true,
 		dataType: "json"
 	});
-	console.timeEnd("timing findProjects") 
-	console.groupEnd();
+	
 }
 
 function openProject(id) {
-	if(!projects) { 
-		console.error("No projects loaded");
+	if(!projects || projects.length===0) { 
+		console.log("No projects loaded yet");
 		return false;
 	}
 

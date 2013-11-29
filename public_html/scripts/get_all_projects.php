@@ -2,6 +2,7 @@
 require "../../includes/init.php";
 Gatekeeper::checkAccess();
 
+
 $userid = Gatekeeper::getUserId();
 
 $items = glob(PROJECT_PATH."*", GLOB_ONLYDIR);
