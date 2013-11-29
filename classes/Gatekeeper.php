@@ -31,8 +31,8 @@ class Gatekeeper {
 		return intval(self::$user_id);
 	}
 	
-	public static function getUser() {
-		$userid = getUserId();
+	public static function getUser(DatabasePDO $db) {
+		$userid = self::getUserId();
 		if(empty($userid)) {
 			return null;
 		} else {

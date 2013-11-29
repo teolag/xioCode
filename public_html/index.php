@@ -1,17 +1,32 @@
 <?php
-require "../includes/init.php";
+
+session_start();
+require "../classes/Git.php";
+require "../classes/Gatekeeper.php";
+require "../classes/DatabasePDO.php";
+require "../includes/config.php";
+
+
+
+
 
 define("CODEMIRRORPATH", "/codemirror/");
 
 $pageTitle = "xioCode";
 
-$doorState = (Gatekeeper::hasAccess())? 'open' : '';
+$jsUser = "null";
+if(Gatekeeper::hasAccess()) {
+	$db = new DatabasePDO($config['database']['server'], $config['database']['username'], $config['database']['password'], $config['database']['name']);
+
+	$loginState=" class='authorized'";
+	$jsUser = json_encode(Gatekeeper::getUser($db));
+	
+}
 
 $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
 
 $lastCommit = Git::getLastCommit();
-
 echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\n" . $lastCommit['message'] . "\n-->";
 
 
@@ -33,8 +48,8 @@ echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\
 		<link rel="shortcut icon" href="/images/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 	</head>
-	<body>
-		<div id="header" class="hidden">
+	<body<?php echo $loginState ?>>
+		<div id="header">
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
 			<div id="userMenu">
 				<div id="username"></div>
@@ -49,13 +64,13 @@ echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\
 				<button id="btnLogout" type="button" class="button24" title="Logout"></button>
 				-->
 			</div>
-			<span id="pageTitle">Projects</span>
+			<span id="pageTitle"></span>
 		</div>
 		
 		<div class="door left <?php echo $doorState; ?>"></div>
 		<div class="door right <?php echo $doorState; ?>"></div>
 
-		<div id="login" class="hidden">
+		<div id="login">
 			<h1>xioCode</h1>
 			<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off"> 
 				<input type="text" name="code_username" id="inputUsername" placeholder="Username" autofocus />
@@ -121,6 +136,7 @@ echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\
 		<script src="http://xio.se/projects/xiopop/XioPop.js"></script>
 		<script>
 			var projectsURL = '<?php echo PROJECT_FOLDER; ?>';
+			var _USER = <?php echo $jsUser; ?>;
 		</script>
 		<script src="/js/writer.js"></script>
 		<script src="/js/main.js"></script>

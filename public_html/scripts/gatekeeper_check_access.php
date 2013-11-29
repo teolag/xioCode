@@ -2,8 +2,8 @@
 require "../../includes/init.php";
 $user_id = Gatekeeper::getUserId();
 if($user_id>0) {
-	header(' ', true, 202);
+	http_response_code(202);
 } else {
-	header(' ', true, 403);
+	http_response_code(401);
 }
 ?>

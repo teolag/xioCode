@@ -11,7 +11,7 @@ var snippets = {
 };
 
 function initWriter() {
-	
+	if(codeMirror) return;
 	
 	codeMirror = CodeMirror.fromTextArea(document.getElementById("code"), {
 		lineNumbers: true,
@@ -51,8 +51,10 @@ function initWriter() {
 	console.groupEnd();
 	
 	codeMirror.on("change", function(cm, change) {
-		console.log("CodeMirror Change", cm, change);
-		fileChanged();
+		if(activeFile) {
+			console.log("CodeMirror Change", cm, change);
+			fileChanged();
+		}
 	});	
 	
 	/*

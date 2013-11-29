@@ -6,7 +6,6 @@ var fileListWidth = 220;
 var DEBUG_MODE_ON=true;
 
 var projects = new Array();
-var _USER;
 
 var activeProject;
 var activeFile;
@@ -24,40 +23,43 @@ if (!DEBUG_MODE_ON) {
     console.log = function(){};
 }
 
+var projectList = document.getElementById("projects");
+var fileList = document.getElementById("fileList");
+
+var loginBox = document.getElementById("login");
+var loginForm = document.getElementById("loginForm");
+var loginButton = document.getElementById("btnLogin");
+
+loginForm.addEventListener("submit", function(e) {
+	e.preventDefault();
+	if(!loginForm.elements['code_username'].value || !loginForm.elements['code_password'].value) {
+		return;
+	}
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open("post", "/scripts/gatekeeper_login.php", true);
+	xhr.onload = loginCallback;
+	xhr.send(new FormData(loginForm));
+	
+}, false);
+
+function loginCallback(e) {
+	var user = JSON.parse(e.target.responseText);
+	if(e.target.status===200 && user && user.username) {
+		_USER = user
+		loginAccepted();
+	}
+	else {
+		console.warn("Incorrect login or password")
+		loginBox.className="";
+		setTimeout(function(){
+			loginBox.className="shake";
+		},1);
+	}
+	loginForm.reset();
+}
 
 
-init();	
-$("#loginForm").submit(function() {
-	var $form = $(this);
-	$.ajax({
-		url:"/scripts/gatekeeper_login.php",
-		type:"POST",
-		data:$form.serialize(),
-		success: function(user, status, jqXHR) {
-			if(user && user.username) {
-				$("#login").fadeOut(130, function() {;
-					_USER = user
-					loginAccepted();
-				});
-			}
-			else {
-				console.warn("Incorrest login or password")
-				$("#login")[0].className="";
-				setTimeout(function(){
-					$("#login")[0].className="shake";
-				},1);
-				$("#btnLogin").removeAttr("disabled");
-				$form.children("input").val('');						
-			}
-		},
-		error: function(user, status, jqXHR) {
-			alert("error  " + user.status + "    " + status + "    " + jqXHR);
-		},
-		dataType:"json"
-	});
-	$("#btnLogin").attr("disabled","disabled");		
-	return false;
-});
 
 
 
@@ -65,10 +67,6 @@ $("#loginForm").submit(function() {
 document.querySelector("#header h1").addEventListener("click", function() {
 	setHash();
 }, false);
-
-
-
-
 
 
 $("#btnNewProject").on("click", function() {
@@ -79,6 +77,7 @@ $("#btnNewProject").on("click", function() {
 		});
 	}	
 });
+
 
 /***************** PROJECT FILTER ***************************************************************/
 var projectFilter = document.getElementById('projectFilter');
@@ -133,13 +132,14 @@ toolbar.addEventListener("click", function(e) {
 	switch(target.id) {
 	
 		case "btnNew":
-		var newFileName = prompt("Enter the filename");
-		if(newFileName) {
-			$.post("/scripts/save.php",  {'uri':encodeURI(newFileName), 'project_id':activeProject.id}, function() {
-				reloadFileList();
-				openFile(newFileName);
-			});
-		}
+		XioPop.prompt("Enter the filename", "", function(newFileName) {
+			if(newFileName) {
+				$.post("/scripts/save.php",  {'uri':encodeURI(newFileName), 'project_id':activeProject.id}, function() {
+					reloadFileList();
+					openFile(newFileName);
+				});
+			}
+		});
 		break;
 		
 		case "btnSave":
@@ -221,13 +221,7 @@ $("#btnChangePassword").on("click", function() {
 	}
 });
 
-$("#btnLogout").on("click", function() {
-	window.location="/scripts/gatekeeper_logout.php";
-});
-
-
-
-
+document.getElementById("btnLogout").addEventListener("click", logout, false);
 
 
 
@@ -394,32 +388,40 @@ fileList.addEventListener("dragleave", hoverFile, false);
 
 function init() {
 	pageTitle = document.title;
-	console.log("Init " + pageTitle);	
-	checkIfUserIsLoggedIn();	
+	console.log("Init " + pageTitle);
+	
+	if(_USER && _USER.username) {
+		loginAccepted();
+	}
+	
 }
 
-function checkIfUserIsLoggedIn() {
-	$.ajax({
-		url:"/scripts/gatekeeper_get_current_user.php",
-		success: function(user, status, jqXHR) {
-			_USER=user;
-			loginAccepted();
-		},
-		error: function(data, status, jqXHR) {
-			console.log(data.responseText);
-			$("#login").show();
-		},
-		dataType:"json"
-	});
+
+function logout() {
+	document.body.classList.remove("authorized");
+	projectList.innerHTML="";
+	fileList.innerHTML="";
+	projects = null;
+	activeProject = null;
+	activeFile = null;
+	files = null;
+	codeMirror.setValue("");
+	loginForm.elements['code_username'].focus();
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open("get", "/scripts/gatekeeper_logout.php", true);
+	xhr.send();
 }
+
+
 
 function checkAccess() {
 	console.log(new Date().toTimeString().substr(0,5), "Access check");
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET","/scripts/gatekeeper_check_access.php");
 	xhr.onload = function(e) {		
-		if(xhr.status == 403) {
-			location.reload();
+		if(xhr.status !== 202) {
+			logout();
 		}
 	}
 	xhr.send();
@@ -429,7 +431,10 @@ function checkAccess() {
 function loginAccepted() {
 	console.log("Login accepted");	
 	console.log(_USER);
-	$("#header").show();
+	
+	document.body.classList.add("authorized");
+	
+	
 	$("#username").html(_USER.username);
 	
 	//Access check every minute
@@ -437,8 +442,7 @@ function loginAccepted() {
 	
 	findProjects();
 	initWriter();
-	readHash(window.location.hash);	
-	$(".door").addClass('open');
+	readHash(window.location.hash);
 }
 
 function fixLayout() {
@@ -497,7 +501,7 @@ function findProjects() {
 				projectsHTML.push("</li>");
 			});
 			console.log("%i projects found", data.length, data);
-			$("#projects").html(projectsHTML.join(""));
+			projectList.innerHTML = projectsHTML.join("");
 			filterProjects();
 		},
 		async:false,
@@ -536,7 +540,9 @@ var openFile = function(uri) {
 	setHash(activeProject.id + "/" + uri);
 }
 
-function loadFile(uri, forceLoadFromDisc) {		
+function loadFile(uri, forceLoadFromDisc) {
+	activeFile = null;
+
 	if(!files[uri]){
 		console.warn("File not found: '" + uri + "'");
 		return false;
@@ -561,8 +567,9 @@ function loadFile(uri, forceLoadFromDisc) {
 	var localSaved = localStore.getItem(activeProject.id +"/"+uri);
 	selectInFileList(uri);
 	if(!forceLoadFromDisc && localSaved) {
-		activeFile = uri;
 		codeMirror.setValue(localSaved);	
+		activeFile = uri;
+		fileChanged();
 		codeMirror.setOption("mode", mode);
 		$menuItem.children("div").fadeOutAndRemove();
 		console.log("Loading '" + uri + "' from local storage. Display as '" + codeMirror.getOption("mode") + "'");
@@ -571,8 +578,8 @@ function loadFile(uri, forceLoadFromDisc) {
 			'project_id':activeProject.id,
 			'uri':encodeURI(uri)
 			}, function(data) {
-				activeFile = uri;
 				codeMirror.setValue(data);
+				activeFile = uri;
 				fileNotChanged();
 				codeMirror.setOption("mode", mode);
 				$menuItem.children("div").fadeOutAndRemove();
@@ -953,3 +960,10 @@ jQuery.fn.fadeOutAndRemove = function(speed){
         $(this).remove();
     })
 }
+
+
+
+
+
+
+init();

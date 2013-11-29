@@ -67,6 +67,8 @@ button:hover {
 }
 
 
+
+
 .button24 {
 	border:0 none;
 	cursor:pointer;
@@ -437,19 +439,23 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 }
 
 #login {
-	text-align:center;
-	position:absolute;
-	left:50%;
-	top:45%;	
-	background-color:#fff;
-	width:300px;
-	height:150px;
-	border:2px solid white;
-	border-radius:20px;
-	margin-left:-150px;
-	margin-top:-75px;
+	text-align: center;
+	position: absolute;
+	left: 50%;
+	top: 45%;	
+	background-color: #fff;
+	width: 300px;
+	height: 150px;
+	border: 2px solid white;
+	border-radius: 20px;
+	margin-left: -150px;
+	margin-top: -75px;
 	-webkit-box-shadow: inset 0px 0px 3px #777, 0 0 550px black;	
 	z-index: 11;
+}
+
+body.authorized #login {
+	display: none;
 }
 
 #login form {
@@ -543,15 +549,16 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .door {
 	position:fixed;
 	top:0;
-	height:100%;
-	width:50%;
+	height: 100%;
+	width: 50%;
 	background: #777;
 	background: -moz-linear-gradient(top, #b5b5b5 1%, #eff8ff 44%, #a3a3a3 100%);
 	background: -webkit-linear-gradient(top, #b5b5b5 1%,#eff8ff 44%,#a3a3a3 100%);
+	z-index:10;
+	
 	-webkit-transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
 	-moz-transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
 	transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
-	z-index:10;
 }
 
 .door.left {
@@ -564,7 +571,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	background-position: center left;
 	border-left: 10px solid rgba(255,255,255,0.2);
 }
-.door.open {			
+
+body.authorized div.door {	
 	width:0;			
 }
 
