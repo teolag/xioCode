@@ -26,12 +26,6 @@ if(Gatekeeper::hasAccess()) {
 $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
 
-if(Git::isGit()) {
-	$lastCommit = Git::getLastCommit();
-	echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\n" . $lastCommit['message'] . "\n-->";
-}
-
-
 ?>
 
 <!doctype html>
