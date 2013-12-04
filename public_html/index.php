@@ -1,13 +1,9 @@
 <?php
-
 session_start();
 require "../classes/Git.php";
 require "../classes/Gatekeeper.php";
 require "../classes/DatabasePDO.php";
 require "../includes/config.php";
-
-
-
 
 
 define("CODEMIRRORPATH", "/codemirror/");
