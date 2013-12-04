@@ -27,7 +27,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
 
 ?>
-
 <!doctype html>
 <html>
 	<head>
@@ -68,7 +67,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<div id="login">
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
 			<?php if(Git::isGit()) : ?>
-			<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", $lastCommit['ts']); ?></div>
+			<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", Git::getLastCommitDate()); ?></div>
 			<?php endif; ?>
 			
 			<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off"> 

@@ -20,6 +20,11 @@ class Git {
 	static public function getLastCommit() {
 		return self::getCommit(self::getLastHash());
 	}
+	
+	static public function getLastCommitDate() {
+		$lastCommit = self::getLastCommit();
+		return $lastCommit['ts'];
+	}
 
 	static public function getCommit($hash) {		
 		exec("git log -n1 $hash --pretty=format:'%at|%s'", $output);
