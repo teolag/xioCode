@@ -30,6 +30,15 @@ button:hover {
 	/*background-color: #FFD697;	*/
 }
 
+h1 {
+	font-size: 22px;
+}
+h1 .first {
+	color: #E79D00;
+}
+h1 .second {
+	color: #999;
+}
 
 #header {
 	width:100%;
@@ -43,16 +52,9 @@ button:hover {
 }
 
 #header h1 {
-	font-size: 22px;
 	margin: 3px 0 3px 15px;
 	float:left;
 	cursor:pointer;
-}
-#header h1 .first {
-	color: #E79D00;
-}
-#header h1 .second {
-	color: #999;
 }
 
 #header #pageTitle {
@@ -430,13 +432,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 
 /****************** LOGIN ***************************/
-#login h1 {
-	margin:10px auto;
-	background: transparent url('/images/code_sprite.png') no-repeat 0 -72px;
-	height:25px;
-	width:120px;
-	text-indent: -9999px;
-}
 
 #login {
 	text-align: center;
@@ -445,7 +440,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	top: 45%;	
 	background-color: #fff;
 	width: 300px;
-	height: 150px;
+	height: 170px;
 	border: 2px solid white;
 	border-radius: 20px;
 	margin-left: -150px;
@@ -456,6 +451,16 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 body.authorized #login {
 	display: none;
+}
+
+#login h1 {
+	margin-bottom: 0;
+}
+
+#login .version {
+	font-size: 0.4em;
+	color: #999;
+	margin-bottom: 1em;
 }
 
 #login form {

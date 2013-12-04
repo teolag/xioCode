@@ -26,9 +26,10 @@ if(Gatekeeper::hasAccess()) {
 $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
 
-$lastCommit = Git::getLastCommit();
-echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\n" . $lastCommit['message'] . "\n-->";
-
+if(Git::isGit()) {
+	$lastCommit = Git::getLastCommit();
+	echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\n" . $lastCommit['message'] . "\n-->";
+}
 
 
 ?>
@@ -71,7 +72,11 @@ echo "<!-- \nGIT: Latest commit\n" . date("Y-m-d H:i:s", $lastCommit['ts']) . "\
 		<div class="door right <?php echo $doorState; ?>"></div>
 
 		<div id="login">
-			<h1>xioCode</h1>
+			<h1><span class="first">xio</span><span class="second">Code</span></h1>
+			<?php if(Git::isGit()) : ?>
+			<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", $lastCommit['ts']); ?></div>
+			<?php endif; ?>
+			
 			<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off"> 
 				<input type="text" name="code_username" id="inputUsername" placeholder="Username" autofocus />
 				<input type="password" name="code_password" id="inputPassword" placeholder="Password" /><br />
