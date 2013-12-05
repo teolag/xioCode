@@ -133,18 +133,24 @@ toolbar.addEventListener("click", function(e) {
 	switch(target.id) {
 	
 		case "btnNew":
-		XioPop.prompt("Enter the filename", "", function(newFileName) {
+		XioPop.prompt("Enter the filename", "", "", function(newFileName) {
 			if(newFileName) {
-				$.post("/scripts/save.php",  {'uri':encodeURI(newFileName), 'project_id':activeProject.id}, function() {
-					reloadFileList();
-					openFile(newFileName);
-				});
+				createNewFile(newFileName);
 			}
 		});
 		break;
 		
 		case "btnSave":
-		saveFile();
+			if(activeFile) {
+				saveFile();
+			} else {
+				console.log("Save As...  ");
+				XioPop.prompt("Save file as...", "Enter the filename", "", function(answer) {
+					if(answer) {
+						saveFileAs(answer);
+					}
+				});	
+			}
 		break;
 		
 		case "btnRevert":
@@ -597,37 +603,56 @@ function revertFile() {
 	}
 }
 
+function createNewFile(newFileName) {
+	$.post("/scripts/save.php",  {'uri':encodeURI(newFileName), 'project_id':activeProject.id}, function() {
+		reloadFileList();
+		openFile(newFileName);
+	});
+}
+
+
 function saveFile() {
 	codeMirror.save();
 	var form = document.getElementById("writer");
 	
-	if(activeFile) {
-		var $menuItem = $("li[data-uri='"+activeFile+"']");
-		$menuItem.append("<img src='/images/ajax-loader.gif' class='file_spinner' />");
-		console.log("Save file '"+ activeFile+"'...");
-		
-		var formData = new FormData(form);
-		formData.append("uri", activeFile);
-		formData.append("project_id", activeProject.id);
-		
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "/scripts/save.php", true);
-		
-		xhr.send(formData);
-		xhr.onload = function(e) {
-			if(e.target.status===200) {
-				fileNotChanged();
-				console.log("File saved");
-			} else {
-				console.error("Error saving file", e);
-			}
-			$menuItem.children("img").fadeOutAndRemove();
-		};		
-	}
-	else {	
-		console.log("Save As...  this should not happen I think");
-	}
+	var formData = new FormData(form);
+	formData.append("uri", activeFile);
+	formData.append("project_id", activeProject.id);
+
+	console.log("Save file '"+ activeFile+"'...");
+	
+	var $menuItem = $("li[data-uri='"+activeFile+"']");
+	$menuItem.append("<img src='/images/ajax-loader.gif' class='file_spinner' />");
+	
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/scripts/save.php", true);
+	
+	xhr.send(formData);
+	xhr.onload = function(e) {
+		if(e.target.status===200) {
+			fileNotChanged();
+			console.log("File saved");
+		} else {
+			console.error("Error saving file", e);
+		}
+		$menuItem.children("img").fadeOutAndRemove();
+	};		
 }
+
+function saveFileAs(newFileName) {
+
+	console.warn("Save as not implemented yet");
+	return;
+
+	var form = document.getElementById("writer");
+	
+	var formData = new FormData(form);
+	formData.append("uri", newFileName);
+	formData.append("project_id", activeProject.id);
+
+}
+
 
 function findFiles() {
 	files = [];
