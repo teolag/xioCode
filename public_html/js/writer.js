@@ -37,8 +37,12 @@ function initWriter() {
 			"Cmd-Alt-Down" 	: function(editor) { CodeMirror.commands.duplicateRow(editor, false); },
 			"Ctrl-Alt-Up" 	: function(editor) { CodeMirror.commands.duplicateRow(editor, true); },
 			"Cmd-Alt-Up" 	: function(editor) { CodeMirror.commands.duplicateRow(editor, true); },
-			"Cmd-L" 		: "selectLines",
-			"Ctrl-L" 		: "selectLines"				
+			"Cmd-I" 		: "selectLines",
+			"Ctrl-I" 		: "selectLines",			
+			"Cmd-L" 		: "jump2Line",
+			"Ctrl-L" 		: "jump2Line",			
+			"Cmd-O" 		: "showAllFunctions",
+			"Ctrl-O" 		: "showAllFunctions"
 		}
 	});
 	
@@ -199,6 +203,48 @@ CodeMirror.commands.newFile = function(editor) {
 	console.log("Ctrl/Cmd+n pressed, new file...");
 	openFile("new");
 }
+CodeMirror.commands.jump2Line = function(editor, line) {
+	if(line===undefined) {
+		XioPop.prompt("Jump to line", "Enter the desired line number", "", function(lineNumber) {
+			if(Number(lineNumber) > 0) {
+				CodeMirror.commands.jump2Line(editor, Number(lineNumber)-1);
+			}
+		});
+		return;
+	}
+	editor.setCursor(line+10, 0);
+	editor.setCursor(line-10, 0);
+	editor.setCursor(line, 0);
+	codeMirror.focus();
+}
+
+CodeMirror.commands.showAllFunctions = function(editor) {
+	
+	var functions = findFunctions();
+	
+	console.log(functions);
+	
+	var list = document.createElement("ul");
+	list.classList.add("selectableList", "functions");
+	list.addEventListener("click", function(e) {
+		var target = e.target;
+		if(target.nodeName==="LI") {
+			var line = Number(target.getAttribute("data-line"));
+			XioPop.close();
+			CodeMirror.commands.jump2Line(editor, line);
+			
+		}		
+	});
+	for(var i=0; i<functions.length; i++) {
+		var f = functions[i];
+		var item = document.createElement("li");
+		item.textContent = f.name + " (" + f.args.join(", ") + ")";
+		item.setAttribute("data-line", f.line); 
+		list.appendChild(item);
+	}
+	XioPop.showElement(list);
+
+}
 
 
 
@@ -213,6 +259,5 @@ function selectTheme() {
 	codeMirror.setOption("theme", theme);
 	console.log("Set theme to:", theme);
 }
-
 
 

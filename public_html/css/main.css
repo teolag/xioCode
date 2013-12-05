@@ -17,6 +17,7 @@ body {
 
 body, textarea, input, button, select {
 	font-family: arial, sans-serif;
+	font-size: 13px;
 }
 
 button {
@@ -266,7 +267,6 @@ h1 .second {
 
 #imagePreviewInfo {
 	background-color: #fff;
-	font-size: 14px;
 	padding: 0 0 0 10px;
 	float: left;
 	height: 150px;
@@ -287,7 +287,6 @@ h1 .second {
 	padding:5px;
 	margin:10px;
 	font-weight:bold;
-	font-size:15px;
 	color:#444;
 	border-radius:10px;
 	border:2px solid gray;
@@ -357,7 +356,6 @@ ul#projects {
 	
 	#fileListRightClickMenu li{
 		border-bottom:1px solid #eee;
-		font-size:12px;
 		cursor:pointer;
 	}
 	
@@ -475,7 +473,6 @@ body.authorized #login {
 	border: 1px solid #bbb;
 	background-color: #eee;
 	color: #444;
-	font-size: 16px;
 }
 
 #login button {
@@ -546,6 +543,25 @@ body.authorized #login {
 #frmProjectConfig .buttonset {
 	text-align: right;
 }
+
+
+/*************************** Project Config ***************************/
+ul.selectableList {
+	margin:0;
+	padding: 0;
+}
+
+ul.selectableList li {
+	cursor: pointer;
+	padding: 3px;
+}
+
+ul.selectableList li:hover {
+	background-color: #ddd;
+
+}
+
+
 /**********************************************************************/
 
 

@@ -4,6 +4,7 @@ var codeMirror;
 var fileListWidth = 220;
 
 var DEBUG_MODE_ON=true;
+var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 
 var projects = new Array();
 
@@ -133,11 +134,7 @@ toolbar.addEventListener("click", function(e) {
 	switch(target.id) {
 	
 		case "btnNew":
-		XioPop.prompt("Enter the filename", "", "", function(newFileName) {
-			if(newFileName) {
-				createNewFile(newFileName);
-			}
-		});
+		createNewFile();
 		break;
 		
 		case "btnSave":
@@ -446,7 +443,7 @@ function loginAccepted() {
 	$("#username").html(_USER.username);
 	
 	//Access check every minute
-	checkAccessInterval = setInterval(checkAccess,60*1000);
+	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 	
 	findProjects();
 	initWriter();
@@ -594,6 +591,7 @@ function unloadFile() {
 	$("#fileList li").removeClass("selected");
 	activeFile = null;
 	codeMirror.setValue("");
+	codeMirror.focus();
 }
 
 function revertFile() {	
@@ -603,12 +601,55 @@ function revertFile() {
 	}
 }
 
-function createNewFile(newFileName) {
-	$.post("/scripts/save.php",  {'uri':encodeURI(newFileName), 'project_id':activeProject.id}, function() {
-		reloadFileList();
-		openFile(newFileName);
-	});
+
+
+function createNewFile() {
+	XioPop.prompt("Enter the new filename", "", "", function(newFileName) {
+		if(newFileName===false) {
+			console.debug("abort file creation");
+			return;
+		} else if(newFileName.trim()=="") {
+			console.debug("not a valid filename");
+			XioPop.alert("Invalid filename", "You must enter a valid filename, try again", function() {
+				createNewFile()
+			});
+		} else {
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", "/scripts/file_handler.php?do=new&project_id="+activeProject.id+"&uri="+escape(newFileName), true);
+			xhr.onload = fileCreationCallback;
+			xhr.send();
+		}
+	});	
 }
+function fileCreationCallback(e) {
+	var json = validateCallback(e);
+	if(!json) return false;
+	
+	console.log("JSON callback", json);
+	
+	reloadFileList();
+	openFile(json.uri);
+}
+
+
+
+
+function validateCallback(e) {
+	if(e.target.status===200) {
+		try {
+			var json = JSON.parse(e.target.responseText);
+			return json;
+		}
+		catch(err) {
+			console.error("Ajax callback not valid json", e.target.responseText, err);
+			return false;
+		}		
+	} else {
+		console.error("Error during ajax call", e);
+		return false;
+	}
+}
+
 
 
 function saveFile() {
@@ -655,6 +696,7 @@ function saveFileAs(newFileName) {
 
 
 function findFiles() {
+	// TODO: Make this async!
 	files = [];
 	console.groupCollapsed("Load project files");
 	console.log(activeProject);
@@ -830,7 +872,6 @@ function chooseProject() {
 }
 
 
-
 function fileChanged() {
 	var localStore = window.localStorage;
     localStore.setItem(activeProject.id+"/"+activeFile, codeMirror.getValue());
@@ -970,6 +1011,34 @@ function hoverFile(e) {
 }
 
 
+
+function findFunctions() {
+	console.log("Finding functions");
+	
+	var text = codeMirror.getValue();
+	
+	var doc = codeMirror.getDoc();
+	
+	
+	var re = new RegExp("function\\s+([A-Z0-9_]+)\\s*\\(([^\\)]*)\\)", "gmi");
+	
+	var hit;
+	var functions = [];
+	while(hit = re.exec(text)) {
+		var pos = doc.posFromIndex(hit.index);
+		var argus = hit[2].replace(" ","").split(",");
+		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
+	}
+	
+	return functions;
+	
+}
+
+
+
+
+
+
 var clone = (function(){ 
   return function (obj) { Clone.prototype=obj; return new Clone() };
   function Clone(){}
@@ -980,6 +1049,13 @@ jQuery.fn.fadeOutAndRemove = function(speed){
         $(this).remove();
     })
 }
+
+
+
+
+
+
+
 
 
 
