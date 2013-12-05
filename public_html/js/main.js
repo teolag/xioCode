@@ -1030,6 +1030,14 @@ function findFunctions() {
 		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
 	}
 	
+	function compare(a,b) {
+		if (a.name < b.name) return -1;
+		if (a.name > b.name) return 1;
+		return 0;
+	}
+
+	functions.sort(compare);
+	
 	return functions;
 	
 }

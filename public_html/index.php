@@ -32,7 +32,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/ambiance.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/lesser-dark.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/monokai.css" type="text/css" />
-		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>addon/dialog/dialog.css">
+		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>addon/dialog/dialog.css" type="text/css" />
 		<link rel="stylesheet" href="http://xio.se/projects/xiopop/XioPop.css">		
 		<link rel="stylesheet" href="/scripts/cssMinify.php" type="text/css" />
 		<link rel="shortcut icon" href="/images/favicon.ico" />

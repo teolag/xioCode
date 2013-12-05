@@ -60,8 +60,8 @@ h1 .second {
 
 #header #pageTitle {
 	font-size: 1.2em;
-	margin-top: 5px;
 	display: inline-block;
+	line-height: 33px;
 }
 
 #header .menuButtons {
@@ -489,7 +489,8 @@ body.authorized #login {
 }
 #userMenu>div {
 	display: inline-block;
-	padding: 6px 15px;
+	line-height: 33px;
+	padding: 0 1em;
 }
 #userMenu:hover ul {
 	display: block;

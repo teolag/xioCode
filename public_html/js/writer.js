@@ -212,8 +212,14 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 		});
 		return;
 	}
-	editor.setCursor(line+10, 0);
+	editor.setCursor(line-40, 0);
+	editor.setCursor(line+40, 0);
+	editor.setCursor(line-30, 0);
+	editor.setCursor(line+30, 0);
+	editor.setCursor(line-20, 0);
+	editor.setCursor(line+20, 0);
 	editor.setCursor(line-10, 0);
+	editor.setCursor(line+10, 0);
 	editor.setCursor(line, 0);
 	codeMirror.focus();
 }
