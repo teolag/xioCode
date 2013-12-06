@@ -7,14 +7,15 @@ var DEBUG_MODE_ON=true;
 var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 
 var projects = new Array();
+var files;
 
 var activeProject;
 var activeFile;
 var checkAccessInterval;
 var pageTitle;
 var hoverTimer;
+var fileToBeLoaded;
 
-var files = new Array();
 
 var oldHash=window.location.hash;
 
@@ -260,7 +261,7 @@ $("#fileList").on("click", "li", function(e) {
 	console.log("Clicked on item", file);		
 	if(e.which == 1) {
 		if(file.type==='folder') {
-			toggleFolder($(this));
+			toggleFolder(this);
 		} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
 			console.log("Open in new tab");
 			window.open(projectsURL + activeProject.id + "/" + uri);
@@ -525,27 +526,33 @@ function openProject(id) {
 	activeProject.id = id;
 	document.title = pageTitle + " - " + project.name;
 
-	//unloadFile();
 	$("#choose_project").hide();
 	$("#writer").show();
 	$("#pageTitle").html(project.name);
 	
 	fixLayout();
-	findFiles();
+	getProjectFiles();
 }
 
-var openFile = function(uri) {
+function openFile(uri) {
 	setHash(activeProject.id + "/" + uri);
 }
 
-function loadFile(uri, forceLoadFromDisc) {
-	activeFile = null;
 
-	if(!files[uri]){
+
+function loadFile(uri, forceLoadFromDisc) {
+
+	if(files==null) {
+		console.log("Filelist not loaded.  Wait for it...");
+		fileToBeLoaded = uri;
+		return false;
+	} else if(!files[uri]){
 		console.warn("File not found: '" + uri + "'");
 		return false;
 	}
 	
+	activeFile = null;
+
 	var mode, modefile;
 	switch(files[uri].type) {
 		case "php": 			mode="application/x-httpd-php"; 	modefile="php/php.js"; break;
@@ -555,11 +562,9 @@ function loadFile(uri, forceLoadFromDisc) {
 		case "xml": case "svg": mode="application/xml"; 			modefile="xml/xml.js"; break;
 		default: 				mode="text/plain";
 	}
-	
-	
+		
 	var $menuItem = $("li[data-uri='"+uri+"']");
 	$menuItem.append("<div class='file_loader'></div>");
-			
 	
 	var localStore = window.localStorage;
 	var localSaved = localStore.getItem(activeProject.id +"/"+uri);
@@ -695,25 +700,42 @@ function saveFileAs(newFileName) {
 }
 
 
-function findFiles() {
-	// TODO: Make this async!
-	files = [];
-	console.groupCollapsed("Load project files");
-	console.log(activeProject);
-	var path = "";
-	console.log("Ajax: get all files in:", path);
-	$.ajax({
-		url: "/scripts/build_file_tree.php",
-		data: {'project_id':activeProject.id},
-		success: function(data) {
-			console.log("Files found:", data);
-			$('#fileList').html(print_folder(data, path));
-			console.groupEnd();
-		},
-		async: false,
-		dataType: "json"
-	});
+
+
+function getProjectFiles() {
+	var xhr = new XMLHttpRequest();
+	xhr.open("get", "/scripts/build_file_tree.php?project_id="+activeProject.id, true);
+	xhr.onload = function(e) {
+		if(e.target.status===200) {
+		
+			console.log("Files:", e.target.responseText);
+			try{
+				var items = JSON.parse(e.target.responseText);
+			} catch(e) {
+				console.error("Error parsing json response", e);
+				return false;
+			}
+			
+			files = [];
+			$('#fileList').html(print_folder(items, ""));
+			
+			if(fileToBeLoaded) {
+				loadFile(fileToBeLoaded);
+				fileToBeLoaded = null;
+			}
+			
+			
+		} else {
+			console.error("Error loading file tree", e);
+		}
+	}
+	xhr.send();
+	
 }
+
+
+
+
 
 function reloadFileList() {
 
@@ -724,13 +746,14 @@ function reloadFileList() {
 	});
 	
 	//Find files and build tree
-	findFiles();
+	getProjectFiles();
 	
 	//reopen all opened folders
 	if(openFolders.length>0) {
 		console.log("Reopen folders", openFolders);
-		$.each(openFolders, function(i, elem) {		
-			toggleFolder($("#fileList li[data-uri='"+elem+"']"));
+		$.each(openFolders, function(i, elem) {
+			var li = fileList.querySelector("li[data-uri='"+elem+"']");
+			toggleFolder(li);
 		});
 	}
 	
@@ -748,8 +771,8 @@ function print_folder(arr, path) {
 		var imagePreview="";
 		if(item.type=="jpg" || item.type=="jpeg" || item.type=="gif" || item.type=="png" || item.type=="bmp" || item.type=="tif" || item.type=="tiff") {
 			imagePreview=" imagePreview";
-		}		
-		files[item.path + item.filename] = item;		
+		}
+		files[item.path + item.filename] = item;
 		var localSaved = localStore.getItem(activeProject.id+"/"+item.path+item.filename);
 		var changed = (localSaved)? ' changed' : '';
 		var hidden  = (item.filename=='xiocode.properties')? ' hidden' : '';
@@ -816,6 +839,7 @@ function readHash(hash) {
 	
 		if(!activeProject || (activeProject && project_id!=activeProject.id)) {
 			console.log("Open project", project_id);
+			files=null;
 			openProject(project_id);
 		}
 		
@@ -825,9 +849,6 @@ function readHash(hash) {
 			} else {			
 				loadFile(uri);
 			}
-		} else if(!!files['index.php']) {
-			console.log("no file selected, view index.php");
-			loadFile('index.php');
 		} else {
 			unloadFile();
 		}
@@ -896,14 +917,15 @@ function numberOfUnsavedFiles() {
 
 
 
-function toggleFolder($this) {
-	var $folderIcon = $this.children("span.fileIcon");
-	if($folderIcon.hasClass("open")) {
-		$folderIcon.removeClass("open");
-		$this.children("ul").hide();
+function toggleFolder(li) {
+	var folderIcon = li.querySelector("span.fileIcon");
+	var folderList = li.querySelector("ul");
+	if(folderIcon.classList.contains("open")) {
+		folderIcon.classList.remove("open");
+		folderList.style.display="none";
 	} else {
-		$folderIcon.addClass("open");
-		$this.children("ul").show();
+		folderIcon.classList.add("open");
+		folderList.style.display="block";
 	}
 }
 

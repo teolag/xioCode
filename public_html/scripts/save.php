@@ -17,7 +17,7 @@ if(is_dir(dirname($path))) {
 }
 else {
 	http_response_code(400);
-	die("Can't find: '".$path."'");
+	die("Can't find folder: '".dirname($path)."'");
 }
 
 
