@@ -1,16 +1,5 @@
 <?php
 
-
-define("STATUS_OK", 1000);
-define("STATUS_FILE_COLLISION", 2001);
-define("STATUS_FILE_COULD_NOT_CREATE", 2002);
-define("STATUS_FILE_COULD_NOT_UPDATE", 2003);
-
-
-$codes = get_defined_constants();
-
-
-
 require "../../includes/init.php";
 Gatekeeper::checkAccess();
 

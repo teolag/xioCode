@@ -126,6 +126,15 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<script>
 			var projectsURL = '<?php echo PROJECT_FOLDER; ?>';
 			var _USER = <?php echo $jsUser; ?>;
+			<?php
+			$codes = get_defined_constants();
+			foreach($codes as $key => $value) {
+				if(substr($key, 0, 6)==="STATUS") {
+					echo "var " . $key . " = " . $value . ";";
+				}
+			}
+			
+			?>
 		</script>
 		<script src="/js/writer.js"></script>
 		<script src="/js/main.js"></script>

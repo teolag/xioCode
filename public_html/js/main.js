@@ -15,6 +15,8 @@ var checkAccessInterval;
 var pageTitle;
 var hoverTimer;
 var fileToBeLoaded;
+var localStore = window.localStorage;
+	
 
 
 var oldHash=window.location.hash;
@@ -27,7 +29,13 @@ if (!DEBUG_MODE_ON) {
 }
 
 var projectList = document.getElementById("projects");
+
+
 var fileList = document.getElementById("fileList");
+fileList.addEventListener("drop", dropFile, false);
+fileList.addEventListener("dragover", hoverFile, false);
+fileList.addEventListener("dragleave", hoverFile, false);
+
 
 var loginBox = document.getElementById("login");
 var loginForm = document.getElementById("loginForm");
@@ -50,7 +58,8 @@ function loginCallback(e) {
 	var user = JSON.parse(e.target.responseText);
 	if(e.target.status===200 && user && user.username) {
 		_USER = user
-		loginAccepted();
+		var userLogin = new CustomEvent("userLogin");
+		dispatchEvent(userLogin);
 	}
 	else {
 		console.warn("Incorrect login or password")
@@ -139,15 +148,15 @@ toolbar.addEventListener("click", function(e) {
 		break;
 		
 		case "btnSave":
-			if(activeFile) {
-				saveFile();
-			} else {
+			if(activeFile==="unsavedFile") {
 				console.log("Save As...  ");
 				XioPop.prompt("Save file as...", "Enter the filename", "", function(answer) {
 					if(answer) {
 						saveFileAs(answer);
 					}
 				});	
+			} else if(activeFile) {
+				saveFile();
 			}
 		break;
 		
@@ -260,7 +269,10 @@ $("#fileList").on("click", "li", function(e) {
 	
 	console.log("Clicked on item", file);		
 	if(e.which == 1) {
-		if(file.type==='folder') {
+		if(uri === activeFile) {
+			console.log("Already open");
+			return;
+		} else if(file.type==='folder') {
 			toggleFolder(this);
 		} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
 			console.log("Open in new tab");
@@ -272,7 +284,7 @@ $("#fileList").on("click", "li", function(e) {
 	} else if(e.which==2) {
 		alert("rightclick");
 	}
-	return false;
+	
 });
 
 $("#fileList").on("dragstart", "li", function(e){
@@ -384,11 +396,6 @@ window.onbeforeunload = function (evt) {
 	}
 }
 
-var fileList = document.getElementById("fileList");
-fileList.addEventListener("drop", dropFile, false);
-fileList.addEventListener("dragover", hoverFile, false);
-fileList.addEventListener("dragleave", hoverFile, false);
-	
 
 
 function init() {
@@ -396,7 +403,8 @@ function init() {
 	console.log("Init " + pageTitle);
 	
 	if(_USER && _USER.username) {
-		loginAccepted();
+		var userLogin = new CustomEvent("userLogin");
+		dispatchEvent(userLogin);
 	}
 	
 }
@@ -434,7 +442,8 @@ function checkAccess() {
 }
 
 
-function loginAccepted() {
+
+addEventListener("userLogin", function(e) {
 	console.log("Login accepted");	
 	console.log(_USER);
 	
@@ -447,9 +456,8 @@ function loginAccepted() {
 	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 	
 	findProjects();
-	initWriter();
-	
-}
+	initWriter();	
+});
 
 function fixLayout() {
 	var h = $(window).height();
@@ -531,6 +539,9 @@ function openProject(id) {
 	$("#pageTitle").html(project.name);
 	
 	fixLayout();
+	
+	files = null;
+	fileList.innerHTML = "";
 	getProjectFiles();
 }
 
@@ -566,7 +577,6 @@ function loadFile(uri, forceLoadFromDisc) {
 	var $menuItem = $("li[data-uri='"+uri+"']");
 	$menuItem.append("<div class='file_loader'></div>");
 	
-	var localStore = window.localStorage;
 	var localSaved = localStore.getItem(activeProject.id +"/"+uri);
 	selectInFileList(uri);
 	if(!forceLoadFromDisc && localSaved) {
@@ -594,8 +604,9 @@ function loadFile(uri, forceLoadFromDisc) {
 
 function unloadFile() {
 	$("#fileList li").removeClass("selected");
-	activeFile = null;
-	codeMirror.setValue("");
+	activeFile = "unsavedFile";
+	var localSaved = localStore.getItem(activeProject.id+"/"+activeFile);
+	codeMirror.setValue(localSaved);	
 	codeMirror.focus();
 }
 
@@ -630,10 +641,30 @@ function fileCreationCallback(e) {
 	var json = validateCallback(e);
 	if(!json) return false;
 	
-	console.log("JSON callback", json);
+	switch(json.status) {
+		case STATUS_OK:		
+		activeFile = json.uri;
+		console.log("file saved as ", activeFile);
+		reloadFileList();
+		openFile(activeFile);
+		break;
+		
+		case STATUS_FILE_COLLISION:
+		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
+			if(answer) {
+				var xhr = new XMLHttpRequest();
+				xhr.open("post", "/scripts/file_handler.php?do=new&project_id="+activeProject.id+"&overwrite=true&uri="+escape(json.uri), true);
+				xhr.onload = fileCreationCallback;
+				xhr.send();
+			}
+		});
+		break;
+		
+		default:
+		console.warn("handle callback", json);
+	}
 	
-	reloadFileList();
-	openFile(json.uri);
+	
 }
 
 
@@ -672,9 +703,7 @@ function saveFile() {
 	
 	
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "/scripts/save.php", true);
-	
-	xhr.send(formData);
+	xhr.open("POST", "/scripts/save.php", true);	
 	xhr.onload = function(e) {
 		if(e.target.status===200) {
 			fileNotChanged();
@@ -684,18 +713,50 @@ function saveFile() {
 		}
 		$menuItem.children("img").fadeOutAndRemove();
 	};		
+	xhr.send(formData);
 }
 
-function saveFileAs(newFileName) {
-
-	console.warn("Save as not implemented yet");
-	return;
-
+function saveFileAs(newFileName, overwrite) {
+	codeMirror.save();
 	var form = document.getElementById("writer");
 	
 	var formData = new FormData(form);
 	formData.append("uri", newFileName);
 	formData.append("project_id", activeProject.id);
+	formData.append("do", "saveAs");
+	if(overwrite) formData.append("overwrite", true);
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/scripts/file_handler.php", true);
+	xhr.onload = function(e) {
+		var json = validateCallback(e);
+		if(!json) return false;	
+		
+		switch(json.status) {
+			case STATUS_OK:
+			if(activeFile==="unsavedFile") {
+				localStore.removeItem(activeProject.id+"/"+activeFile);	
+			}			
+			activeFile = json.uri;
+			console.log("file saved as ", activeFile);
+			reloadFileList();
+			openFile(activeFile);
+			break;
+			
+			case STATUS_FILE_COLLISION:
+			XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
+				if(answer) {
+					saveFileAs(newFileName, true);
+				}
+			});
+			break;
+			
+			default:
+			console.warn("handle callback", json);
+		}
+	}
+	
+	xhr.send(formData);
 
 }
 
@@ -717,20 +778,17 @@ function getProjectFiles() {
 			}
 			
 			files = [];
-			$('#fileList').html(print_folder(items, ""));
+			fileList.innerHTML = print_folder(items, "");
 			
 			if(fileToBeLoaded) {
 				loadFile(fileToBeLoaded);
 				fileToBeLoaded = null;
-			}
-			
-			
+			}			
 		} else {
 			console.error("Error loading file tree", e);
 		}
 	}
-	xhr.send();
-	
+	xhr.send();	
 }
 
 
@@ -764,7 +822,6 @@ function reloadFileList() {
 
 
 function print_folder(arr, path) {
-	var localStore = window.localStorage;
 	var htm = [];
 	htm.push("<ul>");
 	$.each(arr, function(i, item) {
@@ -790,8 +847,24 @@ function print_folder(arr, path) {
 
 function selectInFileList(uri) {
 	console.log("Select: '" + uri + "' in fileList");
-	$("#fileList li").removeClass("selected");
-	$('#fileList li[data-uri="'+uri+'"]').addClass("selected");
+	var items = fileList.querySelectorAll("li");
+	for(var i = 0; i<items.length; i++) {
+		items[i].classList.remove("selected");
+	}
+	var li = fileList.querySelector("li[data-uri='"+uri+"']");
+	li.classList.add("selected");
+	
+	//Open all parent folders
+	var parent = li.parentElement;
+	while(parent!=fileList) {
+		if(parent.nodeName==="LI") {
+			console.log(parent);
+			openFolder(parent);
+		}		
+		parent = parent.parentElement;
+	}
+	
+	
 }
 
 function showFileListRightClickMenu(uri, e) {
@@ -835,7 +908,6 @@ function readHash(hash) {
 		var uri = match[2];
 		
 		console.log("project_id:", project_id);
-		console.log("uri:", uri);
 	
 		if(!activeProject || (activeProject && project_id!=activeProject.id)) {
 			console.log("Open project", project_id);
@@ -843,12 +915,10 @@ function readHash(hash) {
 			openProject(project_id);
 		}
 		
+		console.log("uri:", uri);
 		if(uri) {
-			if(uri=="new") {
-				unloadFile();
-			} else {			
-				loadFile(uri);
-			}
+			console.log("load it");
+			loadFile(uri);
 		} else {
 			unloadFile();
 		}
@@ -894,8 +964,7 @@ function chooseProject() {
 
 
 function fileChanged() {
-	var localStore = window.localStorage;
-    localStore.setItem(activeProject.id+"/"+activeFile, codeMirror.getValue());
+	localStore.setItem(activeProject.id+"/"+activeFile, codeMirror.getValue());
 	console.log("Save to local storage", activeFile);
 	$("#fileList li.selected").addClass("changed");
 	$("#btnSave").removeClass("disabled");
@@ -906,8 +975,7 @@ function fileNotChanged() {
 	$("#btnSave").addClass("disabled");
 	$("#btnRevert").addClass("disabled");
 	$("#fileList li.selected").removeClass("changed");
-	var localStore = window.localStorage;  
-    localStore.removeItem(activeProject.id+"/"+activeFile);	
+	localStore.removeItem(activeProject.id+"/"+activeFile);	
 }
 
 function numberOfUnsavedFiles() {
@@ -919,15 +987,27 @@ function numberOfUnsavedFiles() {
 
 function toggleFolder(li) {
 	var folderIcon = li.querySelector("span.fileIcon");
-	var folderList = li.querySelector("ul");
 	if(folderIcon.classList.contains("open")) {
-		folderIcon.classList.remove("open");
-		folderList.style.display="none";
+		closeFolder(li);
 	} else {
-		folderIcon.classList.add("open");
-		folderList.style.display="block";
+		openFolder(li);
 	}
 }
+function openFolder(li) {
+	var folderIcon = li.querySelector("span.fileIcon");
+	var folderList = li.querySelector("ul");
+	folderIcon.classList.add("open");
+	folderList.style.display="block";
+}
+function closeFolder(li) {
+	var folderIcon = li.querySelector("span.fileIcon");
+	var folderList = li.querySelector("ul");
+	folderIcon.classList.remove("open");
+	folderList.style.display="none";
+}
+
+
+
 
 
 function uploadFiles(files, folder, overwrite) {

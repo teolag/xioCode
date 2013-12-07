@@ -9,6 +9,18 @@ define("PROJECT_PATH", $config['project_uri']);
 define("SALT", $config['database']['salt']);
 define("PROJECT_CONFIG_FILE", "xiocode.properties");
 
+
+
+define("STATUS_OK", 1000);
+define("STATUS_FILE_COLLISION", 2001);
+define("STATUS_FILE_COULD_NOT_CREATE", 2002);
+define("STATUS_FILE_COULD_NOT_UPDATE", 2003);
+
+
+
+
+
+
 $db = new DatabasePDO($config['database']['server'], $config['database']['username'], $config['database']['password'], $config['database']['name']);
 
 function __autoload($className) {	
