@@ -1,13 +1,7 @@
 <?php
 session_start();
 
-
-
 require "config.php";
-
-
-
-
 
 define("ROOT", $_SERVER["DOCUMENT_ROOT"]."/");
 define("PROJECT_FOLDER", $config['project_url']);

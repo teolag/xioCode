@@ -1,9 +1,6 @@
 <?php
-session_start();
-require "../classes/Git.php";
-require "../classes/Gatekeeper.php";
-require "../classes/DatabasePDO.php";
-require "../includes/config.php";
+
+require "../includes/init.php";
 
 
 define("CODEMIRRORPATH", "/codemirror/");
@@ -12,8 +9,6 @@ $pageTitle = "xioCode";
 
 $jsUser = "null";
 if(Gatekeeper::hasAccess()) {
-	$db = new DatabasePDO($config['database']['server'], $config['database']['username'], $config['database']['password'], $config['database']['name']);
-
 	$loginState=" class='authorized'";
 	$jsUser = json_encode(Gatekeeper::getUser($db));
 	
