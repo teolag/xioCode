@@ -41,6 +41,7 @@ var loginBox = document.getElementById("login");
 var loginForm = document.getElementById("loginForm");
 var loginButton = document.getElementById("btnLogin");
 
+
 loginForm.addEventListener("submit", function(e) {
 	e.preventDefault();
 	if(!loginForm.elements['code_username'].value || !loginForm.elements['code_password'].value) {
@@ -51,8 +52,8 @@ loginForm.addEventListener("submit", function(e) {
 	xhr.open("post", "/scripts/gatekeeper_login.php", true);
 	xhr.onload = loginCallback;
 	xhr.send(new FormData(loginForm));
-	
 }, false);
+
 
 function loginCallback(e) {
 	var user = JSON.parse(e.target.responseText);
@@ -65,7 +66,7 @@ function loginCallback(e) {
 		console.warn("Incorrect login or password")
 		loginBox.className="";
 		setTimeout(function(){
-			loginBox.className="shake";
+			loginBox.classList.add("shake");
 		},1);
 	}
 	loginForm.reset();
@@ -268,7 +269,7 @@ $("#fileList").on("click", "li", function(e) {
 	var file = files[uri];
 	
 	console.log("Clicked on item", file);		
-	if(e.which == 1) {
+	if(uri && e.which == 1) {
 		if(uri === activeFile) {
 			console.log("Already open");
 			return;
@@ -281,10 +282,10 @@ $("#fileList").on("click", "li", function(e) {
 			console.log("Mime type text/* -> open in textarea");
 			openFile(uri);
 		}
+		e.stopPropagation();
 	} else if(e.which==2) {
 		alert("rightclick");
-	}
-	
+	}	
 });
 
 $("#fileList").on("dragstart", "li", function(e){
@@ -606,7 +607,11 @@ function unloadFile() {
 	$("#fileList li").removeClass("selected");
 	activeFile = "unsavedFile";
 	var localSaved = localStore.getItem(activeProject.id+"/"+activeFile);
-	codeMirror.setValue(localSaved);	
+	if(localSaved) {
+		codeMirror.setValue(localSaved);
+	} else {
+		codeMirror.setValue("");
+	}
 	codeMirror.focus();
 }
 
@@ -994,12 +999,14 @@ function toggleFolder(li) {
 	}
 }
 function openFolder(li) {
+	console.log("Open folder", li);
 	var folderIcon = li.querySelector("span.fileIcon");
 	var folderList = li.querySelector("ul");
 	folderIcon.classList.add("open");
 	folderList.style.display="block";
 }
 function closeFolder(li) {
+	console.log("Close folder", li);
 	var folderIcon = li.querySelector("span.fileIcon");
 	var folderList = li.querySelector("ul");
 	folderIcon.classList.remove("open");
