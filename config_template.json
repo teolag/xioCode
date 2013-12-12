@@ -1,0 +1,11 @@
+{
+	"project_uri":"/var/www/xioCode/public_html/projects/",
+	"project_url":"http://xioCode.domain.se/projects/",
+	"database":{
+		"server":"localhost",
+		"name":"code",
+		"username":"code",
+		"password":"password",
+		"salt":"secretsalt"
+	}
+}

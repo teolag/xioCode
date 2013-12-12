@@ -230,6 +230,40 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 	
 	console.log(functions);
 	
+	var div = document.createElement("div");
+	div.classList.add("filteredSelectList");
+	
+	
+	var filter = document.createElement("input");
+	filter.type="search";
+	filter.addEventListener("keyup", function(e) {
+		if(e && e.which == 13) {
+			var first = list.querySelector("li");	
+			if(!first) return;
+			
+			console.log("Choose the first", first);
+			var line = Number(first.getAttribute("data-line"));
+			XioPop.close();
+			CodeMirror.commands.jump2Line(editor, line);
+		} else {
+			var searchString = e.target.value.toLowerCase();
+			console.log("filter functions '"+searchString+"'");
+			
+			for(var id in functions) {
+				var func = functions[id];
+				console.log(id, func);
+				
+				var li = list.querySelector("li[data-id='"+id+"']");
+				if(func.name.toLowerCase().search(searchString)!=-1) {
+					li.classList.remove('hidden');
+				} else {
+					li.classList.add('hidden');
+				}
+			}
+	}
+	});
+	
+	
 	var list = document.createElement("ul");
 	list.classList.add("selectableList", "functions");
 	list.addEventListener("click", function(e) {
@@ -237,8 +271,7 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 		if(target.nodeName==="LI") {
 			var line = Number(target.getAttribute("data-line"));
 			XioPop.close();
-			CodeMirror.commands.jump2Line(editor, line);
-			
+			CodeMirror.commands.jump2Line(editor, line);			
 		}		
 	});
 	for(var i=0; i<functions.length; i++) {
@@ -246,9 +279,14 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 		var item = document.createElement("li");
 		item.textContent = f.name + " (" + f.args.join(", ") + ")";
 		item.setAttribute("data-line", f.line); 
+		item.setAttribute("data-id", i); 
 		list.appendChild(item);
 	}
-	XioPop.showElement(list);
+	
+	div.appendChild(filter);
+	div.appendChild(list);
+	XioPop.showElement(div);
+	filter.focus();
 
 }
 
