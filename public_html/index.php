@@ -136,6 +136,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			
 			?>
 		</script>
+		<script src="/js/xioDocs.js"></script>
 		<script src="/js/writer.js"></script>
 		<script src="/js/main.js"></script>
 		

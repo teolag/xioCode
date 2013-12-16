@@ -21,6 +21,7 @@ function initWriter() {
         indentUnit: 4,
 		theme: 'default',
         indentWithTabs: true,
+		cursorScrollMargin: 75,
         highlightSelectionMatches: true,
 		extraKeys: {
 			"Tab"			: "tabWithAutoComplete",
@@ -57,9 +58,13 @@ function initWriter() {
 	codeMirror.on("change", function(cm, change) {
 		if(activeFile) {
 			console.log("CodeMirror Change", cm, change);
-			fileChanged();
+			fileChanged(activeFile);
 		}
 	});	
+	
+	codeMirror.on("scroll", function(cm) {
+		//console.log("Scroll", cm.getScrollInfo());
+	});
 	
 	/*
 	codeMirror.on("focus", function() {
@@ -70,7 +75,9 @@ function initWriter() {
 	});
 	*/
 	
-	codeMirror.on("cursorActivity", function(editor) {
+	codeMirror.on("cursorActivity", function(cm) {
+		//console.log("Cursor activity", cm);
+		
 		/*
 		var cur = editor.getCursor();
 		var c = editor.getSearchCursor(/[ \s:;]/i);

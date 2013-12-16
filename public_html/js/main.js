@@ -16,7 +16,9 @@ var pageTitle;
 var hoverTimer;
 var fileToBeLoaded;
 var localStore = window.localStorage;
-	
+var openedFolders = [];
+
+var docs = new Array();
 
 
 var oldHash=window.location.hash;
@@ -552,67 +554,11 @@ function openFile(uri) {
 
 
 
-function loadFile(uri, forceLoadFromDisc) {
-
-	if(files==null) {
-		console.log("Filelist not loaded.  Wait for it...");
-		fileToBeLoaded = uri;
-		return false;
-	} else if(!files[uri]){
-		console.warn("File not found: '" + uri + "'");
-		return false;
-	}
-	
-	activeFile = null;
-
-	var mode, modefile;
-	switch(files[uri].type) {
-		case "php": 			mode="application/x-httpd-php"; 	modefile="php/php.js"; break;
-		case "js": 				mode="text/javascript"; 			modefile="javascript/javascript.js"; break;
-		case "html": case "htm":mode="text/html"; 					modefile="htmlmixed/htmlmixed"; break;
-		case "css": 			mode="text/css"; 					modefile="css/css.js"; break;
-		case "xml": case "svg": mode="application/xml"; 			modefile="xml/xml.js"; break;
-		default: 				mode="text/plain";
-	}
-		
-	var $menuItem = $("li[data-uri='"+uri+"']");
-	$menuItem.append("<div class='file_loader'></div>");
-	
-	var localSaved = localStore.getItem(activeProject.id +"/"+uri);
-	selectInFileList(uri);
-	if(!forceLoadFromDisc && localSaved) {
-		codeMirror.setValue(localSaved);	
-		activeFile = uri;
-		fileChanged();
-		codeMirror.setOption("mode", mode);
-		$menuItem.children("div").fadeOutAndRemove();
-		console.log("Loading '" + uri + "' from local storage. Display as '" + codeMirror.getOption("mode") + "'");
-	} else {
-		$.get("/scripts/load_file.php", {
-			'project_id':activeProject.id,
-			'uri':encodeURI(uri)
-			}, function(data) {
-				codeMirror.setValue(data);
-				activeFile = uri;
-				fileNotChanged();
-				codeMirror.setOption("mode", mode);
-				$menuItem.children("div").fadeOutAndRemove();
-				console.log("Loading file '" + uri + "'. Display as '" + codeMirror.getOption("mode") + "'");			
-			}
-		);	
-	}	
-}
 
 function unloadFile() {
 	$("#fileList li").removeClass("selected");
 	activeFile = "unsavedFile";
-	var localSaved = localStore.getItem(activeProject.id+"/"+activeFile);
-	if(localSaved) {
-		codeMirror.setValue(localSaved);
-	} else {
-		codeMirror.setValue("");
-	}
-	codeMirror.focus();
+	getOrCreateDoc(activeFile);	
 }
 
 function revertFile() {	
@@ -711,7 +657,7 @@ function saveFile() {
 	xhr.open("POST", "/scripts/save.php", true);	
 	xhr.onload = function(e) {
 		if(e.target.status===200) {
-			fileNotChanged();
+			fileNotChanged(activeFile);
 			console.log("File saved");
 		} else {
 			console.error("Error saving file", e);
@@ -774,7 +720,6 @@ function getProjectFiles() {
 	xhr.onload = function(e) {
 		if(e.target.status===200) {
 		
-			console.log("Files:", e.target.responseText);
 			try{
 				var items = JSON.parse(e.target.responseText);
 			} catch(e) {
@@ -782,13 +727,20 @@ function getProjectFiles() {
 				return false;
 			}
 			
-			files = [];
-			fileList.innerHTML = print_folder(items, "");
+			files = {};
+			fileList.innerHTML = printFolder(items, "");
 			
-			if(fileToBeLoaded) {
-				loadFile(fileToBeLoaded);
-				fileToBeLoaded = null;
-			}			
+			console.log("File list loaded");
+			
+			for(var i=0; i<openedFolders.length; i++) {
+				var li = fileList.querySelector("li[data-uri='"+openedFolders[i]+"']");
+				if(li) {
+					openFolder(li);				
+				}
+			}
+			
+			
+			if(activeFile) selectInFileList(activeFile);
 		} else {
 			console.error("Error loading file tree", e);
 		}
@@ -801,24 +753,8 @@ function getProjectFiles() {
 
 
 function reloadFileList() {
-
-	//Save filelist state
-	var openFolders = [];
-	$.each($("#fileList li[data-type=folder] span.open"), function(i, open) {
-		openFolders.push($(open).parent().data("uri"));
-	});
 	
-	//Find files and build tree
 	getProjectFiles();
-	
-	//reopen all opened folders
-	if(openFolders.length>0) {
-		console.log("Reopen folders", openFolders);
-		$.each(openFolders, function(i, elem) {
-			var li = fileList.querySelector("li[data-uri='"+elem+"']");
-			toggleFolder(li);
-		});
-	}
 	
 	//reselect opened file
 	selectInFileList(activeFile);
@@ -826,7 +762,7 @@ function reloadFileList() {
 }
 
 
-function print_folder(arr, path) {
+function printFolder(arr, path) {
 	var htm = [];
 	htm.push("<ul>");
 	$.each(arr, function(i, item) {
@@ -842,7 +778,7 @@ function print_folder(arr, path) {
 		htm.push("<span class='fileIcon "+item.type+"'></span>");
 		htm.push("<span class='fileName'>"+item.filename+"</span>");
 		if(item.leafs) {
-			htm.push(print_folder(item.leafs, item.path));
+			htm.push(printFolder(item.leafs, item.path));
 		}
 		htm.push("</li>");		
 	});
@@ -851,24 +787,30 @@ function print_folder(arr, path) {
 }
 
 function selectInFileList(uri) {
+	if(!files) {
+		console.log("Can not select", uri, "in fileList. Files not loaded");
+		return;
+	} 
+
 	console.log("Select: '" + uri + "' in fileList");
 	var items = fileList.querySelectorAll("li");
 	for(var i = 0; i<items.length; i++) {
 		items[i].classList.remove("selected");
 	}
 	var li = fileList.querySelector("li[data-uri='"+uri+"']");
-	li.classList.add("selected");
-	
-	//Open all parent folders
-	var parent = li.parentElement;
-	while(parent!=fileList) {
-		if(parent.nodeName==="LI") {
-			console.log(parent);
-			openFolder(parent);
-		}		
-		parent = parent.parentElement;
+	if(li) {
+		li.classList.add("selected");
+		
+		//Open all parent folders
+		var parent = li.parentElement;
+		while(parent!=fileList) {
+			if(parent.nodeName==="LI") {
+				console.log(parent);
+				openFolder(parent);
+			}		
+			parent = parent.parentElement;
+		}
 	}
-	
 	
 }
 
@@ -922,8 +864,8 @@ function readHash(hash) {
 		
 		console.log("uri:", uri);
 		if(uri) {
-			console.log("load it");
-			loadFile(uri);
+			getOrCreateDoc(uri);
+			selectInFileList(uri);
 		} else {
 			unloadFile();
 		}
@@ -968,19 +910,19 @@ function chooseProject() {
 }
 
 
-function fileChanged() {
-	localStore.setItem(activeProject.id+"/"+activeFile, codeMirror.getValue());
-	console.log("Save to local storage", activeFile);
+function fileChanged(uri) {
+	localStore.setItem(activeProject.id+"/"+uri, codeMirror.getValue());
+	console.log("Save to local storage", uri);
 	$("#fileList li.selected").addClass("changed");
 	$("#btnSave").removeClass("disabled");
 	$("#btnRevert").removeClass("disabled");
 }
-function fileNotChanged() {
-	console.log(activeFile, "is now clean");
+function fileNotChanged(uri) {
+	console.log(uri, "is now clean");
 	$("#btnSave").addClass("disabled");
 	$("#btnRevert").addClass("disabled");
 	$("#fileList li.selected").removeClass("changed");
-	localStore.removeItem(activeProject.id+"/"+activeFile);	
+	localStore.removeItem(activeProject.id+"/"+uri);	
 }
 
 function numberOfUnsavedFiles() {
@@ -1000,6 +942,12 @@ function toggleFolder(li) {
 }
 function openFolder(li) {
 	console.log("Open folder", li);
+	var uri = li.dataset.uri;
+	var index = openedFolders.indexOf(uri);
+	if (index === -1) {
+		openedFolders.push(uri);
+	}
+	
 	var folderIcon = li.querySelector("span.fileIcon");
 	var folderList = li.querySelector("ul");
 	folderIcon.classList.add("open");
@@ -1007,6 +955,12 @@ function openFolder(li) {
 }
 function closeFolder(li) {
 	console.log("Close folder", li);
+	var uri = li.dataset.uri;
+	var index = openedFolders.indexOf(uri);
+	if (index > -1) {
+		openedFolders.splice(index, 1);
+	}
+	
 	var folderIcon = li.querySelector("span.fileIcon");
 	var folderList = li.querySelector("ul");
 	folderIcon.classList.remove("open");
