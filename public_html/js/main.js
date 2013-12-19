@@ -557,8 +557,11 @@ function openFile(uri) {
 
 function unloadFile() {
 	$("#fileList li").removeClass("selected");
-	activeFile = "unsavedFile";
-	getOrCreateDoc(activeFile);	
+	activeFile = "untitled";
+	var doc = CodeMirror.Doc("");
+	var old = codeMirror.swapDoc(doc);
+	codeMirror.focus();
+	xioDocs[activeFile] = doc;
 }
 
 function revertFile() {	

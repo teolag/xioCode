@@ -37,8 +37,7 @@ function loadDoc(uri, forceLoadFromDisc) {
 
 function docLoaded(uri, data) {
 	var mode = getDocType(uri);
-	var firstLineNumber = 10;				
-	var doc = CodeMirror.Doc(data, mode, firstLineNumber);
+	var doc = CodeMirror.Doc(data, mode, 1);
 	var old = codeMirror.swapDoc(doc);
 	codeMirror.focus();
 	xioDocs[uri] = doc;
