@@ -274,7 +274,7 @@ $("#fileList").on("click", "li", function(e) {
 	if(uri && e.which == 1) {
 		if(uri === activeFile) {
 			console.log("Already open");
-			return;
+			e.preventDefault();
 		} else if(file.type==='folder') {
 			toggleFolder(this);
 		} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
