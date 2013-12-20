@@ -6,6 +6,8 @@ var fileListWidth = 220;
 var DEBUG_MODE_ON=true;
 var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 
+var KEY_ENTER = 13;
+
 var projects = new Array();
 var files;
 
@@ -84,14 +86,25 @@ document.querySelector("#header h1").addEventListener("click", function() {
 }, false);
 
 
-$("#btnNewProject").on("click", function() {
-	var projectName = prompt("Enter the projects name");
-	if(projectName) {
-		$.get("/scripts/new_project.php", {'projectName':projectName}, function(data) {
-			findProjects();
-		});
-	}	
-});
+var btnNewProject = document.getElementById("btnNewProject");
+
+btnNewProject.addEventListener("click", function() {
+	XioPop.prompt("Enter the projects name", "", "", function(projectName) {
+		if(projectName) {
+			var xhr = new XMLHttpRequest();			
+			xhr.open("get", "/scripts/new_project.php?projectName="+projectName, true);
+			
+			xhr.onload = function(e) {
+				if(e.target.status===200) {
+					findProjects();
+				}
+			};
+			
+			xhr.send();
+		}	
+	});
+	
+}, false);
 
 
 /***************** PROJECT FILTER ***************************************************************/
@@ -151,7 +164,7 @@ toolbar.addEventListener("click", function(e) {
 		break;
 		
 		case "btnSave":
-			if(activeFile==="unsavedFile") {
+			if(activeFile==="untitled") {
 				console.log("Save As...  ");
 				XioPop.prompt("Save file as...", "Enter the filename", "", function(answer) {
 					if(answer) {
@@ -478,7 +491,7 @@ function fixLayout() {
 }
 
 function showImagePreview(uri) {
-	var imgsrc = projectsURL + activeProject.id + "/" + uri;
+	var imgsrc = activeProject.id + "/" + uri;
 	var item = files[uri];
 	
 	console.log("showImagePreview");
@@ -561,13 +574,14 @@ function unloadFile() {
 	var doc = CodeMirror.Doc("");
 	var old = codeMirror.swapDoc(doc);
 	codeMirror.focus();
-	xioDocs[activeFile] = doc;
+	if(!xioDocs.hasOwnProperty(activeProject.id)) xioDocs[activeProject.id] = {};
+	xioDocs[activeProject.id][activeFile] = doc;
 }
 
 function revertFile() {	
 	if(confirm("Are you sure you want to revert your unsaved changes?")) {
 		console.log("Revert file: '", activeFile, "'");
-		loadDoc(activeFile, true);		
+		loadDoc(activeProject.id, activeFile, true);		
 	}
 }
 
@@ -867,7 +881,7 @@ function readHash(hash) {
 		
 		console.log("uri:", uri);
 		if(uri) {
-			getOrCreateDoc(uri);
+			getOrCreateDoc(activeProject.id, uri);
 			selectInFileList(uri);
 		} else {
 			unloadFile();
@@ -881,12 +895,12 @@ function readHash(hash) {
 
 
 function filterProjects(e) {
-	if(e && e.which == 13) {
+	var searchString = projectFilter.value.toLowerCase();
+	if(e && e.which == KEY_ENTER && searchString) {
 		var firstItem = document.querySelector("#projects li:not(.hidden)");
 		setHash(firstItem.getAttribute('data-project_id')+"/");
 		return false;
 	} else {
-		var searchString = projectFilter.value.toLowerCase();
 		console.log("filter projects '"+searchString+"'", projectFilter, projects);
 		
 		for(var id in projects) {

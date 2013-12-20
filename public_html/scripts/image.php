@@ -13,8 +13,9 @@ define("SAVE", 2);
 
 //INPUT
 if(!isset($_REQUEST['src'])) die("input image must be set");
-$file = $_SERVER["DOCUMENT_ROOT"]."/".$_REQUEST['src'];
+$file = $_SERVER["DOCUMENT_ROOT"]."/projects/".$_REQUEST['src'];
 $filetype = strtolower(pathinfo($file, PATHINFO_EXTENSION)); 
+
 
 if(isset($_REQUEST['output'])) {
 	$output = $_SERVER["DOCUMENT_ROOT"]."/".$_REQUEST['output'];
@@ -77,7 +78,6 @@ if(class_exists("Imagick")) {
 
 
 
-
 switch($mode) {
 
 	case GD:
@@ -97,7 +97,7 @@ switch($mode) {
 		$im = new Imagick($file);
 		$im->resizeImage($new_width,$new_height, imagick::FILTER_CATROM , 1, true);
 		if($do==VIEW) {
-			header("Content-Type: image/png");
+			printHeader($filetype);
 			echo $im;
 		} elseif($do==SAVE) {
 			$im->writeImage($output);

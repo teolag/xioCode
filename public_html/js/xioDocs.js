@@ -2,23 +2,23 @@ var xioDocs = {};
 
 
 
-function getOrCreateDoc(uri) {
+function getOrCreateDoc(projectId, uri) {
 	console.log("getOrCreateDoc", uri);
-	if(xioDocs.hasOwnProperty(uri)) {
-		var doc = xioDocs[uri];
+	if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri)) {
+		var doc = xioDocs[projectId][uri];
 		console.log("swap to doc", doc);
 		activeFile = uri;
 		codeMirror.swapDoc(doc);
 		codeMirror.focus();
 	} else {
-		loadDoc(uri);	
+		loadDoc(projectId, uri);	
 	}
 }
 
-function loadDoc(uri, forceLoadFromDisc) {		
+function loadDoc(projectId, uri, forceLoadFromDisc) {		
 	var localSaved = localStore.getItem(activeProject.id +"/"+uri);
 	if(!forceLoadFromDisc && localSaved) {
-		docLoaded(uri, localSaved);
+		docLoaded(projectId, uri, localSaved);
 		fileChanged(uri);
 		console.log("Loading '" + uri + "' from local storage. Display as '" + codeMirror.getOption("mode") + "'");
 	} else {
@@ -28,19 +28,20 @@ function loadDoc(uri, forceLoadFromDisc) {
 		
 		xhr.onload = function(e) {
 			fileNotChanged(uri);
-			docLoaded(uri, e.target.responseText);
+			docLoaded(projectId, uri, e.target.responseText);
 		};
 		
 		xhr.send();
 	}
 }
 
-function docLoaded(uri, data) {
+function docLoaded(projectId, uri, data) {
 	var mode = getDocType(uri);
 	var doc = CodeMirror.Doc(data, mode);
 	var old = codeMirror.swapDoc(doc);
 	codeMirror.focus();
-	xioDocs[uri] = doc;
+	if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
+	xioDocs[projectId][uri] = doc;
 	activeFile = uri;
 }
 
