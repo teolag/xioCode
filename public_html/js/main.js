@@ -567,7 +567,7 @@ function unloadFile() {
 function revertFile() {	
 	if(confirm("Are you sure you want to revert your unsaved changes?")) {
 		console.log("Revert file: '", activeFile, "'");
-		loadFile(activeFile, true);		
+		loadDoc(activeFile, true);		
 	}
 }
 
