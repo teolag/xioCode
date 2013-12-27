@@ -434,7 +434,8 @@ function logout() {
 	files = new Array();
 	activeProject = null;
 	activeFile = null;
-	codeMirror.setValue("");
+	xioDocs = {};
+	unloadFile();
 	loginForm.elements['code_username'].focus();	
 	clearInterval(checkAccessInterval);
 	
@@ -791,7 +792,7 @@ function printFolder(arr, path) {
 		var localSaved = localStore.getItem(activeProject.id+"/"+item.path+item.filename);
 		var changed = (localSaved)? ' changed' : '';
 		var hidden  = (item.filename=='xiocode.properties')? ' hidden' : '';
-		htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + item.path + item.filename + "' data-type='"+item.type+"' data-mime='"+item.mime+"'>");
+		htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + item.path + item.filename + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+toHumanReadableFileSize(item.size,true)+"'>");
 		htm.push("<span class='fileIcon "+item.type+"'></span>");
 		htm.push("<span class='fileName'>"+item.filename+"</span>");
 		if(item.leafs) {
@@ -905,7 +906,6 @@ function filterProjects(e) {
 		
 		for(var id in projects) {
 			var project = projects[id];
-			console.log(id, project);
 			
 			var li = document.querySelector("#projects li[data-project_id='"+id+"']");
 			if(project.name.toLowerCase().search(searchString)!=-1) {
@@ -1120,6 +1120,16 @@ function findFunctions() {
 	
 	return functions;
 	
+}
+
+
+function toHumanReadableFileSize(bytes, si) {
+	var unit = si ? 1000 : 1024;
+    if (bytes < unit) return bytes + " bytes";
+    var exp = Math.floor(Math.log(bytes) / Math.log(unit));
+    var pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+	var val = bytes/Math.pow(unit, exp);
+    return val.toFixed(1) + " " + pre + "B";
 }
 
 
