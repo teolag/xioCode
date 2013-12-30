@@ -208,7 +208,7 @@ CodeMirror.commands.shortcutSave = function(editor) {
 CodeMirror.commands.newFile = function(editor) {
 	//Does not work in chrome...
 	console.log("Ctrl/Cmd+n pressed, new file...");
-	openFile("new");
+	unloadFile();
 }
 CodeMirror.commands.jump2Line = function(editor, line) {
 	if(line===undefined) {
@@ -219,17 +219,15 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 		});
 		return;
 	}
-	editor.setCursor(line-40, 0);
-	editor.setCursor(line+40, 0);
-	editor.setCursor(line-30, 0);
-	editor.setCursor(line+30, 0);
+	editor.setCursor(0, 0);
 	editor.setCursor(line-20, 0);
-	editor.setCursor(line+20, 0);
-	editor.setCursor(line-10, 0);
-	editor.setCursor(line+10, 0);
 	editor.setCursor(line, 0);
 	codeMirror.focus();
 }
+CodeMirror.commands.rightTrimLines = function(editor, line) {
+	
+}
+
 
 CodeMirror.commands.showAllFunctions = function(editor) {
 	

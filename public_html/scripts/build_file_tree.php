@@ -49,17 +49,17 @@ function folderComperator($a, $b) {
 	
 	if($aFolder && !$bFolder){ 
 		$return=-1;
-		//echo "$aName kommer före $bName eftersom det är en mapp\n"; 
+		//echo "$aName kommer fï¿½re $bName eftersom det ï¿½r en mapp\n"; 
 	}
 	elseif($bFolder && !$aFolder) { 
 		$return=1;
-		//echo "$bName kommer före $aName eftersom det är en mapp\n"; 
+		//echo "$bName kommer fï¿½re $aName eftersom det ï¿½r en mapp\n"; 
 	}	
 	else {
 		$return=strnatcasecmp($aName,$bName);
-		//if($return>0) echo "$bName kommer före $aName\n"; 
-		//elseif($return<0) echo "$aName kommer före $bName\n";
-		//else echo "$aName är lika som $bName\n";
+		//if($return>0) echo "$bName kommer fï¿½re $aName\n"; 
+		//elseif($return<0) echo "$aName kommer fï¿½re $bName\n";
+		//else echo "$aName ï¿½r lika som $bName\n";
 	}
 	return $return;
 }

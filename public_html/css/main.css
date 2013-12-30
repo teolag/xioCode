@@ -391,14 +391,21 @@ ul#projects {
 	background-color: rgba(150, 150, 150, 0.2);
 }
 
-div.CodeMirror span.CodeMirror-matchingbracket {
+
+.CodeMirror-focused .CodeMirror-selected { background: pink; }
+
+.CodeMirror-matchingbracket {
 	color: red;
 	font-weight: bold;
 }
-div.CodeMirror span.CodeMirror-nonmatchingbracket {
+.CodeMirror-nonmatchingbracket {
 	color: red;
 	font-weight: bold;
 	border-bottom: 1px solid red;
+}
+
+.cm-searching {
+	background: rgba(255, 212, 121, 0.4);
 }
 
 

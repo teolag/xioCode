@@ -792,7 +792,8 @@ function printFolder(arr, path) {
 		var localSaved = localStore.getItem(activeProject.id+"/"+item.path+item.filename);
 		var changed = (localSaved)? ' changed' : '';
 		var hidden  = (item.filename=='xiocode.properties')? ' hidden' : '';
-		htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + item.path + item.filename + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+toHumanReadableFileSize(item.size,true)+"'>");
+		var title = item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
+		htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + item.path + item.filename + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
 		htm.push("<span class='fileIcon "+item.type+"'></span>");
 		htm.push("<span class='fileName'>"+item.filename+"</span>");
 		if(item.leafs) {

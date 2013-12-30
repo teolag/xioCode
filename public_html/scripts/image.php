@@ -1,5 +1,7 @@
 <?php
 
+
+
 //CONSTANTS
 define("IMAGEMAGICK_CLASS", 1);
 define("IMAGEMAGICK_SYSTEM", 2);
@@ -15,6 +17,9 @@ define("SAVE", 2);
 if(!isset($_REQUEST['src'])) die("input image must be set");
 $file = $_SERVER["DOCUMENT_ROOT"]."/projects/".$_REQUEST['src'];
 $filetype = strtolower(pathinfo($file, PATHINFO_EXTENSION)); 
+
+
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($file)).' GMT');
 
 
 if(isset($_REQUEST['output'])) {
@@ -199,11 +204,15 @@ function gdPrint($image, $filetype, $quality=80) {
 function printHeader($filetype) {
 	switch($filetype) {
 		case "jpg": case "jpeg":
-		header('Content-type: image/png');
+		header('Content-type: image/jpeg');
 		break;
 		
 		case "png":
 		header('Content-type: image/png');
+		break;
+		
+		case "gif":
+		header('Content-type: image/gif');
 		break;
 	}
 }
