@@ -1,3 +1,6 @@
 [submodule "codemirror"]
 	path = public_html/codemirror
 	url = https://github.com/marijnh/CodeMirror.git
+[submodule "public_html/elusive-iconfont"]
+	path = public_html/elusive-iconfont
+	url = https://github.com/aristath/elusive-iconfont.git
