@@ -21,7 +21,7 @@ function initWriter() {
         indentUnit: 4,
 		theme: 'default',
         indentWithTabs: true,
-		cursorScrollMargin: 75,
+		//cursorScrollMargin: 75,
         highlightSelectionMatches: true,
 		extraKeys: {
 			"Tab"			: "tabWithAutoComplete",
@@ -58,7 +58,9 @@ function initWriter() {
 	codeMirror.on("change", function(cm, change) {
 		if(activeFile) {
 			console.log("CodeMirror Change", cm, change);
-			fileChanged(activeFile);
+			document.getElementById("btnSave").classList.remove("disabled");
+			$("#fileList li.selected").addClass("changed");
+			$("#openedList li.selected").addClass("changed");
 		}
 	});	
 	
@@ -219,8 +221,8 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 		});
 		return;
 	}
-	editor.setCursor(0, 0);
-	editor.setCursor(line-20, 0);
+	editor.setCursor(line+100, 0);
+	editor.setCursor(line-10, 0);
 	editor.setCursor(line, 0);
 	codeMirror.focus();
 }

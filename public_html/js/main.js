@@ -20,8 +20,6 @@ var fileToBeLoaded;
 var localStore = window.localStorage;
 var openedFolders = [];
 
-var docs = new Array();
-
 
 var oldHash=window.location.hash;
 
@@ -32,7 +30,82 @@ if (!DEBUG_MODE_ON) {
     console.log = function(){};
 }
 
-var projectList = document.getElementById("projects");
+var projectsFilter = document.getElementById('projectsFilter');
+projectsFilter.addEventListener("search", filterProjects);
+projectsFilter.addEventListener("keyup", filterProjects);
+
+var projectsList = document.getElementById('projectsList');
+projectsList.addEventListener("click", function(e) {
+	var target = e.target;
+	var doo;
+	
+	if(target.nodeName==="A") {
+		doo = target.dataset.do;
+		console.log("Do", doo);
+		e.preventDefault();
+	}
+	
+	var li = target;		
+	while(li.nodeName!=="LI") {
+		if(li==projectsList) return;
+		li = li.parentElement;
+	}
+	var projectId = li.dataset.project_id;
+	
+	switch(doo) {
+	
+		case "delete":
+		var project = projects[projectId];
+		XioPop.confirm("Delete project?", "Are you sure you want to delete project '"+project.name+"'?", function(answer) {
+			if(answer) {
+				var formData = new FormData();
+				formData.append("project_id", projectId);
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', "/scripts/delete_project.php", true);
+				xhr.onload = function(e) {
+					var xhr = e.target;
+					if(xhr.status===200) {
+						console.log("Project deleted");
+						findProjects();
+					} else {
+						console.err("Error deleting project", xhr);
+					}
+				}
+				xhr.send(formData);
+			}
+		});
+		break;
+		
+		case "rename":
+		XioPop.prompt("Rename project", "Enter a new name for the project", projects[projectId].name, function(newName) {		
+			if(newName) {
+				var formData = new FormData();
+				formData.append("new_name", newName);
+				formData.append("project_id", projectId);
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', "/scripts/rename_project.php", true);
+				xhr.onload = function(e) {
+					var xhr = e.target;
+					if(xhr.status===200) {
+						console.log("Project renamed");
+						findProjects();
+					} else {
+						console.err("Error renaming project", xhr);
+					}
+				}
+				xhr.send(formData);				
+			}
+		});
+		break;
+	
+		
+		default:
+		setHash(projectId+"/");
+	
+	}
+	
+	
+});
 
 
 var fileList = document.getElementById("fileList");
@@ -44,19 +117,24 @@ fileList.addEventListener("dragleave", hoverFile, false);
 var loginBox = document.getElementById("login");
 var loginForm = document.getElementById("loginForm");
 var loginButton = document.getElementById("btnLogin");
+loginForm.addEventListener("submit", loginRequest, false);
 
 
-loginForm.addEventListener("submit", function(e) {
+function loginRequest(e) {
 	e.preventDefault();
-	if(!loginForm.elements['code_username'].value || !loginForm.elements['code_password'].value) {
+	if(!loginForm.elements['code_username'].value || 
+		!loginForm.elements['code_password'].value) {
 		return;
 	}
-	
+
+	loginButton.disabled=true;
+	loginButton.textContent="Authorizing...";
+
 	var xhr = new XMLHttpRequest();
 	xhr.open("post", "/scripts/gatekeeper_login.php", true);
 	xhr.onload = loginCallback;
 	xhr.send(new FormData(loginForm));
-}, false);
+}
 
 
 function loginCallback(e) {
@@ -74,6 +152,9 @@ function loginCallback(e) {
 		},1);
 	}
 	loginForm.reset();
+	loginButton.disabled=false;
+	loginButton.textContent="Login";
+	loginForm.elements.code_username.focus();
 }
 
 
@@ -87,82 +168,50 @@ document.querySelector("#header h1").addEventListener("click", function() {
 
 
 var btnNewProject = document.getElementById("btnNewProject");
-
 btnNewProject.addEventListener("click", function() {
 	XioPop.prompt("Enter the projects name", "", "", function(projectName) {
 		if(projectName) {
-			var xhr = new XMLHttpRequest();			
+			var xhr = new XMLHttpRequest();
 			xhr.open("get", "/scripts/new_project.php?projectName="+projectName, true);
-			
+
 			xhr.onload = function(e) {
 				if(e.target.status===200) {
 					findProjects();
 				}
 			};
-			
 			xhr.send();
-		}	
+		}
 	});
-	
 }, false);
-
-
-/***************** PROJECT FILTER ***************************************************************/
-var projectFilter = document.getElementById('projectFilter');
-projectFilter.addEventListener("search", filterProjects);
-projectFilter.addEventListener("keyup", filterProjects);
-
-$("#projects").on("click", "li", function() {
-	setHash(this.getAttribute("data-project_id")+"/");
-});
-
-$("#projects").on("click", ".lblDeleteProject", function(e) {
-	var $li = $(this).closest('li');
-	var projectId = $li.data("project_id");
-	var project = projects[projectId];
-	if(confirm("Are you sure you want to delete project '"+project.name+"'?")) {
-		$.post("/scripts/delete_project.php", {'project_id':projectId}, function(data) {
-			findProjects();
-		});
-	}
-	e.stopPropagation();
-});
-
-$("#projects").on("click", ".lblRenameProject", function(e) {
-	var $li = $(this).closest('li');
-	var projectId = $li.data("project_id");
-	var projectName = $li.data("name");
-	var newName = prompt("Rename project", projectName);		
-	if(newName) {
-		$.post("/scripts/rename_project.php", {'new_name':newName, 'project_id':projectId}, function(data) {
-			findProjects();
-		});			
-	}
-	e.stopPropagation();
-});
 
 
 
 
 /***************** TOOLBAR **********************************************************************/
 
-var toolbar = document.getElementById("toolbar");
-toolbar.addEventListener("click", function(e) {
+var fileToolbar = document.getElementById("fileToolbar");
+fileToolbar.addEventListener("click", toolbarHandler, false);
+
+var projectToolbar = document.getElementById("projectToolbar");
+projectToolbar.addEventListener("click", toolbarHandler, false);
+
+
+function toolbarHandler(e) {
 	if(e.button!==0) return false;
-	
+
 	var target = e.target;
 	while(target.nodeName!=="LI") {
-		if(target==toolbar) return;
+		//if(target==) return;
 		target = target.parentElement;
 	}
 	if(target.classList.contains("disabled")) return;
-	
+
 	switch(target.id) {
-	
+
 		case "btnNew":
 		createNewFile();
 		break;
-		
+
 		case "btnSave":
 			if(activeFile==="untitled") {
 				console.log("Save As...  ");
@@ -170,31 +219,28 @@ toolbar.addEventListener("click", function(e) {
 					if(answer) {
 						saveFileAs(answer);
 					}
-				});	
+				});
 			} else if(activeFile) {
 				saveFile();
 			}
 		break;
-		
-		case "btnRevert":
-		revertFile();
-		break;
+
 		
 		case "btnPreviewFile":
 		var path = projectsURL + activeProject.id +"/"+ activeFile;
 		console.log("Preview:", projectsURL + activeProject.id +"/"+ activeFile);
 		window.open(path, 'code_file_preview');
 		break;
-		
+
 		case "btnPreviewProject":
 		var url = activeProject.run_url;
 		if(!url) {
 			url = projectsURL + activeProject.id + "/";
-		}	
+		}
 		window.open(url, activeProject.id+'_preview');
 		break;
-		
-		
+
+
 		case "btnProjectConfig":
 		XioPop.load("/scripts/project_config.php?project_id="+activeProject.id, function(e) {
 			var frmProjectConfig = document.getElementById("frmProjectConfig");
@@ -215,10 +261,10 @@ toolbar.addEventListener("click", function(e) {
 				}
 				xhr.send(formData);
 			}, false);
-			
+
 			var btnConfigCancel = document.getElementById("btnConfigCancel");
 			btnConfigCancel.addEventListener("click", function(e) {
-				XioPop.close();				
+				XioPop.close();
 			}, false);
 		});
 		break;
@@ -226,32 +272,60 @@ toolbar.addEventListener("click", function(e) {
 		case "btnExportZip":
 			window.location="/scripts/export_zip.php?path=" + activeProject.id + "/";
 		break;
-		
+
 		default:
 		console.warn("Unknown button clicked");
 	}
 
-}, false);
+}
 
 
 
 /***************** USER MENU **********************************************************************/
 
-$("#btnExportAllZip").on("click", function() {
-	var d = new Date();
-	window.location="/scripts/export_zip.php?path=" + "&filename=Projects_"+d.toISOString().substring(0,10)+'.zip';
-});
+var userMenu = document.getElementById("userMenu");
+userMenu.addEventListener("click", function(e) {
+	if(e.button!==0) return false;
 
-$("#btnChangePassword").on("click", function() {
-	var newPass = prompt("Enter new password");
-	if(newPass) {
-		$.post("/scripts/change_password.php", {'newPass':newPass}, function(data) {
-			alert(data);		
-		});
+	var target = e.target;
+	while(target.nodeName!=="LI") {
+		if(target==userMenu) return;
+		target = target.parentElement;
+	}
+	
+	switch(target.id) {
+		case "btnLogout":
+		logout();
+		break;
+		
+		case "btnExportAllZip":
+		var d = new Date();
+		window.location="/scripts/export_zip.php?path=" + "&filename=Projects_"+d.toISOString().substring(0,10)+'.zip';
+		break;
+		
+		case "btnChangePassword":
+		XioPop.prompt("Change password", "Enter your new password", "", function(newPass) {
+			if(newPass) {
+				var formData = new FormData();
+				formData.append("newPass", newPass);
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', "/scripts/change_password.php", true);
+				xhr.onload = function(e) {
+					var xhr = e.target;
+					if(xhr.status===200) {
+						console.log("Sparat");
+						XioPop.close();
+					} else {
+						console.err("Error changing password", xhr);
+					}
+				}
+				xhr.send(formData);
+			}
+		});		
+		break;
 	}
 });
 
-document.getElementById("btnLogout").addEventListener("click", logout, false);
 
 
 
@@ -396,9 +470,9 @@ $("#fileListRightClickMenu li").on("click", function() {
 	hideFileListRightClickMenu();
 });
 		
-$(window).resize(function() {
+window.onresize = function(e) {
 	fixLayout();
-});	
+}	
 
 window.onhashchange = function(e) {
 	var newHash = window.location.hash;
@@ -428,14 +502,16 @@ function init() {
 
 function logout() {
 	document.body.classList.remove("authorized");
-	projectList.innerHTML="";
+	projectsList.innerHTML="";
 	fileList.innerHTML="";
+	openedList.innerHTML="";
 	projects = new Array();
 	files = new Array();
+	var doc = CodeMirror.Doc("");
+	var old = codeMirror.swapDoc(doc);
 	activeProject = null;
 	activeFile = null;
 	xioDocs = {};
-	unloadFile();
 	loginForm.elements['code_username'].focus();	
 	clearInterval(checkAccessInterval);
 	
@@ -477,18 +553,7 @@ addEventListener("userLogin", function(e) {
 });
 
 function fixLayout() {
-	var h = $(window).height();
-	var w = $(window).width();
 	
-	if(codeMirror) {
-		codeMirror.setSize(w-fileListWidth-40, h-112);
-		codeMirror.refresh();
-	}
-	
-	$("#fileList").css ({
-		"width":fileListWidth,
-		"height":h-64
-	});
 }
 
 function showImagePreview(uri) {
@@ -519,13 +584,13 @@ function findProjects() {
 				projectsHTML.push("<h3>"+item.name+"</h3>");
 				projectsHTML.push("<div style='display: block;'>");
 				if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
-				projectsHTML.push("<a href='#' class='lblRenameProject'>Rename</a>");
-				projectsHTML.push("<a href='#' class='lblDeleteProject'>Delete</a>");
+				projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
+				projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
 				projectsHTML.push("</div>");
 				projectsHTML.push("</li>");
 			});
 			console.log("%i projects found", Object.keys(projects).length, data);
-			projectList.innerHTML = projectsHTML.join("");
+			projectsList.innerHTML = projectsHTML.join("");
 			filterProjects();
 			readHash(window.location.hash);
 		},
@@ -551,15 +616,15 @@ function openProject(id) {
 	activeProject.id = id;
 	document.title = pageTitle + " - " + project.name;
 
-	$("#choose_project").hide();
-	$("#writer").show();
+	$("#projectChooser").hide();
+	$("#projectArea").show();
 	$("#pageTitle").html(project.name);
 	
-	fixLayout();
 	
 	files = null;
 	fileList.innerHTML = "";
 	getProjectFiles();
+	redrawOpenedDocs();
 }
 
 function openFile(uri) {
@@ -571,19 +636,10 @@ function openFile(uri) {
 
 function unloadFile() {
 	$("#fileList li").removeClass("selected");
-	activeFile = "untitled";
-	var doc = CodeMirror.Doc("");
-	var old = codeMirror.swapDoc(doc);
+	getOrCreateDoc(activeProject.id, "untitled")
+	setActiveFile("untitled");
 	codeMirror.focus();
-	if(!xioDocs.hasOwnProperty(activeProject.id)) xioDocs[activeProject.id] = {};
-	xioDocs[activeProject.id][activeFile] = doc;
-}
-
-function revertFile() {	
-	if(confirm("Are you sure you want to revert your unsaved changes?")) {
-		console.log("Revert file: '", activeFile, "'");
-		loadDoc(activeProject.id, activeFile, true);		
-	}
+	
 }
 
 
@@ -612,10 +668,9 @@ function fileCreationCallback(e) {
 	
 	switch(json.status) {
 		case STATUS_OK:		
-		activeFile = json.uri;
-		console.log("file saved as ", activeFile);
+		console.log("file saved as ", json.uri);
 		reloadFileList();
-		openFile(activeFile);
+		openFile(json.uri);
 		break;
 		
 		case STATUS_FILE_COLLISION:
@@ -659,11 +714,11 @@ function validateCallback(e) {
 
 function saveFile() {
 	codeMirror.save();
-	var form = document.getElementById("writer");
 	
-	var formData = new FormData(form);
+	var formData = new FormData();
 	formData.append("uri", activeFile);
 	formData.append("project_id", activeProject.id);
+	formData.append("code", codeMirror.getValue());
 
 	console.log("Save file '"+ activeFile+"'...");
 	
@@ -675,7 +730,7 @@ function saveFile() {
 	xhr.open("POST", "/scripts/save.php", true);	
 	xhr.onload = function(e) {
 		if(e.target.status===200) {
-			fileNotChanged(activeFile);
+			setFileToClean(activeFile);
 			console.log("File saved");
 		} else {
 			console.error("Error saving file", e);
@@ -687,11 +742,11 @@ function saveFile() {
 
 function saveFileAs(newFileName, overwrite) {
 	codeMirror.save();
-	var form = document.getElementById("writer");
 	
-	var formData = new FormData(form);
+	var formData = new FormData();
 	formData.append("uri", newFileName);
 	formData.append("project_id", activeProject.id);
+	formData.append("code", codeMirror.getValue());
 	formData.append("do", "saveAs");
 	if(overwrite) formData.append("overwrite", true);
 	
@@ -703,13 +758,9 @@ function saveFileAs(newFileName, overwrite) {
 		
 		switch(json.status) {
 			case STATUS_OK:
-			if(activeFile==="unsavedFile") {
-				localStore.removeItem(activeProject.id+"/"+activeFile);	
-			}			
-			activeFile = json.uri;
-			console.log("file saved as ", activeFile);
+			console.log("file saved as ", json.uri);
 			reloadFileList();
-			openFile(activeFile);
+			openFile(json.uri);
 			break;
 			
 			case STATUS_FILE_COLLISION:
@@ -788,12 +839,18 @@ function printFolder(arr, path) {
 		if(item.type=="jpg" || item.type=="jpeg" || item.type=="gif" || item.type=="png" || item.type=="bmp" || item.type=="tif" || item.type=="tiff") {
 			imagePreview=" imagePreview";
 		}
-		files[item.path + item.filename] = item;
-		var localSaved = localStore.getItem(activeProject.id+"/"+item.path+item.filename);
-		var changed = (localSaved)? ' changed' : '';
+		var uri = item.path + item.filename;
+		files[uri] = item;
+		
+		
+		var changed = "";
+		if(xioDocs[activeProject.id].hasOwnProperty(uri) && !xioDocs[activeProject.id][uri].isClean()) {
+			changed = " changed ";
+		}
+		
 		var hidden  = (item.filename=='xiocode.properties')? ' hidden' : '';
 		var title = item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
-		htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + item.path + item.filename + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
+		htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + uri + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
 		htm.push("<span class='fileIcon "+item.type+"'></span>");
 		htm.push("<span class='fileName'>"+item.filename+"</span>");
 		if(item.leafs) {
@@ -897,18 +954,18 @@ function readHash(hash) {
 
 
 function filterProjects(e) {
-	var searchString = projectFilter.value.toLowerCase();
+	var searchString = projectsFilter.value.toLowerCase();
 	if(e && e.which == KEY_ENTER && searchString) {
-		var firstItem = document.querySelector("#projects li:not(.hidden)");
+		var firstItem = document.querySelector("#projectsList li:not(.hidden)");
 		setHash(firstItem.getAttribute('data-project_id')+"/");
 		return false;
 	} else {
-		console.log("filter projects '"+searchString+"'", projectFilter, projects);
+		console.log("filter projects '"+searchString+"'", projectsFilter, projects);
 		
 		for(var id in projects) {
 			var project = projects[id];
 			
-			var li = document.querySelector("#projects li[data-project_id='"+id+"']");
+			var li = document.querySelector("#projectsList li[data-project_id='"+id+"']");
 			if(project.name.toLowerCase().search(searchString)!=-1) {
 				li.classList.remove('hidden');
 			} else {
@@ -919,28 +976,19 @@ function filterProjects(e) {
 }	
 
 function chooseProject() {
-	$("#choose_project").show();
-	$("#writer").hide();
+	$("#projectChooser").show();
+	$("#projectArea").hide();
 	$("#pageTitle").html("Choose project");
 	activeProject = null;
 	document.tite = pageTitle;
-	projectFilter.focus();
+	projectsFilter.focus();
 }
 
 
-function fileChanged(uri) {
-	localStore.setItem(activeProject.id+"/"+uri, codeMirror.getValue());
-	console.log("Save to local storage", uri);
-	$("#fileList li.selected").addClass("changed");
-	$("#btnSave").removeClass("disabled");
-	$("#btnRevert").removeClass("disabled");
-}
-function fileNotChanged(uri) {
+function setFileToClean(uri) {
 	console.log(uri, "is now clean");
-	$("#btnSave").addClass("disabled");
-	$("#btnRevert").addClass("disabled");
 	$("#fileList li.selected").removeClass("changed");
-	localStore.removeItem(activeProject.id+"/"+uri);	
+	$("#openedList li.selected").removeClass("changed");
 }
 
 function numberOfUnsavedFiles() {

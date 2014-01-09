@@ -11,11 +11,9 @@ $jsUser = "null";
 if(Gatekeeper::hasAccess()) {
 	$loginState=" class='authorized'";
 	$jsUser = json_encode(Gatekeeper::getUser($db));
-	
 }
 
 $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
-
 
 ?>
 <!doctype html>
@@ -43,14 +41,46 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 					<li id="btnChangePassword">Change password</li>
 					<li id="btnLogout">Logout</li>
 				</ul>
-				<!--
-				<button id="btnExportAllZip" type="button" class="button24" title="Export all projects to a single zip-file"></button>
-				<button id="btnChangePassword" type="button" class="button24" title="Change password"></button>
-				<button id="btnLogout" type="button" class="button24" title="Logout"></button>
-				-->
 			</div>
 			<span id="pageTitle"></span>
 		</div>
+		
+		
+
+		<div id="projectChooser" class="hidden">
+			<input type="search" placeholder="Filter projects" id="projectsFilter" />
+			<button id="btnNewProject" type="button" class="button24" title="Create a new project"></button>
+			<ul id="projectsList"></ul>			
+		</div>
+		
+		<div id="projectArea">
+	
+			<div id="leftColumn">
+				<ul id="projectToolbar" class="toolbar">						
+					<li id="btnNew" title="Create new file"><div class="button32"></div></li>
+					<li id="btnPreviewProject" title="Preview project"><div class="button32"></div></li>
+					<li id="btnExportZip" title="Export project to zip"><div class="button32"></div></li>
+					<li id="btnProjectConfig" title="Project configurations"><div class="button32"></div></li>
+				</ul>
+				<div id="fileList"></div>
+			</div>
+			
+			
+			<div id="xioDoc">
+				<div id="xioDocTop">
+					<ul id="fileToolbar" class="toolbar">						
+						<li id="btnSave" title="Save file"><div class="button32"></div></li>
+						<li id="btnPreviewFile" title="Preview active file"><div class="button32"></div></li>
+					</ul>
+					<ul id="openedList"></ul>
+				</div>
+					<textarea name="code" id="code"></textarea>		
+				<!--<div id="editorWrapper"></div>-->
+			</div>
+		
+		</div>
+		
+		<!-- Popups -->
 		
 		<div class="door left <?php echo $doorState; ?>"></div>
 		<div class="door right <?php echo $doorState; ?>"></div>
@@ -67,29 +97,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 				<button id="btnLogin" type="submit">Login</button>			
 			</form>
 		</div>
-
-		<div id="choose_project" class="hidden">
-			<input type="search" placeholder="Filter projects" id="projectFilter" />
-			<button id="btnNewProject" type="button" class="button24" title="Create a new project"></button>
-			<ul id="projects"></ul>			
-		</div>
-	
-		<form id="writer" class="hidden">
-			<div id="fileList"></div>
-			<ul id="toolbar">						
-				<li id="btnNew" title="Create new file"><div class="button32"></div></li>
-				<li id="btnSave" title="Save file"><div class="button32"></div></li>
-				<li id="btnRevert" title="Revert back to saved file"><div class="button32"></div></li>
-				<li id="btnPreviewFile" title="Preview active file"><div class="button32"></div></li>
-				<li id="btnPreviewProject" title="Preview project"><div class="button32"></div></li>
-				<li id="btnExportZip" title="Export project to zip"><div class="button32"></div></li>
-				<!--<li id="btnColorPicker"><div class="button32"></div></li>-->
-				<li id="btnProjectConfig" title="Project configurations"><div class="button32"></div></li>
-			</ul>
-			<div id="editorWrapper">
-				<textarea name="code" id="code"></textarea>		
-			</div>			
-		</form>
 		
 		<div id="imagePreview" class="hidden">
 			<div id="imagePreviewImage"></div>
