@@ -27,5 +27,6 @@ foreach($items as $i) {
 	$projects[basename($i)] = $config;
 }
 
+header('Content-Type: application/json');
 echo json_encode($projects);
 ?>

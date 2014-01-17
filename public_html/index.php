@@ -26,7 +26,8 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/lesser-dark.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/monokai.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>addon/dialog/dialog.css" type="text/css" />
-		<link rel="stylesheet" href="http://xio.se/projects/xiopop/XioPop.css">		
+		<link rel="stylesheet" href="http://xio.se/projects/xiopop/XioPop.css">
+		<link rel="stylesheet" href="/elusive-iconfont/css/elusive-webfont.css">
 		<link rel="stylesheet" href="/scripts/cssMinify.php" type="text/css" />
 		<link rel="shortcut icon" href="/images/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -35,7 +36,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<div id="header">
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
 			<div id="userMenu">
-				<div id="username"></div>
+				<span class="el-icon-user"></span><span id="username"></span>
 				<ul>
 					<li id="btnExportAllZip">Export all</li>
 					<li id="btnChangePassword">Change password</li>
@@ -49,18 +50,18 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
 		<div id="projectChooser" class="hidden">
 			<input type="search" placeholder="Filter projects" id="projectsFilter" />
-			<button id="btnNewProject" type="button" class="button24" title="Create a new project"></button>
+			<span id="btnNewProject" class="el-icon-plus-sign icon-small" title="Create a new project"></span>
 			<ul id="projectsList"></ul>			
 		</div>
 		
-		<div id="projectArea">
+		<div id="projectArea" class="hidden">
 	
 			<div id="leftColumn">
 				<ul id="projectToolbar" class="toolbar">						
-					<li id="btnNew" title="Create new file"><div class="button32"></div></li>
-					<li id="btnPreviewProject" title="Preview project"><div class="button32"></div></li>
-					<li id="btnExportZip" title="Export project to zip"><div class="button32"></div></li>
-					<li id="btnProjectConfig" title="Project configurations"><div class="button32"></div></li>
+					<li><span id="btnNew" title="Create new file" class="icon-small el-icon-file-new"></span></li>
+					<li><span id="btnPreviewProject" title="Preview project" class="icon-small el-icon-screen"></span></li>
+					<li><span id="btnExportZip" title="Export project to zip" class="icon-small el-icon-download"></span></li>
+					<li><span id="btnProjectConfig" title="Project configurations" class="icon-small el-icon-cog"></span></li>
 				</ul>
 				<div id="fileList"></div>
 			</div>
@@ -69,8 +70,8 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			<div id="xioDoc">
 				<div id="xioDocTop">
 					<ul id="fileToolbar" class="toolbar">						
-						<li id="btnSave" title="Save file"><div class="button32"></div></li>
-						<li id="btnPreviewFile" title="Preview active file"><div class="button32"></div></li>
+						<li><span id="btnSave" title="Save file" class="icon-small el-icon-inbox"></span></li>
+						<li><span id="btnPreviewFile" title="Preview active file" class="icon-small el-icon-eye-open"></span></li>
 					</ul>
 					<ul id="openedList"></ul>
 				</div>

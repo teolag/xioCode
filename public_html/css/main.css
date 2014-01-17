@@ -12,11 +12,13 @@ body {
 	margin: 0;
 	display: flex;
 	flex-direction: column;
+	color: #666;
+	background-color: #fff;
 }
 
 body, textarea, input, button, select {
 	font-family: arial, sans-serif;
-	font-size: 13px;
+	font-size: 15px;
 }
 
 button {
@@ -31,7 +33,8 @@ button:hover {
 }
 
 h1 {
-	font-size: 22px;
+	font-size: 1.3em;
+	
 }
 h1 .first {
 	color: #E79D00;
@@ -41,23 +44,22 @@ h1 .second {
 }
 
 #header {
-	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(43,43,43)),color-stop(1, rgb(82,82,82)));
-	background-image: -moz-linear-gradient(center bottom,rgb(43,43,43) 0%,rgb(82,82,82) 100%);
+	background-color: #444;
 	text-align:center;
-	box-shadow: 0 0 3px 2px rgba(0,0,0,0.4);
 	color:#888;
 }
 
 #header h1 {
-	margin: 3px 0 3px 15px;
 	float:left;
 	cursor:pointer;
+	line-height: 1.8em;
+	margin: 0 0.5em;
 }
 
 #header #pageTitle {
 	font-size: 1.2em;
+	line-height: 1.8em;
 	display: inline-block;
-	line-height: 33px;
 }
 
 #header .menuButtons {
@@ -73,7 +75,7 @@ h1 .second {
 	flex: 1;
 }
 #leftColumn {
-	width: 250px;
+	width: 220px;
 	padding: 5px;
 	display: flex;
 	flex-direction: column;
@@ -96,8 +98,27 @@ h1 .second {
 }
 
 
+.icon-small {
+	font-size: 1.3em;
+	color: #666;
+	cursor: pointer;
+}
+.icon-small:hover {
+	color: #BADA55;
+}
+.icon-small.disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+.icon-small.disabled:hover {
+	color: #666;
+}
 
 
+#btnNewProject {
+	vertical-align: text-top;
+	line-height: 16px;
+}
 
 
 .button24 {
@@ -108,7 +129,7 @@ h1 .second {
 	background: transparent url('/images/code_sprite.png') no-repeat 0 0;
 }
 
-#btnNewProject		{background-position: -48px -16px;}
+
 #btnLogout 			{background-position: -24px -16px;}
 #btnChangePassword	{background-position: 0 -16px;}
 #btnChangeSkin 		{background-position: -72px -16px;}
@@ -124,7 +145,6 @@ h1 .second {
 
 #btnNew .button32				{background-position: 0 -40px;}
 #btnPreviewFile .button32		{background-position: -32px -40px;}
-#btnSave .button32				{background-position: -64px -40px;}
 #btnPreviewProject .button32		{background-position: -96px -40px;}
 #btnExportZip .button32			{background-position: -128px -40px;}
 #btnRevert .button32				{background-position: -160px -40px;}
@@ -133,34 +153,38 @@ h1 .second {
 
 
 
-#logo {
-	height:35px;
-}
-
-
-
 
 
 
 #openedList {
 	padding: 0;
-	margin: 0;	
+	margin: 0 10px;	
 }
 #openedList li {
 	display: block;
 	float: left;
-	padding: 3px 10px;
-	background-color: #E6E6E6;
+	padding: 3px 7px 3px 10px;
+	background-color: #ccc;
 	margin-right: 4px;
 	border-radius: 5px 5px 0 0;
 	cursor: pointer;
+	color: #202020;
 }
 #openedList li.selected {
 	cursor: default;
-	background-color: #E6DBC7;
+	background-color: #999;
 }
-#openedList li.changed {
+#openedList li.changed span.filename {
 	text-decoration: underline;
+}
+#openedList li span.close {
+	font-size: 11px;
+	color: #333;
+	margin-left: 0.5em;
+}
+#openedList li span.close:hover {
+	color: #000;
+	cursor: pointer;
 }
 
 
@@ -168,9 +192,10 @@ h1 .second {
 	background-color:#ddd;
 	margin: 5px 0 0 0;
 	overflow:auto;
-	font-size:11px;
+	font-size: 0.7em;
 	padding: 3px;
 	flex: 1;
+	color: #101010;
 }
 
 #fileList ul{
@@ -269,25 +294,10 @@ h1 .second {
 
 .toolbar li {
 	display: inline-block;
-	background-color: #ddd;
-	cursor: pointer;
-	padding: 5px;
+	padding: 0;
 	margin: 0;
-	font-size:0;
 }
 
-.toolbar li:hover {
-	background-color:#FFD697;
-}
-
-.toolbar li.disabled:hover {
-	background-color:transparent;
-}
-
-.toolbar li.disabled  {
-	opacity: 0.2;
-	cursor: default;
-}
 
 
 #imagePreview {
@@ -421,7 +431,7 @@ ul#projectsList {
 /*************** CODEMIRROR *********************/
 
 .CodeMirror {
-	border:1px solid #ccc;
+	//border:1px solid #ccc;
 }
 .cm-s-default {background: #fff;}
 .cm-s-eclipse {background: #fff;}
@@ -542,7 +552,7 @@ body.authorized #login {
 }
 #userMenu>div {
 	display: inline-block;
-	line-height: 33px;
+	line-height: 1.8em;
 	padding: 0 1em;
 }
 #userMenu:hover ul {
@@ -565,6 +575,12 @@ body.authorized #login {
 #userMenu ul  li:hover{
 	background-color: #444;
 	color: #E79D00;
+}
+#userMenu > span {
+	display: inline-block;
+	line-height: 1.8em;
+	padding-right: 10px;
+	font-size: 1.2em;
 }
 
 

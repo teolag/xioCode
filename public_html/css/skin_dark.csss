@@ -1,59 +1,23 @@
 
 
 body {
-	background: rgb(60, 60, 60) none;
+	background-color: #3D3D3D;
 }
 
-#projects li {
-	background: -webkit-linear-gradient(top,rgb(100, 100, 100) 0%,rgb(88, 88, 88) 28%,rgb(94, 94, 94) 44%,rgb(92, 92, 92) 53%,rgb(56, 56, 56) 100%);
-	box-shadow: 
-		1px 1px 5px 1px rgba(0, 0, 0, 0.16),
-		inset 0px 0px 8px 4px rgba(255, 255, 255, 0.09);
-}
-
-#projectFilter {
-	color: #888;
-	border: 2px solid rgb(78, 78, 78);
-	background-color: rgb(48, 48, 48);
-}
-
-#projectFilter::-webkit-input-placeholder {
-   color: #666;
+#header {
+	background-color: #202020;
 }
 
 #fileList {
-	border: 0;
-	background-color: rgba(0, 0, 0, 0.4);
-	color: #999;
+	background-color:#444;
+}
+#fileList  li.selected{
+	background-color: #666;
 }
 
-#fileList li.selected {
-	background-color: rgba(0, 0, 0, 0.15);
+#openedList li {
+	background-color: #444;
 }
-
-#toolbar button {
-	border: 0;
-	background-color: rgba(0, 0, 0, 0.4);
-}
-
-
-
-/* Let's get this party started */
-::-webkit-scrollbar {
-    width: 12px;
-}
- 
-/* Track */
-::-webkit-scrollbar-track {
-    background-color: #333;
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.5); 
-}
-
-/*erger*/
-::-webkit-scrollbar-thumb:window-inactive {
-	background: rgba(255,255,255,0.1); 
+#openedList li.selected {
+	background-color: #666;
 }

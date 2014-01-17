@@ -7,8 +7,24 @@ openedList.addEventListener("click", function(e) {
 		if(target==openedList) return;
 		target = target.parentElement;
 	}
+	console.log("Click on tab", target, e.target, e);
+	
+	if(e.target.classList.contains("close") || e.which===2) {
+		
+		console.log("Close tab", target);
+		var doc = xioDocs[activeProject.id][target.dataset.uri];
+		if(!doc.isClean()) {
+			XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
+				if(answer) closeDoc(activeProject.id, target.dataset.uri);;
+			});
+		} else {
+			closeDoc(activeProject.id, target.dataset.uri);
+		}
+		return;
+	}
+	
+	
 	openFile(target.dataset.uri);
-	console.log("Click on tab", target);
 	
 }, false);
 
@@ -19,22 +35,51 @@ function redrawOpenedDocs() {
 	var html="";
 	var oFiles = xioDocs[activeProject.id];
 	console.log("oFiles", oFiles);
+	openedList.innerHTML="";
 			
 	for (var property in oFiles) {
 		if (oFiles.hasOwnProperty(property)) {
 			var doc = oFiles[property];
 			var active = activeFile===property;
 			var classes = [];
-			if(active) classes.push("selected");			
-			if(!doc.isClean()) classes.push("changed");
+			
+			var li = document.createElement("LI");
+			li.dataset.uri=property;
+						
+			if(active) li.classList.add("selected");			
+			if(!doc.isClean()) li.classList.add("changed");
+			
+			var filename = document.createElement("span");
+			filename.textContent = property;
+			filename.classList.add("filename");
+			
+			var close = document.createElement("span");
+			close.classList.add("el-icon-remove-sign", "close");
+			
+			li.appendChild(filename);
+			li.appendChild(close);
 					
-			html+="<li data-uri='"+property+"' class='"+classes.join(" ")+"'>"+ property +"</li>";
+			openedList.appendChild(li);
 		}
 	}
 	
-	openedList.innerHTML=html;
-	
 }
+
+function closeDoc(projectId, uri) {
+	var oFiles = xioDocs[projectId];
+	delete oFiles[uri];
+	redrawOpenedDocs();
+	for(var oUri in oFiles);
+	console.log("oUri",oUri);
+	if(oUri && activeFile===oUri) {
+		openFile(oUri);
+	} else if(oUri===undefined) {
+		console.log("Open empty");
+		openFile();
+	} 
+}
+
+
 
 function getOrCreateDoc(projectId, uri) {
 	console.log("getOrCreateDoc", uri);
@@ -58,7 +103,7 @@ function loadDoc(projectId, uri) {
 	}
 	
 	var xhr = new XMLHttpRequest();
-	xhr.open("get", "/scripts/load_file.php?project_id="+activeProject.id+"&uri="+encodeURI(uri), true);
+	xhr.open("get", "/scripts/load_file.php?project_id="+projectId+"&uri="+encodeURI(uri), true);
 	console.log("Loading '" + uri + "' from disk.");
 	
 	xhr.onload = function(e) {

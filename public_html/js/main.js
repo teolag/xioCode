@@ -200,10 +200,12 @@ function toolbarHandler(e) {
 	if(e.button!==0) return false;
 
 	var target = e.target;
+	/*
 	while(target.nodeName!=="LI") {
 		//if(target==) return;
 		target = target.parentElement;
 	}
+	*/
 	if(target.classList.contains("disabled")) return;
 
 	switch(target.id) {
@@ -549,11 +551,13 @@ addEventListener("userLogin", function(e) {
 	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 	
 	findProjects();
-	initWriter();	
+	initWriter();
+	fixLayout();
 });
 
 function fixLayout() {
-	
+	var height = document.getElementById("xioDoc").offsetHeight - document.getElementById("xioDocTop").offsetHeight;
+	codeMirror.setSize(null, height);
 }
 
 function showImagePreview(uri) {
@@ -573,13 +577,20 @@ function showImagePreview(uri) {
 
 function findProjects() {
 	var url = "/scripts/get_all_projects.php";
-	$.ajax({
-		url: url,
-		success: function(data) {
-			projects=data;
+	var xhr = new XMLHttpRequest();
+	xhr.responseType='json';
+	xhr.open("get", "/scripts/get_all_projects.php", true);
+	xhr.onreadystatechange = function(e) {
+		console.log("readystate change", e.target.readyState, e.target);
+	};
+	xhr.onload = function(e) {
+		if(e.target.status===200) {
+			console.log("Projects callback", e.target);
+			projects=e.target.response;
 			console.log(projects);
 			var projectsHTML=[];
-			$.each(projects, function(id, item) {
+			for(var id in projects) {
+				var item = projects[id];
 				projectsHTML.push("<li data-project_id='"+id+"'>");
 				projectsHTML.push("<h3>"+item.name+"</h3>");
 				projectsHTML.push("<div style='display: block;'>");
@@ -588,16 +599,15 @@ function findProjects() {
 				projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
 				projectsHTML.push("</div>");
 				projectsHTML.push("</li>");
-			});
-			console.log("%i projects found", Object.keys(projects).length, data);
+			}
+			console.log("%i projects found", Object.keys(projects).length, e.target.response);
 			projectsList.innerHTML = projectsHTML.join("");
 			filterProjects();
 			readHash(window.location.hash);
-		},
-		async: true,
-		dataType: "json"
-	});
-	
+		}
+	};
+	xhr.send();
+	readHash(window.location.hash);
 }
 
 function openProject(id) {
@@ -628,6 +638,7 @@ function openProject(id) {
 }
 
 function openFile(uri) {
+	if(!uri) uri="";
 	setHash(activeProject.id + "/" + uri);
 }
 
@@ -636,8 +647,9 @@ function openFile(uri) {
 
 function unloadFile() {
 	$("#fileList li").removeClass("selected");
-	getOrCreateDoc(activeProject.id, "untitled")
-	setActiveFile("untitled");
+	openFile("untitled")
+	//getOrCreateDoc(activeProject.id, "untitled")
+	//setActiveFile("untitled");
 	codeMirror.focus();
 	
 }
@@ -761,6 +773,9 @@ function saveFileAs(newFileName, overwrite) {
 			console.log("file saved as ", json.uri);
 			reloadFileList();
 			openFile(json.uri);
+			if(activeFile==="untitled") {
+				delete xioDocs[activeProject.id][activeFile];
+			}
 			break;
 			
 			case STATUS_FILE_COLLISION:
@@ -844,7 +859,7 @@ function printFolder(arr, path) {
 		
 		
 		var changed = "";
-		if(xioDocs[activeProject.id].hasOwnProperty(uri) && !xioDocs[activeProject.id][uri].isClean()) {
+		if(xioDocs.hasOwnProperty(activeProject.id) && xioDocs[activeProject.id].hasOwnProperty(uri) && !xioDocs[activeProject.id][uri].isClean()) {
 			changed = " changed ";
 		}
 		
@@ -940,7 +955,7 @@ function readHash(hash) {
 		
 		console.log("uri:", uri);
 		if(uri) {
-			getOrCreateDoc(activeProject.id, uri);
+			getOrCreateDoc(project_id, uri);
 			selectInFileList(uri);
 		} else {
 			unloadFile();
@@ -987,12 +1002,21 @@ function chooseProject() {
 
 function setFileToClean(uri) {
 	console.log(uri, "is now clean");
+	document.getElementById("btnSave").classList.add("disabled");
+	var doc = xioDocs[activeProject.id][uri];
+	doc.markClean();
 	$("#fileList li.selected").removeClass("changed");
 	$("#openedList li.selected").removeClass("changed");
 }
 
 function numberOfUnsavedFiles() {
-	return $("#fileList li.changed").length;
+	var counter = 0;
+	for(var uri in xioDocs[activeProject.id]) {
+		if(!xioDocs[activeProject.id][uri].isClean()) {
+			counter++;
+		}
+	}
+	return counter;
 } 
 
 

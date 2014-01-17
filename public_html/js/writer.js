@@ -20,6 +20,7 @@ function initWriter() {
 		styleActiveLine: true,
         indentUnit: 4,
 		theme: 'default',
+		//theme: 'ambiance',
         indentWithTabs: true,
 		//cursorScrollMargin: 75,
         highlightSelectionMatches: true,
