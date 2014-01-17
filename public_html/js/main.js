@@ -189,11 +189,8 @@ btnNewProject.addEventListener("click", function() {
 
 /***************** TOOLBAR **********************************************************************/
 
-var fileToolbar = document.getElementById("fileToolbar");
-fileToolbar.addEventListener("click", toolbarHandler, false);
-
-var projectToolbar = document.getElementById("projectToolbar");
-projectToolbar.addEventListener("click", toolbarHandler, false);
+var toolbar = document.getElementById("toolbar");
+toolbar.addEventListener("click", toolbar, false);
 
 
 function toolbarHandler(e) {

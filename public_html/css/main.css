@@ -72,17 +72,17 @@ h1 .second {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	padding: 0.5em;
 	flex: 1;
 }
 #leftColumn {
 	width: 220px;
-	padding: 5px;
 	display: flex;
 	flex-direction: column;
 }
 #xioDoc {
 	flex: 1;
-	padding: 5px;
+	padding-left: 0.5em;
 	display: flex;
 	flex-direction: column;
 }
@@ -158,28 +158,28 @@ h1 .second {
 
 #openedList {
 	padding: 0;
-	margin: 0 10px;	
+	margin: 0 0 0 1em;
 }
 #openedList li {
 	display: block;
 	float: left;
 	padding: 3px 7px 3px 10px;
-	background-color: #ccc;
+	background-color: #ddd;
 	margin-right: 4px;
 	border-radius: 5px 5px 0 0;
 	cursor: pointer;
-	color: #202020;
+	color: #222;
 }
 #openedList li.selected {
 	cursor: default;
-	background-color: #999;
+	background-color: #E2CFA7;
 }
 #openedList li.changed span.filename {
 	text-decoration: underline;
 }
 #openedList li span.close {
 	font-size: 11px;
-	color: #333;
+	color: #666;
 	margin-left: 0.5em;
 }
 #openedList li span.close:hover {
@@ -189,11 +189,12 @@ h1 .second {
 
 
 #fileList {
-	background-color:#ddd;
-	margin: 5px 0 0 0;
-	overflow:auto;
+	background-color: #eee;
+	border:1px solid #ccc;
+	margin: 0.5em 0 0 0;
+	overflow: auto;
 	font-size: 0.7em;
-	padding: 3px;
+	padding: 0.5em;
 	flex: 1;
 	color: #101010;
 }
@@ -296,6 +297,7 @@ h1 .second {
 	display: inline-block;
 	padding: 0;
 	margin: 0;
+	font-size: 1.4em
 }
 
 
@@ -431,7 +433,7 @@ ul#projectsList {
 /*************** CODEMIRROR *********************/
 
 .CodeMirror {
-	//border:1px solid #ccc;
+	border: 1px solid #ccc;
 }
 .cm-s-default {background: #fff;}
 .cm-s-eclipse {background: #fff;}
