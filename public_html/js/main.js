@@ -190,22 +190,16 @@ btnNewProject.addEventListener("click", function() {
 /***************** TOOLBAR **********************************************************************/
 
 var toolbar = document.getElementById("toolbar");
-toolbar.addEventListener("click", toolbar, false);
+toolbar.addEventListener("click", toolbarHandler, false);
 
 
 function toolbarHandler(e) {
 	if(e.button!==0) return false;
 
-	var target = e.target;
-	/*
-	while(target.nodeName!=="LI") {
-		//if(target==) return;
-		target = target.parentElement;
-	}
-	*/
-	if(target.classList.contains("disabled")) return;
+	var button = e.target;
+	if(button.classList.contains("disabled")) return;
 
-	switch(target.id) {
+	switch(button.id) {
 
 		case "btnNew":
 		createNewFile();
