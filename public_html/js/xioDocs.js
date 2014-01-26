@@ -31,9 +31,9 @@ openedList.addEventListener("click", function(e) {
 
 
 
-function redrawOpenedDocs() {	
+function redrawOpenedDocs(projectId) {	
 	var html="";
-	var oFiles = xioDocs[activeProject.id];
+	var oFiles = xioDocs[projectId];
 	console.log("oFiles", oFiles);
 	openedList.innerHTML="";
 			
@@ -50,7 +50,8 @@ function redrawOpenedDocs() {
 			if(!doc.isClean()) li.classList.add("changed");
 			
 			var filename = document.createElement("span");
-			filename.textContent = property;
+			filename.textContent = property.replace(/^.*[\\\/]/, '');
+			filename.title = property;
 			filename.classList.add("filename");
 			
 			var close = document.createElement("span");
@@ -68,7 +69,7 @@ function redrawOpenedDocs() {
 function closeDoc(projectId, uri) {
 	var oFiles = xioDocs[projectId];
 	delete oFiles[uri];
-	redrawOpenedDocs();
+	redrawOpenedDocs(projectId);
 	for(var oUri in oFiles);
 	console.log("oUri",oUri);
 	if(oUri && activeFile===oUri) {
@@ -87,9 +88,9 @@ function getOrCreateDoc(projectId, uri) {
 		var doc = xioDocs[projectId][uri];
 		console.log("swap to doc", doc);
 		codeMirror.swapDoc(doc);
-		setActiveFile(uri);
+		setActiveFile(projectId, uri);
 		codeMirror.focus();
-		redrawOpenedDocs();
+		redrawOpenedDocs(projectId);
 		console.log("Doc", doc);
 	} else {
 		loadDoc(projectId, uri);	
@@ -120,14 +121,14 @@ function docLoaded(projectId, uri, data) {
 	var old = codeMirror.swapDoc(doc);
 	if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
 	xioDocs[projectId][uri] = doc;
-	setActiveFile(uri);
+	setActiveFile(projectId, uri);
 	codeMirror.focus();
-	redrawOpenedDocs();
+	redrawOpenedDocs(projectId);
 }
 
 
-function setActiveFile(uri) {
-	var doc = xioDocs[activeProject.id][uri];
+function setActiveFile(projectId, uri) {
+	var doc = xioDocs[projectId][uri];
 	activeFile = uri;
 	console.log("Is file clean?", doc.isClean());
 	if(doc.isClean()) {

@@ -625,7 +625,7 @@ function openProject(id) {
 	files = null;
 	fileList.innerHTML = "";
 	getProjectFiles();
-	redrawOpenedDocs();
+	redrawOpenedDocs(id);
 }
 
 function openFile(uri) {
