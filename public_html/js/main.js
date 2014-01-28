@@ -142,7 +142,7 @@ function loginCallback(e) {
 	if(e.target.status===200 && user && user.username) {
 		_USER = user;
 		var userLogin = new CustomEvent("userLogin");
-		dispatchEvent(userLogin);
+		window.dispatchEvent(userLogin);
 	}
 	else {
 		console.warn("Incorrect login or password");
@@ -372,11 +372,12 @@ $("#fileList").on("click", "li", function(e) {
 
 $("#fileList").on("dragstart", "li", function(e){
 	console.log("Drag start", this, e);
-	var mime = $(this).data("mime");
+	var mime = "css/text"; //$(this).data("mime");
 	var filename = $(this).children(".fileName").html();
 	var filePath = location.origin + "/scripts/load_file.php?project_id=" + activeProject.id + "&uri=" + encodeURI($(this).data("uri"));
 	var fileDetails = mime + ":" + filename + ":" + filePath;
-	console.log("fileDetails", fileDetails);
+	var fileDetails = "text/html:index.htm:http://beta.xio.se";
+	console.log("fileDetails", fileDetails, e);
 	e.originalEvent.dataTransfer.setData("DownloadURL", fileDetails);
 	$("#fileList").data("dragItem", $(this));
 	e.stopPropagation();
@@ -488,7 +489,7 @@ function init() {
 	
 	if(_USER && _USER.username) {
 		var userLogin = new CustomEvent("userLogin");
-		dispatchEvent(userLogin);
+		window.dispatchEvent(userLogin);
 	}
 	
 }
@@ -573,26 +574,24 @@ function findProjects() {
 	xhr.responseType='json';
 	xhr.open("get", "/scripts/get_all_projects.php", true);
 	xhr.onreadystatechange = function(e) {
-		console.log("readystate change", e.target.readyState, e.target);
+		//console.log("readystate change", e.target.readyState, e.target);
 	};
 	xhr.onload = function(e) {
 		if(e.target.status===200) {
-			console.log("Projects callback", e.target);
 			projects=e.target.response;
-			console.log(projects);
 			var projectsHTML=[];
 			for(var id in projects) {
-        if (projects.hasOwnProperty(id)) {
-          var item = projects[id];
-          projectsHTML.push("<li data-project_id='"+id+"'>");
-          projectsHTML.push("<h3>"+item.name+"</h3>");
-          projectsHTML.push("<div style='display: block;'>");
-          if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
-          projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
-          projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
-          projectsHTML.push("</div>");
-          projectsHTML.push("</li>");
-        }
+				if (projects.hasOwnProperty(id)) {
+					var item = projects[id];
+					projectsHTML.push("<li data-project_id='"+id+"'>");
+					projectsHTML.push("<h3>"+item.name+"</h3>");
+					projectsHTML.push("<div style='display: block;'>");
+					if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
+					projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
+					projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
+					projectsHTML.push("</div>");
+					projectsHTML.push("</li>");
+				}
 			}
 			console.log("%i projects found", Object.keys(projects).length, e.target.response);
 			projectsList.innerHTML = projectsHTML.join("");

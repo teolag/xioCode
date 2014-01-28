@@ -1,6 +1,6 @@
 <?php
 require "../../includes/init.php";
-
+Gatekeeper::checkAccess();
 
 
 if(isset($_GET['from']) && isset($_GET['from'])) {

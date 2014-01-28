@@ -1,6 +1,6 @@
 <?php
 require "../../includes/init.php";
-
+Gatekeeper::checkAccess();
 
 if(get_magic_quotes_gpc()) $code = stripslashes($_POST['code']);
 else $code = $_POST['code'];

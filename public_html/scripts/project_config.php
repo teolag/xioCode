@@ -1,5 +1,6 @@
 <?php
 require "../../includes/init.php";
+Gatekeeper::checkAccess();
 
 if(isset($_GET['do']) && $_GET['do']=="save") {
 	echo "sparar";

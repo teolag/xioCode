@@ -1,6 +1,6 @@
 <?php
 require "../../includes/init.php";
-
+Gatekeeper::checkAccess();
 
 $projectId = $_POST['project_id'];
 if(empty($projectId)) die("Project id must be set");

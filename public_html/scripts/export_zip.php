@@ -1,6 +1,6 @@
 <?php
 require "../../includes/init.php";
-
+Gatekeeper::checkAccess();
 	
 	
 //Show errors

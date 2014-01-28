@@ -1,5 +1,6 @@
 <?php
 require "../../includes/init.php";
+Gatekeeper::checkAccess();
 
 $projectPath = PROJECT_PATH . $_GET['project_id'] . "/";
 $from = urldecode($_GET['uri']);

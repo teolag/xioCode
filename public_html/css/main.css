@@ -433,9 +433,10 @@ ul#projectsList {
 
 .CodeMirror {
 	border: 1px solid #ccc;
+	font-size: 1em;
+	font-family: 'Inconsolata', sans-serif;
 }
 .cm-s-default {background: #fff;}
-.cm-s-eclipse {background: #fff;}
 
 .CodeMirror-activeline-background {
 	background-color: rgba(150, 150, 150, 0.1);
@@ -449,12 +450,8 @@ ul#projectsList {
 .CodeMirror-focused .CodeMirror-selected { background: pink; }
 
 .CodeMirror-matchingbracket {
-	color: red;
-	font-weight: bold;
 }
 .CodeMirror-nonmatchingbracket {
-	color: red;
-	font-weight: bold;
 	border-bottom: 1px solid red;
 }
 

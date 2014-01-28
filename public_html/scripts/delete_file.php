@@ -1,5 +1,6 @@
 <?php
 require "../../includes/init.php";
+Gatekeeper::checkAccess();
 
 if(empty($_GET['uri'])) die("uri must be specified");
 
