@@ -45,26 +45,22 @@ h1 .second {
 
 #header {
 	background-color: #444;
-	text-align:center;
-	color:#888;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	color: #888;
+	padding: 0.3em;
 }
 
 #header h1 {
-	float:left;
-	cursor:pointer;
-	line-height: 1.8em;
-	margin: 0 0.5em;
+	cursor: pointer;
+	margin: 0;
+	padding: 0 0.5em
 }
 
 #header #pageTitle {
 	font-size: 1.2em;
-	line-height: 1.8em;
-	display: inline-block;
-}
-
-#header .menuButtons {
-	float: right;
-	margin-right: 0.5em;
 }
 
 
@@ -74,6 +70,9 @@ h1 .second {
 	justify-content: space-between;
 	padding: 0.5em;
 	flex: 1;
+}
+#projectArea.hidden {
+	display: none;
 }
 #leftColumn {
 	width: 220px;
@@ -544,15 +543,16 @@ body.authorized #login {
 
 
 /*************************** User Menu ***************************/
-#userMenu {
-	float: right;
-	text-align: right;
-	cursor: default;
+#userMenu:hover>div {
+	color: #bada55;
+	background-color: #666;	
 }
 #userMenu>div {
-	display: inline-block;
-	line-height: 1.8em;
-	padding: 0 1em;
+	cursor: default;
+	font-size: 1.2em;
+	background-color: #999;
+	padding: 0.2em 0.5em;
+	color: #333;
 }
 #userMenu:hover ul {
 	display: block;
@@ -561,6 +561,7 @@ body.authorized #login {
 	display: none;
 	margin: 0;
 	padding: 0;
+	text-align: right;
 	background-color: #333;
 	position: absolute;
 	z-index: 8;
@@ -573,13 +574,7 @@ body.authorized #login {
 }
 #userMenu ul  li:hover{
 	background-color: #444;
-	color: #E79D00;
-}
-#userMenu > span {
-	display: inline-block;
-	line-height: 1.8em;
-	padding-right: 10px;
-	font-size: 1.2em;
+	color: #bada55;
 }
 
 

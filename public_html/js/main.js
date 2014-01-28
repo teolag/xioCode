@@ -100,7 +100,7 @@ projectsList.addEventListener("click", function(e) {
 	
 		
 		default:
-		setHash(projectId+"/");
+		setHash(projectId+"/untitled");
 	
 	}
 	
@@ -541,9 +541,8 @@ addEventListener("userLogin", function(e) {
 	//Access check every minute
 	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 	
-	findProjects();
 	initWriter();
-	fixLayout();
+	findProjects();
 });
 
 function fixLayout() {
@@ -598,7 +597,6 @@ function findProjects() {
 		}
 	};
 	xhr.send();
-	readHash(window.location.hash);
 }
 
 function openProject(id) {
@@ -610,7 +608,7 @@ function openProject(id) {
 	var project = projects[id];
 	if(project===undefined) {
 		console.log("project id not found, return to base...");
-		setHash(" ");
+		setHash();
 		return;
 	}
 	activeProject = project;
@@ -620,7 +618,7 @@ function openProject(id) {
 	$("#projectChooser").hide();
 	$("#projectArea").show();
 	$("#pageTitle").html(project.name);
-	
+	fixLayout();
 	
 	files = null;
 	fileList.innerHTML = "";
@@ -869,6 +867,7 @@ function printFolder(arr, path) {
 }
 
 function selectInFileList(uri) {
+	if(uri==="untitled") return;
 	if(!files) {
 		console.log("Can not select", uri, "in fileList. Files not loaded");
 		return;
@@ -936,23 +935,23 @@ function readHash(hash) {
 		var project_id = match[1];
 		var uri = match[2];
 		
-		console.log("project_id:", project_id);
+		console.log("   project_id:", project_id);
+		console.log("   uri:", uri);
 	
 		if(!activeProject || (activeProject && project_id!=activeProject.id)) {
 			console.log("Open project", project_id);
 			files=null;
 			openProject(project_id);
 		}
-		
-		console.log("uri:", uri);
 		if(uri) {
 			getOrCreateDoc(project_id, uri);
 			selectInFileList(uri);
 		} else {
 			unloadFile();
 		}
+		
 	} else {
-		console.log("Show projects page");
+		console.log("   Show projects page");
 		chooseProject();
 	}	
 	oldHash=hash;
@@ -963,7 +962,7 @@ function filterProjects(e) {
 	var searchString = projectsFilter.value.toLowerCase();
 	if(e && e.which == KEY_ENTER && searchString) {
 		var firstItem = document.querySelector("#projectsList li:not(.hidden)");
-		setHash(firstItem.getAttribute('data-project_id')+"/");
+		setHash(firstItem.getAttribute('data-project_id')+"/untitled");
 		return false;
 	} else {
 		console.log("filter projects '"+searchString+"'", projectsFilter, projects);
@@ -984,7 +983,7 @@ function filterProjects(e) {
 function chooseProject() {
 	$("#projectChooser").show();
 	$("#projectArea").hide();
-	$("#pageTitle").html("Choose project");
+	$("#pageTitle").html("My projects");
 	activeProject = null;
 	document.tite = pageTitle;
 	projectsFilter.focus();

@@ -34,15 +34,15 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 	<body<?php echo $loginState ?>>
 		<div id="header">
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
+			<span id="pageTitle"></span>
 			<div id="userMenu">
-				<span class="el-icon-user"></span><span id="username"></span>
+				<div><span class="el-icon-user"></span> <span id="username"></span></div>
 				<ul>
 					<li id="btnExportAllZip">Export all</li>
 					<li id="btnChangePassword">Change password</li>
 					<li id="btnLogout">Logout</li>
 				</ul>
 			</div>
-			<span id="pageTitle"></span>
 		</div>
 		
 		

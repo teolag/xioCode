@@ -98,7 +98,7 @@ function getOrCreateDoc(projectId, uri) {
 }
 
 function loadDoc(projectId, uri) {		
-	if(uri=="untitled") {
+	if(uri==="untitled") {
 		docLoaded(projectId, uri, "");
 		return;
 	}
