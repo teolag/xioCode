@@ -8,7 +8,7 @@ var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 
 var KEY_ENTER = 13;
 
-var projects = new Array();
+var projects = [];
 var files;
 
 var activeProject;
@@ -70,7 +70,7 @@ projectsList.addEventListener("click", function(e) {
 					} else {
 						console.err("Error deleting project", xhr);
 					}
-				}
+				};
 				xhr.send(formData);
 			}
 		});
@@ -92,7 +92,7 @@ projectsList.addEventListener("click", function(e) {
 					} else {
 						console.err("Error renaming project", xhr);
 					}
-				}
+				};
 				xhr.send(formData);				
 			}
 		});
@@ -122,8 +122,8 @@ loginForm.addEventListener("submit", loginRequest, false);
 
 function loginRequest(e) {
 	e.preventDefault();
-	if(!loginForm.elements['code_username'].value || 
-		!loginForm.elements['code_password'].value) {
+	if(!loginForm.elements.code_username.value || 
+		!loginForm.elements.code_password.value) {
 		return;
 	}
 
@@ -140,12 +140,12 @@ function loginRequest(e) {
 function loginCallback(e) {
 	var user = JSON.parse(e.target.responseText);
 	if(e.target.status===200 && user && user.username) {
-		_USER = user
+		_USER = user;
 		var userLogin = new CustomEvent("userLogin");
 		dispatchEvent(userLogin);
 	}
 	else {
-		console.warn("Incorrect login or password")
+		console.warn("Incorrect login or password");
 		loginBox.className="";
 		setTimeout(function(){
 			loginBox.classList.add("shake");
@@ -251,7 +251,7 @@ function toolbarHandler(e) {
 					} else {
 						console.err("Error saving config", xhr);
 					}
-				}
+				};
 				xhr.send(formData);
 			}, false);
 
@@ -311,7 +311,7 @@ userMenu.addEventListener("click", function(e) {
 					} else {
 						console.err("Error changing password", xhr);
 					}
-				}
+				};
 				xhr.send(formData);
 			}
 		});		
@@ -391,7 +391,7 @@ $("#fileList").on("mousemove", "li.imagePreview", function(e) {
 });
 
 $("#fileList").on("mouseout", "li.imagePreview", function() {
-	clearTimeout(hoverTimer)
+	clearTimeout(hoverTimer);
 	$("#imagePreview").hide();
 });
 
@@ -427,15 +427,16 @@ $("#fileListRightClickMenu li").on("click", function() {
 		break;
 		
 		case "delete":
+      var answer;
 			if(files[uri].type=='folder') { 
-				var answer = confirm("Are you sure you want to delete the folder and all its content?\n"+uri+"?");
+				answer = confirm("Are you sure you want to delete the folder and all its content?\n"+uri+"?");
 				if(answer) {
 					$.get("/scripts/delete_folder.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
 						reloadFileList();
 					});
 				}
 			} else {
-				var answer = confirm("Are you sure you want to delete the file: '"+uri+"'?");
+				answer = confirm("Are you sure you want to delete the file: '"+uri+"'?");
 				if(answer) {
 					$.get("/scripts/delete_file.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
 						reloadFileList();
@@ -465,19 +466,19 @@ $("#fileListRightClickMenu li").on("click", function() {
 		
 window.onresize = function(e) {
 	fixLayout();
-}	
+};
 
 window.onhashchange = function(e) {
 	var newHash = window.location.hash;
 	if(oldHash!=newHash) readHash(newHash);
-}
+};
 
 window.onbeforeunload = function (evt) {
-	var n = numberOfUnsavedFiles()
+	var n = numberOfUnsavedFiles();
 	if(n>0) {
 		return "You have "+n+" unsaved files. Are you sure you want to navigate away from this page";
 	}
-}
+};
 
 
 
@@ -498,14 +499,14 @@ function logout() {
 	projectsList.innerHTML="";
 	fileList.innerHTML="";
 	openedList.innerHTML="";
-	projects = new Array();
-	files = new Array();
+	projects = [];
+	files = [];
 	var doc = CodeMirror.Doc("");
 	var old = codeMirror.swapDoc(doc);
 	activeProject = null;
 	activeFile = null;
 	xioDocs = {};
-	loginForm.elements['code_username'].focus();	
+	loginForm.elements.code_username.focus();	
 	clearInterval(checkAccessInterval);
 	
 	var xhr = new XMLHttpRequest();
@@ -523,7 +524,7 @@ function checkAccess() {
 		if(xhr.status !== 202) {
 			logout();
 		}
-	}
+	};
 	xhr.send();
 }
 
@@ -547,6 +548,7 @@ addEventListener("userLogin", function(e) {
 
 function fixLayout() {
 	var height = document.getElementById("xioDoc").offsetHeight - document.getElementById("xioDocTop").offsetHeight;
+	console.log("fixLayout", height);
 	codeMirror.setSize(null, height);
 }
 
@@ -580,15 +582,17 @@ function findProjects() {
 			console.log(projects);
 			var projectsHTML=[];
 			for(var id in projects) {
-				var item = projects[id];
-				projectsHTML.push("<li data-project_id='"+id+"'>");
-				projectsHTML.push("<h3>"+item.name+"</h3>");
-				projectsHTML.push("<div style='display: block;'>");
-				if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
-				projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
-				projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
-				projectsHTML.push("</div>");
-				projectsHTML.push("</li>");
+        if (projects.hasOwnProperty(id)) {
+          var item = projects[id];
+          projectsHTML.push("<li data-project_id='"+id+"'>");
+          projectsHTML.push("<h3>"+item.name+"</h3>");
+          projectsHTML.push("<div style='display: block;'>");
+          if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
+          projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
+          projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
+          projectsHTML.push("</div>");
+          projectsHTML.push("</li>");
+        }
 			}
 			console.log("%i projects found", Object.keys(projects).length, e.target.response);
 			projectsList.innerHTML = projectsHTML.join("");
@@ -615,8 +619,8 @@ function openProject(id) {
 	activeProject.id = id;
 	document.title = pageTitle + " - " + project.name;
 
-	$("#projectChooser").hide();
-	$("#projectArea").show();
+	document.getElementById("projectChooser").classList.add("hidden");
+	document.getElementById("projectArea").classList.remove("hidden");
 	$("#pageTitle").html(project.name);
 	fixLayout();
 	
@@ -636,7 +640,7 @@ function openFile(uri) {
 
 function unloadFile() {
 	$("#fileList li").removeClass("selected");
-	openFile("untitled")
+	openFile("untitled");
 	//getOrCreateDoc(activeProject.id, "untitled")
 	//setActiveFile("untitled");
 	codeMirror.focus();
@@ -650,10 +654,10 @@ function createNewFile() {
 		if(newFileName===false) {
 			console.debug("abort file creation");
 			return;
-		} else if(newFileName.trim()=="") {
+		} else if(newFileName.trim()==="") {
 			console.debug("not a valid filename");
 			XioPop.alert("Invalid filename", "You must enter a valid filename, try again", function() {
-				createNewFile()
+				createNewFile();
 			});
 		} else {
 			var xhr = new XMLHttpRequest();
@@ -778,7 +782,7 @@ function saveFileAs(newFileName, overwrite) {
 			default:
 			console.warn("handle callback", json);
 		}
-	}
+	};
 	
 	xhr.send(formData);
 
@@ -793,10 +797,11 @@ function getProjectFiles() {
 	xhr.onload = function(e) {
 		if(e.target.status===200) {
 		
+      var items;
 			try{
-				var items = JSON.parse(e.target.responseText);
-			} catch(e) {
-				console.error("Error parsing json response", e);
+				items = JSON.parse(e.target.responseText);
+			} catch(err) {
+				console.error("Error parsing json response", err);
 				return false;
 			}
 			
@@ -817,7 +822,7 @@ function getProjectFiles() {
 		} else {
 			console.error("Error loading file tree", e);
 		}
-	}
+	};
 	xhr.send();	
 }
 
@@ -930,8 +935,8 @@ function setHash(newHash) {
 
 function readHash(hash) {
 	console.log("Read hash", hash);
-	var match;
-	if(match = hash.match(/^#([^\/]*)\/?(.*)$/)) {
+	var match = hash.match(/^#([^\/]*)\/?(.*)$/);
+	if(match) {
 		var project_id = match[1];
 		var uri = match[2];
 		
@@ -968,21 +973,24 @@ function filterProjects(e) {
 		console.log("filter projects '"+searchString+"'", projectsFilter, projects);
 		
 		for(var id in projects) {
-			var project = projects[id];
-			
-			var li = document.querySelector("#projectsList li[data-project_id='"+id+"']");
-			if(project.name.toLowerCase().search(searchString)!=-1) {
-				li.classList.remove('hidden');
-			} else {
-				li.classList.add('hidden');
-			}
+      if (projects.hasOwnProperty(id)) {
+        var project = projects[id];
+        
+        var li = document.querySelector("#projectsList li[data-project_id='"+id+"']");
+        if(project.name.toLowerCase().search(searchString)!=-1) {
+          li.classList.remove('hidden');
+        } else {
+          li.classList.add('hidden');
+        }
+      }
 		}
 	}
 }	
 
 function chooseProject() {
-	$("#projectChooser").show();
-	$("#projectArea").hide();
+	document.getElementById("projectChooser").classList.remove("hidden");
+	document.getElementById("projectArea").classList.add("hidden");
+	
 	$("#pageTitle").html("My projects");
 	activeProject = null;
 	document.tite = pageTitle;
@@ -1058,12 +1066,14 @@ function uploadFiles(files, folder, overwrite) {
 	uploadData.append('path', folder);
 	uploadData.append('project_id', activeProject.id);
 	var fileUploadCount = 0;
+  var xhr;
 	
-	for (var i = 0, file; file = files[i]; ++i) {
+	for (var i=0; i<files.length; ++i) {
+    var file = files[i];
 		var checkData = new FormData();
 		checkData.append('file', folder + file.name);
 		checkData.append('project_id', activeProject.id);
-		var xhr = new XMLHttpRequest();
+		xhr = new XMLHttpRequest();
 		xhr.open('POST', "/scripts/check_collision.php", false);
 		xhr.send(checkData);		
 		if(xhr.status === 409) {
@@ -1078,7 +1088,7 @@ function uploadFiles(files, folder, overwrite) {
 	}
 	
 	if(fileUploadCount>0) {	
-		var xhr = new XMLHttpRequest();
+		xhr = new XMLHttpRequest();
 		xhr.open('POST', "/scripts/file_upload.php", true);
 		xhr.onload = function(e) {		
 			if(xhr.status == 200) {
@@ -1093,8 +1103,8 @@ function uploadFiles(files, folder, overwrite) {
 			/*
 			console.log(e);
 			if (e.lengthComputable) {
-			  progressBar.value = (e.loaded / e.total) * 100;
-			  progressBar.textContent = progressBar.value; // Fallback for unsupported browsers.
+        progressBar.value = (e.loaded / e.total) * 100;
+				progressBar.textContent = progressBar.value; // Fallback for unsupported browsers.
 			}
 			*/
 		};				
@@ -1110,12 +1120,13 @@ function dropFile(e) {
 	console.log(e);
 	
 	var folder="";
+  var $newParent;
 	if($(e.target).closest("li[data-type=folder]").length) {
-		var folder = $(e.target).closest("li[data-type=folder]").data("uri") + "/";
-		var $newParent = $(e.target).closest("li[data-type=folder]").children("ul");
+		folder = $(e.target).closest("li[data-type=folder]").data("uri") + "/";
+		$newParent = $(e.target).closest("li[data-type=folder]").children("ul");
 	} else {
-		var folder="";
-		var $newParent = $("#fileList");
+		folder="";
+		$newParent = $("#fileList");
 	}
 	
 	console.log("drop to folder /" + folder);	
@@ -1149,7 +1160,7 @@ function hoverFile(e) {
 	if(e.type == "dragover") {
 		$target.addClass("dropTo");
 	} else {
-		$target.removeClass("dropTo")
+		$target.removeClass("dropTo");
 	}
 }
 
@@ -1165,9 +1176,9 @@ function findFunctions() {
 	
 	var re = new RegExp("function\\s+([A-Z0-9_]+)\\s*\\(([^\\)]*)\\)", "gmi");
 	
-	var hit;
+	var hit = re.exec(text);
 	var functions = [];
-	while(hit = re.exec(text)) {
+	while(hit) {
 		var pos = doc.posFromIndex(hit.index);
 		var argus = hit[2].replace(" ","").split(",");
 		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
@@ -1201,21 +1212,15 @@ function toHumanReadableFileSize(bytes, si) {
 
 
 var clone = (function(){ 
-  return function (obj) { Clone.prototype=obj; return new Clone() };
+  return function (obj) { Clone.prototype=obj; return new Clone(); };
   function Clone(){}
 }());
 
 jQuery.fn.fadeOutAndRemove = function(speed){
     $(this).fadeOut(speed,function(){
         $(this).remove();
-    })
-}
-
-
-
-
-
-
+    });
+};
 
 
 
