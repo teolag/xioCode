@@ -34,7 +34,6 @@ openedList.addEventListener("click", function(e) {
 function redrawOpenedDocs(projectId) {	
 	var html="";
 	var oFiles = xioDocs[projectId];
-	console.log("oFiles", oFiles);
 	openedList.innerHTML="";
 			
 	for (var property in oFiles) {

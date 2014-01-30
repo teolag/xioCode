@@ -104,12 +104,12 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		
 		<div id="fileListRightClickMenu" class="hidden">
 			<ul>
-				<li data-do="refresh" class="rootItem">Refresh</li>
-				<li data-do="delete">Delete</li>
-				<li data-do="newFolder" class="rootItem">New folder...</li>
-				<li data-do="newFile" class="rootItem">New file...</li>
-				<li data-do="rename">Rename...</li>
-				<li data-do="upload" class="rootItem">Upload files...</li>
+				<li data-do="refresh">Refresh</li>
+				<li data-do="delete" class="fileOnly">Delete</li>
+				<li data-do="newFolder">New folder...</li>
+				<li data-do="newFile">New file...</li>
+				<li data-do="rename" class="fileOnly">Rename...</li>
+				<li data-do="upload">Upload files...</li>
 			</ul>
 		</div>		
 				
@@ -143,6 +143,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			?>
 		</script>
 		<script src="/js/xioDocs.js"></script>
+		<script src="/js/file_list.js"></script>
 		<script src="/js/writer.js"></script>
 		<script src="/js/main.js"></script>
 		

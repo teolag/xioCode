@@ -56,6 +56,16 @@ function initWriter() {
 	console.log("Mimes", CodeMirror.mimeModes);
 	console.groupEnd();
 	
+	codeMirror.on("dragover", function(cm, e) {
+		cm.setCursor(cm.coordsChar({left:e.x, top:e.y}));
+		cm.focus();
+		
+	});
+	codeMirror.on("drop", function(cm, a) {
+		console.log("Drop on cm", a.dataTransfer.getData("uri"));
+		cm.replaceSelection(a.dataTransfer.getData("uri"));		
+	});
+	
 	codeMirror.on("change", function(cm, change) {
 		if(activeFile) {
 			console.log("CodeMirror Change", cm, change);

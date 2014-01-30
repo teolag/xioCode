@@ -9,7 +9,7 @@ var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 var KEY_ENTER = 13;
 
 var projects = [];
-var files;
+//var files;
 
 var activeProject;
 var activeFile;
@@ -108,10 +108,6 @@ projectsList.addEventListener("click", function(e) {
 });
 
 
-var fileList = document.getElementById("fileList");
-fileList.addEventListener("drop", dropFile, false);
-fileList.addEventListener("dragover", hoverFile, false);
-fileList.addEventListener("dragleave", hoverFile, false);
 
 
 var loginBox = document.getElementById("login");
@@ -323,148 +319,6 @@ userMenu.addEventListener("click", function(e) {
 
 
 
-/***************** FILE LIST **********************************************************************/
-
-$("#fileList").on("contextmenu",function(e){
-	var $target = $(e.target);
-	if(e.ctrlKey || e.altKey) return true;
-	
-	if($target.is("span") || $target.is("li")) {
-		if($target.is("span")) $target = $target.parent();
-		var uri = $target.data("uri");			
-		showFileListRightClickMenu(uri, e);
-		return false;
-	} else {
-		showRootRightClickMenu("", e);
-		return false;
-	}		
-}); 
-
-$("#fileList").on("click", function(e) {
-	hideFileListRightClickMenu();
-});
-	
-$("#fileList").on("click", "li", function(e) {
-	hideFileListRightClickMenu();
-	
-	var uri = $(this).data("uri");
-	var file = files[uri];
-	
-	console.log("Clicked on item", file);		
-	if(uri && e.which == 1) {
-		if(uri === activeFile) {
-			console.log("Already open");
-			e.preventDefault();
-		} else if(file.type==='folder') {
-			toggleFolder(this);
-		} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
-			console.log("Open in new tab");
-			window.open(projectsURL + activeProject.id + "/" + uri);
-		} else {		
-			console.log("Mime type text/* -> open in textarea");
-			openFile(uri);
-		}
-		e.stopPropagation();
-	} else if(e.which==2) {
-		alert("rightclick");
-	}	
-});
-
-$("#fileList").on("dragstart", "li", function(e){
-	console.log("Drag start", this, e);
-	var mime = "css/text"; //$(this).data("mime");
-	var filename = $(this).children(".fileName").html();
-	var filePath = location.origin + "/scripts/load_file.php?project_id=" + activeProject.id + "&uri=" + encodeURI($(this).data("uri"));
-	var fileDetails = mime + ":" + filename + ":" + filePath;
-	var fileDetails = "text/html:index.htm:http://beta.xio.se";
-	console.log("fileDetails", fileDetails, e);
-	e.originalEvent.dataTransfer.setData("DownloadURL", fileDetails);
-	$("#fileList").data("dragItem", $(this));
-	e.stopPropagation();
-});
-		
-$("#fileList").on("mouseover", "li.imagePreview", function(e) {
-	hoverTimer = setTimeout('showImagePreview("' + $(this).data("uri") + '")', 500);
-});
-
-$("#fileList").on("mousemove", "li.imagePreview", function(e) {
-	$("#imagePreview").css({top:e.pageY, left:e.pageX+20});
-});
-
-$("#fileList").on("mouseout", "li.imagePreview", function() {
-	clearTimeout(hoverTimer);
-	$("#imagePreview").hide();
-});
-
-$("#fileListRightClickMenu li").on("click", function() {
-	var uri = $(this).parent().parent().data("uri");
-	var path = (uri)? files[uri].path : "";
-	var filename = (uri)? files[uri].filename : "";
-	switch($(this).data("do")) {
-		
-		case "newFolder":
-			var folderName = prompt("Enter the name of the folder");
-			if(folderName) {
-				if(uri && files[uri].type=='folder') path+=filename + "/";
-				$.get("/scripts/create_folder.php",  {'project_id':activeProject.id, 'uri':encodeURI(path + folderName)}, function() {
-					reloadFileList();
-				});
-			}
-		break;
-		
-		case "newFile":
-			var newFileName = prompt("Enter the filename");
-			if(newFileName) {
-				if(uri && files[uri].type=='folder') path+=filename + "/";
-				$.post("/scripts/save.php",  {'project_id':activeProject.id, 'uri':encodeURI(path + newFileName)}, function() {
-					reloadFileList();
-					openFile(path + newFileName);
-				});
-			}			
-		break;
-		
-		case "refresh":
-			reloadFileList();			
-		break;
-		
-		case "delete":
-      var answer;
-			if(files[uri].type=='folder') { 
-				answer = confirm("Are you sure you want to delete the folder and all its content?\n"+uri+"?");
-				if(answer) {
-					$.get("/scripts/delete_folder.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
-						reloadFileList();
-					});
-				}
-			} else {
-				answer = confirm("Are you sure you want to delete the file: '"+uri+"'?");
-				if(answer) {
-					$.get("/scripts/delete_file.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
-						reloadFileList();
-					});
-				}
-			}
-		break;
-		
-		case "rename":
-			var new_name = prompt("Enter the new name of the file/folder", filename);
-			if(new_name) {
-				$.get("/scripts/rename.php",  {'project_id':activeProject.id, 'from':encodeURI(uri), 'to':encodeURI(path + new_name)}, function() {
-					if(activeFile==uri) activeFile=path+new_name;
-					console.log(uri, "renamed to", path+new_name);
-					reloadFileList();
-				});
-			}
-		break;
-		
-		case "upload":
-			XioPop.alert("upload file...", "not implemented yet ");
-		break;
-		
-	}
-	hideFileListRightClickMenu();
-});
-		
 window.onresize = function(e) {
 	fixLayout();
 };
@@ -498,10 +352,9 @@ function init() {
 function logout() {
 	document.body.classList.remove("authorized");
 	projectsList.innerHTML="";
-	fileList.innerHTML="";
+	FileList.clear();
 	openedList.innerHTML="";
 	projects = [];
-	files = [];
 	var doc = CodeMirror.Doc("");
 	var old = codeMirror.swapDoc(doc);
 	activeProject = null;
@@ -548,8 +401,7 @@ addEventListener("userLogin", function(e) {
 });
 
 function fixLayout() {
-	var height = document.getElementById("xioDoc").offsetHeight - document.getElementById("xioDocTop").offsetHeight;
-	console.log("fixLayout", height);
+	var height = document.getElementById("fileList").offsetHeight;
 	codeMirror.setSize(null, height);
 }
 
@@ -623,9 +475,8 @@ function openProject(id) {
 	$("#pageTitle").html(project.name);
 	fixLayout();
 	
-	files = null;
-	fileList.innerHTML = "";
-	getProjectFiles();
+	FileList.clear();
+	FileList.setProjectId(id);
 	redrawOpenedDocs(id);
 }
 
@@ -638,7 +489,6 @@ function openFile(uri) {
 
 
 function unloadFile() {
-	$("#fileList li").removeClass("selected");
 	openFile("untitled");
 	//getOrCreateDoc(activeProject.id, "untitled")
 	//setActiveFile("untitled");
@@ -673,7 +523,7 @@ function fileCreationCallback(e) {
 	switch(json.status) {
 		case STATUS_OK:		
 		console.log("file saved as ", json.uri);
-		reloadFileList();
+		FileList.loadProjectFiles();
 		openFile(json.uri);
 		break;
 		
@@ -763,7 +613,7 @@ function saveFileAs(newFileName, overwrite) {
 		switch(json.status) {
 			case STATUS_OK:
 			console.log("file saved as ", json.uri);
-			reloadFileList();
+			FileList.loadProjectFiles();
 			openFile(json.uri);
 			if(activeFile==="untitled") {
 				delete xioDocs[activeProject.id][activeFile];
@@ -790,136 +640,13 @@ function saveFileAs(newFileName, overwrite) {
 
 
 
-function getProjectFiles() {
-	var xhr = new XMLHttpRequest();
-	xhr.open("get", "/scripts/build_file_tree.php?project_id="+activeProject.id, true);
-	xhr.onload = function(e) {
-		if(e.target.status===200) {
-		
-      var items;
-			try{
-				items = JSON.parse(e.target.responseText);
-			} catch(err) {
-				console.error("Error parsing json response", err);
-				return false;
-			}
-			
-			files = {};
-			fileList.innerHTML = printFolder(items, "");
-			
-			console.log("File list loaded");
-			
-			for(var i=0; i<openedFolders.length; i++) {
-				var li = fileList.querySelector("li[data-uri='"+openedFolders[i]+"']");
-				if(li) {
-					openFolder(li);				
-				}
-			}
-			
-			
-			if(activeFile) selectInFileList(activeFile);
-		} else {
-			console.error("Error loading file tree", e);
-		}
-	};
-	xhr.send();	
-}
 
 
 
 
 
-function reloadFileList() {
-	
-	getProjectFiles();
-	
-	//reselect opened file
-	selectInFileList(activeFile);
-	
-}
 
 
-function printFolder(arr, path) {
-	var htm = [];
-	htm.push("<ul>");
-	$.each(arr, function(i, item) {
-		var imagePreview="";
-		if(item.type=="jpg" || item.type=="jpeg" || item.type=="gif" || item.type=="png" || item.type=="bmp" || item.type=="tif" || item.type=="tiff") {
-			imagePreview=" imagePreview";
-		}
-		var uri = item.path + item.filename;
-		files[uri] = item;
-		
-		
-		var changed = "";
-		if(xioDocs.hasOwnProperty(activeProject.id) && xioDocs[activeProject.id].hasOwnProperty(uri) && !xioDocs[activeProject.id][uri].isClean()) {
-			changed = " changed ";
-		}
-		
-		var hidden  = (item.filename=='xiocode.properties')? ' hidden' : '';
-		var title = item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
-		htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + uri + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
-		htm.push("<span class='fileIcon "+item.type+"'></span>");
-		htm.push("<span class='fileName'>"+item.filename+"</span>");
-		if(item.leafs) {
-			htm.push(printFolder(item.leafs, item.path));
-		}
-		htm.push("</li>");		
-	});
-	htm.push("</ul>");
-	return htm.join("");
-}
-
-function selectInFileList(uri) {
-	if(uri==="untitled") return;
-	if(!files) {
-		console.log("Can not select", uri, "in fileList. Files not loaded");
-		return;
-	} 
-
-	console.log("Select: '" + uri + "' in fileList");
-	var items = fileList.querySelectorAll("li");
-	for(var i = 0; i<items.length; i++) {
-		items[i].classList.remove("selected");
-	}
-	var li = fileList.querySelector("li[data-uri='"+uri+"']");
-	if(li) {
-		li.classList.add("selected");
-		
-		//Open all parent folders
-		var parent = li.parentElement;
-		while(parent!=fileList) {
-			if(parent.nodeName==="LI") {
-				console.log(parent);
-				openFolder(parent);
-			}		
-			parent = parent.parentElement;
-		}
-	}
-	
-}
-
-function showFileListRightClickMenu(uri, e) {
-	$("#fileListRightClickMenu")
-		.data('uri', uri)
-		.css({left:e.pageX, top:e.pageY})
-		.show()
-		.find("li").show()
-	;
-}
-
-function showRootRightClickMenu(uri, e) {
-	$("#fileListRightClickMenu")
-		.data('uri', uri)
-		.css({left:e.pageX, top:e.pageY})
-		.show()
-		.find("li:not(.rootItem)").hide()
-	;
-}
-
-function hideFileListRightClickMenu() {
-	$("#fileListRightClickMenu").hide();
-}
 
 function setHash(newHash) {
 	if(!newHash) {
@@ -944,12 +671,11 @@ function readHash(hash) {
 	
 		if(!activeProject || (activeProject && project_id!=activeProject.id)) {
 			console.log("Open project", project_id);
-			files=null;
 			openProject(project_id);
 		}
 		if(uri) {
 			getOrCreateDoc(project_id, uri);
-			selectInFileList(uri);
+			FileList.setActiveFile(uri);
 		} else {
 			unloadFile();
 		}
@@ -1019,149 +745,9 @@ function numberOfUnsavedFiles() {
 
 
 
-function toggleFolder(li) {
-	var folderIcon = li.querySelector("span.fileIcon");
-	if(folderIcon.classList.contains("open")) {
-		closeFolder(li);
-	} else {
-		openFolder(li);
-	}
-}
-function openFolder(li) {
-	console.log("Open folder", li);
-	var uri = li.dataset.uri;
-	var index = openedFolders.indexOf(uri);
-	if (index === -1) {
-		openedFolders.push(uri);
-	}
-	
-	var folderIcon = li.querySelector("span.fileIcon");
-	var folderList = li.querySelector("ul");
-	folderIcon.classList.add("open");
-	folderList.style.display="block";
-}
-function closeFolder(li) {
-	console.log("Close folder", li);
-	var uri = li.dataset.uri;
-	var index = openedFolders.indexOf(uri);
-	if (index > -1) {
-		openedFolders.splice(index, 1);
-	}
-	
-	var folderIcon = li.querySelector("span.fileIcon");
-	var folderList = li.querySelector("ul");
-	folderIcon.classList.remove("open");
-	folderList.style.display="none";
-}
 
 
 
-
-
-function uploadFiles(files, folder, overwrite) {
-	console.log("start upload:", files, "to", folder);
-
-	var uploadData = new FormData();			
-	uploadData.append('path', folder);
-	uploadData.append('project_id', activeProject.id);
-	var fileUploadCount = 0;
-  var xhr;
-	
-	for (var i=0; i<files.length; ++i) {
-    var file = files[i];
-		var checkData = new FormData();
-		checkData.append('file', folder + file.name);
-		checkData.append('project_id', activeProject.id);
-		xhr = new XMLHttpRequest();
-		xhr.open('POST', "/scripts/check_collision.php", false);
-		xhr.send(checkData);		
-		if(xhr.status === 409) {
-			if(!confirm(xhr.responseText + ", Do you want to overwrite the file?")) {
-				continue;
-			}
-		} else if(xhr.status !== 202) {
-			continue;
-		}
-		uploadData.append(file.name, file);
-		fileUploadCount++;
-	}
-	
-	if(fileUploadCount>0) {	
-		xhr = new XMLHttpRequest();
-		xhr.open('POST', "/scripts/file_upload.php", true);
-		xhr.onload = function(e) {		
-			if(xhr.status == 200) {
-				reloadFileList();					
-			} else {
-				console.log("Error uploading file:");
-				console.log(files);
-			}		
-		};
-		
-		xhr.upload.onprogress = function(e) {
-			/*
-			console.log(e);
-			if (e.lengthComputable) {
-        progressBar.value = (e.loaded / e.total) * 100;
-				progressBar.textContent = progressBar.value; // Fallback for unsupported browsers.
-			}
-			*/
-		};				
-		xhr.send(uploadData);
-	}
-}
-
-
-
-
-function dropFile(e) {
-	hoverFile(e);
-	console.log(e);
-	
-	var folder="";
-  var $newParent;
-	if($(e.target).closest("li[data-type=folder]").length) {
-		folder = $(e.target).closest("li[data-type=folder]").data("uri") + "/";
-		$newParent = $(e.target).closest("li[data-type=folder]").children("ul");
-	} else {
-		folder="";
-		$newParent = $("#fileList");
-	}
-	
-	console.log("drop to folder /" + folder);	
-	
-	var $dragItem = $("#fileList").data("dragItem");
-	if($dragItem) {
-		if($newParent[0]===$dragItem.parent()[0]) {
-			console.log("drop to same place, abort");
-			return;
-		}
-		$.get("/scripts/move_file.php",  {'project_id':activeProject.id, 'uri':encodeURI($dragItem.data('uri')), 'toFolder':encodeURI(folder)}, function() {
-			reloadFileList();
-			return;
-		});
-	} 
-	
-	var files = e.target.files || e.dataTransfer.files;
-	if(files.length > 0) {
-		uploadFiles(files, folder, false);
-	}
-	
-}
-
-function hoverFile(e) {
-	e.stopPropagation();
-	e.preventDefault();
-	
-	var $target = $(e.target).closest("li[data-type=folder]");
-	if(!$target.length) $target = $("#fileList");
-	
-	if(e.type == "dragover") {
-		$target.addClass("dropTo");
-	} else {
-		$target.removeClass("dropTo");
-	}
-}
 
 
 
@@ -1171,16 +757,28 @@ function findFunctions() {
 	var text = codeMirror.getValue();
 	
 	var doc = codeMirror.getDoc();
-	
-	
-	var re = new RegExp("function\\s+([A-Z0-9_]+)\\s*\\(([^\\)]*)\\)", "gmi");
-	
-	var hit = re.exec(text);
 	var functions = [];
-	while(hit) {
+	
+	
+	var hit;
+	
+	// Find functions in the format:   function pelle(arg1, arg2) {
+	var re = new RegExp("function\\s+([A-Z0-9_]+)\\s*\\(([^\\)]*)\\)", "gmi");
+	while(hit = re.exec(text)) {
 		var pos = doc.posFromIndex(hit.index);
 		var argus = hit[2].replace(" ","").split(",");
 		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
+	}
+	
+	// Find functions in the format:   pelle = function(arg1, arg2) {
+	re = new RegExp("([A-Z0-9_]+)\\s*=\\s*function\\s*\\(([^\\)]*)\\)", "gmi");
+	while(hit = re.exec(text)) {
+		console.log("func 2", hit);
+		
+		var pos = doc.posFromIndex(hit.index);
+		var argus = hit[2].replace(" ","").split(",");
+		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
+		
 	}
 	
 	function compare(a,b) {
@@ -1221,6 +819,16 @@ jQuery.fn.fadeOutAndRemove = function(speed){
     });
 };
 
+
+function toQueryString(obj) {
+    var parts = [];
+    for (var i in obj) {
+        if (obj.hasOwnProperty(i)) {
+            parts.push(encodeURIComponent(i) + "=" + encodeURIComponent(obj[i]));
+        }
+    }
+    return parts.join("&");
+}
 
 
 
