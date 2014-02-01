@@ -352,15 +352,11 @@ function createNewFile() {
 				createNewFile();
 			});
 		} else {
-			var xhr = new XMLHttpRequest();
-			xhr.open("post", "/scripts/file_handler.php?do=new&project_id="+activeProject.id+"&uri="+escape(newFileName), true);
-			xhr.onload = fileCreationCallback;
-			xhr.send();
+			Ajax.getJSON("/scripts/file_handler.php", {do:"new", project_id:activeProject.id, uri:escape(newFileName)}, fileCreationCallback);
 		}
 	});	
 }
-function fileCreationCallback(e) {
-	var json = validateCallback(e);
+function fileCreationCallback(json) {
 	if(!json) return false;
 	
 	switch(json.status) {
@@ -373,23 +369,15 @@ function fileCreationCallback(e) {
 		case STATUS_FILE_COLLISION:
 		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
 			if(answer) {
-				var xhr = new XMLHttpRequest();
-				xhr.open("post", "/scripts/file_handler.php?do=new&project_id="+activeProject.id+"&overwrite=true&uri="+escape(json.uri), true);
-				xhr.onload = fileCreationCallback;
-				xhr.send();
+				Ajax.getJSON("/scripts/file_handler.php", {do:"new", project_id:activeProject.id, uri:escape(newFileName), overwrite:true}, fileCreationCallback);
 			}
 		});
 		break;
 		
 		default:
 		console.warn("handle callback", json);
-	}
-	
-	
+	}	
 }
-
-
-
 
 
 function saveFile() {

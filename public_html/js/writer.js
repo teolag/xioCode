@@ -19,7 +19,7 @@ function initWriter() {
 		smartIndent: false,
 		styleActiveLine: true,
         indentUnit: 4,
-		theme: 'default',
+		theme: 'arne',
 		//theme: 'ambiance',
         indentWithTabs: true,
 		//cursorScrollMargin: 75,

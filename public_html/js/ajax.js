@@ -38,7 +38,7 @@ var Ajax = (function() {
 	post = function(url, parameters, successCallback, errorCallback) {
 		var sendData;
 		if(parameters && Object.keys(parameters).length>0) {
-			sendData = toQueryString(parameters);
+			sendData = obj2querystring(parameters);
 		}
 		
 		xhr = new XMLHttpRequest();
