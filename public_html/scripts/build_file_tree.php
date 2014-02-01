@@ -49,27 +49,28 @@ function folderComperator($a, $b) {
 	
 	if($aFolder && !$bFolder){ 
 		$return=-1;
-		//echo "$aName kommer f�re $bName eftersom det �r en mapp\n"; 
+		//echo "$aName before $bName because it is a folder\n"; 
 	}
 	elseif($bFolder && !$aFolder) { 
 		$return=1;
-		//echo "$bName kommer f�re $aName eftersom det �r en mapp\n"; 
+		//echo "$bName before $aName because it is a folder\n"; 
 	}	
 	else {
 		$return=strnatcasecmp($aName,$bName);
-		//if($return>0) echo "$bName kommer f�re $aName\n"; 
-		//elseif($return<0) echo "$aName kommer f�re $bName\n";
-		//else echo "$aName �r lika som $bName\n";
+		//if($return>0) echo "$bName before $aName\n"; 
+		//elseif($return<0) echo "$aName before $bName\n";
+		//else echo "$aName is the same as $bName\n";
 	}
 	return $return;
 }
 
-
+if(empty($_GET['project_id'])) die("project_id must be set");
 $path = PROJECT_PATH . $_GET['project_id'] . "/";
 if(is_dir($path)) {
-$tree = lookInFolder($path);
-//echo "<pre>".print_r($tree,1)."</pre>";
-echo json_encode($tree);
+	$tree = lookInFolder($path);
+	//echo "<pre>".print_r($tree,1)."</pre>";
+	header('Content-Type: application/json');
+	echo json_encode($tree);
 } else {
 	die("Can not find project path: " . $path);
 }

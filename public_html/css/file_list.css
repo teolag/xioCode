@@ -41,6 +41,10 @@
 	text-decoration:underline;
 }
 
+#fileList .spinner {
+	margin: 1px 0 0 5px;
+}
+
 #fileList span.fileIcon {
 	width:16px;
 	height:16px;

@@ -57,14 +57,14 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<div id="projectArea" class="hidden">
 	
 			<div id="leftColumn">
-				<ul id="toolbar" class="toolbar">						
-					<li><span id="btnNew" title="Create new file" class="icon-small el-icon-file-new"></span></li>
-					<li><span id="btnSave" title="Save file" class="icon-small el-icon-inbox"></span></li>
-					<li><span id="btnPreviewFile" title="Preview active file" class="icon-small el-icon-eye-open"></span></li>
-					<li><span id="btnPreviewProject" title="Preview project" class="icon-small el-icon-screen"></span></li>
-					<li><span id="btnExportZip" title="Export project to zip" class="icon-small el-icon-download"></span></li>
-					<li><span id="btnProjectConfig" title="Project configurations" class="icon-small el-icon-cog"></span></li>
-				</ul>
+				<div id="toolbar" class="toolbar">						
+					<span id="btnNew" title="Create new file" class="icon-small el-icon-file-new"></span
+					><span id="btnSave" title="Save file" class="icon-small el-icon-inbox"></span
+					><span id="btnPreviewFile" title="Preview active file" class="icon-small el-icon-eye-open"></span
+					><span id="btnPreviewProject" title="Preview project" class="icon-small el-icon-screen"></span
+					><span id="btnExportZip" title="Export project to zip" class="icon-small el-icon-download"></span
+					><span id="btnProjectConfig" title="Project configurations" class="icon-small el-icon-cog"></span>
+				</div>
 				<div id="fileList"></div>
 			</div>
 			
@@ -113,8 +113,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			</ul>
 		</div>		
 				
-		<script src="/js/jquery-2.0.3.min.js"></script>
-		
 		<script src="<?php echo CODEMIRRORPATH; ?>lib/codemirror.js"></script>
 		<script src="<?php echo CODEMIRRORPATH; ?>mode/xml/xml.js"></script>
 		<script src="<?php echo CODEMIRRORPATH; ?>mode/javascript/javascript.js"></script>
@@ -142,7 +140,9 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			
 			?>
 		</script>
+		<script src="/js/ajax.js"></script>
 		<script src="/js/xioDocs.js"></script>
+		<script src="/js/project_list.js"></script>
 		<script src="/js/file_list.js"></script>
 		<script src="/js/writer.js"></script>
 		<script src="/js/main.js"></script>

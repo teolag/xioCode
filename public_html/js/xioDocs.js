@@ -71,7 +71,7 @@ function closeDoc(projectId, uri) {
 	redrawOpenedDocs(projectId);
 	for(var oUri in oFiles);
 	console.log("oUri",oUri);
-	if(oUri && activeFile===oUri) {
+	if(oUri && activeFile!==oUri) {
 		openFile(oUri);
 	} else if(oUri===undefined) {
 		console.log("Open empty");
@@ -120,8 +120,8 @@ function docLoaded(projectId, uri, data) {
 	var old = codeMirror.swapDoc(doc);
 	if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
 	xioDocs[projectId][uri] = doc;
-	setActiveFile(projectId, uri);
 	codeMirror.focus();
+	setActiveFile(projectId, uri);
 	redrawOpenedDocs(projectId);
 }
 
@@ -129,12 +129,7 @@ function docLoaded(projectId, uri, data) {
 function setActiveFile(projectId, uri) {
 	var doc = xioDocs[projectId][uri];
 	activeFile = uri;
-	console.log("Is file clean?", doc.isClean());
-	if(doc.isClean()) {
-		document.getElementById("btnSave").classList.add("disabled");
-	} else {
-		document.getElementById("btnSave").classList.remove("disabled");
-	}
+	updateCleanStatus(uri);
 }
 
 

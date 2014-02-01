@@ -2,11 +2,15 @@
 require "../../includes/init.php";
 Gatekeeper::checkAccess();
 
+if(empty($_REQUEST['project_id'])) {
+	die("project_id must be defined");
+}
+
+$configFile = PROJECT_PATH . $_REQUEST['project_id'] . "/" . PROJECT_CONFIG_FILE;
 if(isset($_GET['do']) && $_GET['do']=="save") {
 	echo "sparar";
 	print_r($_POST);
 	
-	$configFile = PROJECT_PATH . $_POST['project_id'] . "/" . PROJECT_CONFIG_FILE;
 	if(!file_put_contents($configFile, json_encode($_POST['config']))) {
 		http_response_code(400);
 		die("Could not write to config file: ". $configFile);
@@ -15,16 +19,6 @@ if(isset($_GET['do']) && $_GET['do']=="save") {
 }
 
 
-
-
-
-
-if(empty($_GET['project_id'])) {
-	die("project_id must be defined");
-}
-
-
-$configFile = PROJECT_PATH . $_GET['project_id'] . "/" . PROJECT_CONFIG_FILE;
 $config = json_decode(file_get_contents($configFile), 1);
 
 function getValue(&$config, $key) {
@@ -34,17 +28,12 @@ function getValue(&$config, $key) {
 	return "";
 }
 
-
 ?>
-
-
-
-
 
 
 <form id="frmProjectConfig">
 	<h2>Project Config</h2>
-	<input type="hidden" name="project_id" value="<?php echo $_GET['project_id']; ?>" />
+	<input type="hidden" name="project_id" value="<?php echo $_REQUEST['project_id']; ?>" />
 
 	<ul>
 		<li>

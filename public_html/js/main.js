@@ -1,27 +1,21 @@
 "use strict";
 
-var codeMirror;
+
 var fileListWidth = 220;
 
 var DEBUG_MODE_ON=true;
 var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
-
 var KEY_ENTER = 13;
-
-var projects = [];
-//var files;
 
 var activeProject;
 var activeFile;
 var checkAccessInterval;
 var pageTitle;
+var title = document.getElementById("pageTitle");
 var hoverTimer;
 var fileToBeLoaded;
-var localStore = window.localStorage;
-var openedFolders = [];
 
-
-var oldHash=window.location.hash;
+var oldHash;//window.location.hash;
 
 
 
@@ -30,85 +24,10 @@ if (!DEBUG_MODE_ON) {
     console.log = function(){};
 }
 
-var projectsFilter = document.getElementById('projectsFilter');
-projectsFilter.addEventListener("search", filterProjects);
-projectsFilter.addEventListener("keyup", filterProjects);
-
-var projectsList = document.getElementById('projectsList');
-projectsList.addEventListener("click", function(e) {
-	var target = e.target;
-	var doo;
-	
-	if(target.nodeName==="A") {
-		doo = target.dataset.do;
-		console.log("Do", doo);
-		e.preventDefault();
-	}
-	
-	var li = target;		
-	while(li.nodeName!=="LI") {
-		if(li==projectsList) return;
-		li = li.parentElement;
-	}
-	var projectId = li.dataset.project_id;
-	
-	switch(doo) {
-	
-		case "delete":
-		var project = projects[projectId];
-		XioPop.confirm("Delete project?", "Are you sure you want to delete project '"+project.name+"'?", function(answer) {
-			if(answer) {
-				var formData = new FormData();
-				formData.append("project_id", projectId);
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', "/scripts/delete_project.php", true);
-				xhr.onload = function(e) {
-					var xhr = e.target;
-					if(xhr.status===200) {
-						console.log("Project deleted");
-						findProjects();
-					} else {
-						console.err("Error deleting project", xhr);
-					}
-				};
-				xhr.send(formData);
-			}
-		});
-		break;
-		
-		case "rename":
-		XioPop.prompt("Rename project", "Enter a new name for the project", projects[projectId].name, function(newName) {		
-			if(newName) {
-				var formData = new FormData();
-				formData.append("new_name", newName);
-				formData.append("project_id", projectId);
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', "/scripts/rename_project.php", true);
-				xhr.onload = function(e) {
-					var xhr = e.target;
-					if(xhr.status===200) {
-						console.log("Project renamed");
-						findProjects();
-					} else {
-						console.err("Error renaming project", xhr);
-					}
-				};
-				xhr.send(formData);				
-			}
-		});
-		break;
-	
-		
-		default:
-		setHash(projectId+"/untitled");
-	
-	}
-	
-	
-});
 
 
 
+var username = document.getElementById("username");
 
 var loginBox = document.getElementById("login");
 var loginForm = document.getElementById("loginForm");
@@ -161,25 +80,6 @@ function loginCallback(e) {
 document.querySelector("#header h1").addEventListener("click", function() {
 	setHash();
 }, false);
-
-
-var btnNewProject = document.getElementById("btnNewProject");
-btnNewProject.addEventListener("click", function() {
-	XioPop.prompt("Enter the projects name", "", "", function(projectName) {
-		if(projectName) {
-			var xhr = new XMLHttpRequest();
-			xhr.open("get", "/scripts/new_project.php?projectName="+projectName, true);
-
-			xhr.onload = function(e) {
-				if(e.target.status===200) {
-					findProjects();
-				}
-			};
-			xhr.send();
-		}
-	});
-}, false);
-
 
 
 
@@ -235,20 +135,16 @@ function toolbarHandler(e) {
 			var frmProjectConfig = document.getElementById("frmProjectConfig");
 			frmProjectConfig.addEventListener("submit", function(e) {
 				e.preventDefault();
-				console.log("Save project configurations");
-				var formData = new FormData(frmProjectConfig);
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', "/scripts/project_config.php?do=save", false);
-				xhr.onload = function(e) {
-					var xhr = e.target;
-					if(xhr.status===200) {
-						console.log("Sparat");
+				console.log("Save project configurations...");
+				Ajax.postForm("/scripts/project_config.php?do=save", frmProjectConfig, 
+					function(xhr) {
+						console.log("Project configurations saved!");
 						XioPop.close();
-					} else {
-						console.err("Error saving config", xhr);
+						ProjectList.loadProjects();
+					}, function(e) {
+						console.err("Error saving config", e);
 					}
-				};
-				xhr.send(formData);
+				);
 			}, false);
 
 			var btnConfigCancel = document.getElementById("btnConfigCancel");
@@ -323,10 +219,7 @@ window.onresize = function(e) {
 	fixLayout();
 };
 
-window.onhashchange = function(e) {
-	var newHash = window.location.hash;
-	if(oldHash!=newHash) readHash(newHash);
-};
+window.onhashchange = readHash;
 
 window.onbeforeunload = function (evt) {
 	var n = numberOfUnsavedFiles();
@@ -344,17 +237,15 @@ function init() {
 	if(_USER && _USER.username) {
 		var userLogin = new CustomEvent("userLogin");
 		window.dispatchEvent(userLogin);
-	}
-	
+	}	
 }
 
 
 function logout() {
 	document.body.classList.remove("authorized");
-	projectsList.innerHTML="";
+	ProjectList.clear();
 	FileList.clear();
 	openedList.innerHTML="";
-	projects = [];
 	var doc = CodeMirror.Doc("");
 	var old = codeMirror.swapDoc(doc);
 	activeProject = null;
@@ -389,15 +280,13 @@ addEventListener("userLogin", function(e) {
 	console.log(_USER);
 	
 	document.body.classList.add("authorized");
-	
-	
-	$("#username").html(_USER.username);
+	username.textContent = _USER.username;
 	
 	//Access check every minute
 	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 	
 	initWriter();
-	findProjects();
+	ProjectList.loadProjects();
 });
 
 function fixLayout() {
@@ -405,63 +294,19 @@ function fixLayout() {
 	codeMirror.setSize(null, height);
 }
 
-function showImagePreview(uri) {
-	var imgsrc = activeProject.id + "/" + uri;
-	var item = files[uri];
-	
-	console.log("showImagePreview");
-	$("#imagePreview").show();
-	document.getElementById("imagePreviewImage").style.backgroundImage = "url('/scripts/image.php?src="+imgsrc+"&max_width=140&max_height=140')";
-	$("#imagePreviewInfo").html(
-		"<strong>" + item.filename + "</strong><br /><br />" +
-		"Width: <strong>" + item.width + "</strong> px<br />" +
-		"Height: <strong>" + item.height + "</strong> px<br />"
-	);
-}
 
 
-function findProjects() {
-	var url = "/scripts/get_all_projects.php";
-	var xhr = new XMLHttpRequest();
-	xhr.responseType='json';
-	xhr.open("get", "/scripts/get_all_projects.php", true);
-	xhr.onreadystatechange = function(e) {
-		//console.log("readystate change", e.target.readyState, e.target);
-	};
-	xhr.onload = function(e) {
-		if(e.target.status===200) {
-			projects=e.target.response;
-			var projectsHTML=[];
-			for(var id in projects) {
-				if (projects.hasOwnProperty(id)) {
-					var item = projects[id];
-					projectsHTML.push("<li data-project_id='"+id+"'>");
-					projectsHTML.push("<h3>"+item.name+"</h3>");
-					projectsHTML.push("<div style='display: block;'>");
-					if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
-					projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
-					projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
-					projectsHTML.push("</div>");
-					projectsHTML.push("</li>");
-				}
-			}
-			console.log("%i projects found", Object.keys(projects).length, e.target.response);
-			projectsList.innerHTML = projectsHTML.join("");
-			filterProjects();
-			readHash(window.location.hash);
-		}
-	};
-	xhr.send();
-}
+
+
 
 function openProject(id) {
-	if(!projects || projects.length===0) { 
+	if(!ProjectList.isLoaded()) { 
 		console.log("No projects loaded yet");
 		return false;
 	}
 
-	var project = projects[id];
-	if(project===undefined) {
+	var project = ProjectList.getProject(id);
+	if(!project) {
 		console.log("project id not found, return to base...");
 		setHash();
 		return;
@@ -469,10 +314,10 @@ function openProject(id) {
 	activeProject = project;
 	activeProject.id = id;
 	document.title = pageTitle + " - " + project.name;
+	title.textContent = project.name;
 
 	document.getElementById("projectChooser").classList.add("hidden");
 	document.getElementById("projectArea").classList.remove("hidden");
-	$("#pageTitle").html(project.name);
 	fixLayout();
 	
 	FileList.clear();
@@ -480,12 +325,11 @@ function openProject(id) {
 	redrawOpenedDocs(id);
 }
 
+
 function openFile(uri) {
 	if(!uri) uri="";
 	setHash(activeProject.id + "/" + uri);
 }
-
-
 
 
 function unloadFile() {
@@ -495,7 +339,6 @@ function unloadFile() {
 	codeMirror.focus();
 	
 }
-
 
 
 function createNewFile() {
@@ -548,23 +391,6 @@ function fileCreationCallback(e) {
 
 
 
-function validateCallback(e) {
-	if(e.target.status===200) {
-		try {
-			var json = JSON.parse(e.target.responseText);
-			return json;
-		}
-		catch(err) {
-			console.error("Ajax callback not valid json", e.target.responseText, err);
-			return false;
-		}		
-	} else {
-		console.error("Error during ajax call", e);
-		return false;
-	}
-}
-
-
 
 function saveFile() {
 	codeMirror.save();
@@ -576,9 +402,7 @@ function saveFile() {
 
 	console.log("Save file '"+ activeFile+"'...");
 	
-	var $menuItem = $("li[data-uri='"+activeFile+"']");
-	$menuItem.append("<img src='/images/ajax-loader.gif' class='file_spinner' />");
-	
+	FileList.showSpinner(activeFile);
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", "/scripts/save.php", true);	
@@ -589,7 +413,7 @@ function saveFile() {
 		} else {
 			console.error("Error saving file", e);
 		}
-		$menuItem.children("img").fadeOutAndRemove();
+		FileList.hideSpinner(activeFile);
 	};		
 	xhr.send(formData);
 }
@@ -659,7 +483,10 @@ function setHash(newHash) {
 	}
 }
 
-function readHash(hash) {
+function readHash() {
+	var hash = window.location.hash;
+	if(oldHash===hash) return;
+	
 	console.log("Read hash", hash);
 	var match = hash.match(/^#([^\/]*)\/?(.*)$/);
 	if(match) {
@@ -674,69 +501,62 @@ function readHash(hash) {
 			openProject(project_id);
 		}
 		if(uri) {
-			getOrCreateDoc(project_id, uri);
-			FileList.setActiveFile(uri);
+			if(uri!==activeFile) {
+				getOrCreateDoc(project_id, uri);
+				FileList.setActiveFile(uri);
+			}
 		} else {
 			unloadFile();
 		}
 		
 	} else {
-		console.log("   Show projects page");
+		console.log("  Show projects page");
 		chooseProject();
 	}	
 	oldHash=hash;
 }
 
-
-function filterProjects(e) {
-	var searchString = projectsFilter.value.toLowerCase();
-	if(e && e.which == KEY_ENTER && searchString) {
-		var firstItem = document.querySelector("#projectsList li:not(.hidden)");
-		setHash(firstItem.getAttribute('data-project_id')+"/untitled");
-		return false;
-	} else {
-		console.log("filter projects '"+searchString+"'", projectsFilter, projects);
-		
-		for(var id in projects) {
-      if (projects.hasOwnProperty(id)) {
-        var project = projects[id];
-        
-        var li = document.querySelector("#projectsList li[data-project_id='"+id+"']");
-        if(project.name.toLowerCase().search(searchString)!=-1) {
-          li.classList.remove('hidden');
-        } else {
-          li.classList.add('hidden');
-        }
-      }
-		}
-	}
-}	
-
 function chooseProject() {
 	document.getElementById("projectChooser").classList.remove("hidden");
 	document.getElementById("projectArea").classList.add("hidden");
-	
-	$("#pageTitle").html("My projects");
+
+	title.textContent = "My projects";
 	activeProject = null;
 	document.tite = pageTitle;
 	projectsFilter.focus();
 }
 
 
+
+
+
 function setFileToClean(uri) {
 	console.log(uri, "is now clean");
-	document.getElementById("btnSave").classList.add("disabled");
 	var doc = xioDocs[activeProject.id][uri];
-	doc.markClean();
-	$("#fileList li.selected").removeClass("changed");
-	$("#openedList li.selected").removeClass("changed");
+	doc.markClean();	
+	updateCleanStatus(uri);
+}
+
+function updateCleanStatus(uri) {
+	var tab = openedList.querySelector("li[data-uri='"+uri+"']");
+	if(xioDocs[activeProject.id][uri].isClean()) {
+		document.getElementById("btnSave").classList.add("disabled");
+		FileList.setFileAsClean(uri);
+		if(tab) tab.classList.remove("changed");
+	} else {
+		document.getElementById("btnSave").classList.remove("disabled");
+		FileList.setFileAsDirty(uri);
+		if(tab) tab.classList.add("changed");
+	}
 }
 
 function numberOfUnsavedFiles() {
 	var counter = 0;
-	for(var uri in xioDocs[activeProject.id]) {
-		if(!xioDocs[activeProject.id][uri].isClean()) {
-			counter++;
+	if(activeProject) {
+		for(var uri in xioDocs[activeProject.id]) {
+			if(!xioDocs[activeProject.id][uri].isClean()) {
+				counter++;
+			}
 		}
 	}
 	return counter;
@@ -812,23 +632,6 @@ var clone = (function(){
   return function (obj) { Clone.prototype=obj; return new Clone(); };
   function Clone(){}
 }());
-
-jQuery.fn.fadeOutAndRemove = function(speed){
-    $(this).fadeOut(speed,function(){
-        $(this).remove();
-    });
-};
-
-
-function toQueryString(obj) {
-    var parts = [];
-    for (var i in obj) {
-        if (obj.hasOwnProperty(i)) {
-            parts.push(encodeURIComponent(i) + "=" + encodeURIComponent(obj[i]));
-        }
-    }
-    return parts.join("&");
-}
 
 
 

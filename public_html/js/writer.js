@@ -1,5 +1,5 @@
 
-
+var codeMirror;
 var snippets = {
 	"html":		"<!doctype html>\n<html>\n\t<head>\n\t\t<title>Page Title</title>\n\t\t<meta charset=\"utf-8\" />\n\t\t<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n\t</head>\n\t<body>\n\t\t\n\t</body>\n</html>",
 	"css":		"<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />",
@@ -61,17 +61,19 @@ function initWriter() {
 		cm.focus();
 		
 	});
-	codeMirror.on("drop", function(cm, a) {
-		console.log("Drop on cm", a.dataTransfer.getData("uri"));
-		cm.replaceSelection(a.dataTransfer.getData("uri"));		
+	codeMirror.on("drop", function(cm, e) {
+		var uri = e.dataTransfer.getData("uri");
+		if(uri) {
+			console.log("Drop on cm", e.dataTransfer.getData("uri"));
+			cm.replaceSelection(e.dataTransfer.getData("uri"));
+			e.preventDefault();
+		}
 	});
 	
 	codeMirror.on("change", function(cm, change) {
 		if(activeFile) {
-			console.log("CodeMirror Change", cm, change);
-			document.getElementById("btnSave").classList.remove("disabled");
-			$("#fileList li.selected").addClass("changed");
-			$("#openedList li.selected").addClass("changed");
+			//console.log("CodeMirror Change", cm, change);
+			updateCleanStatus(activeFile);
 		}
 	});	
 	

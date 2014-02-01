@@ -3,9 +3,11 @@ var FileList = (function() {
 	var projectId, activeFile;
 	var files;
 	var fileList, rightClickMenu;
+	var openedFolders = [];
 
 	var init = function() {
 		rightClickMenu = document.getElementById("fileListRightClickMenu");
+		rightClickMenu.addEventListener("click", rightClickClickHandler, false);
 		fileList = document.getElementById("fileList");
 		fileList.addEventListener("drop", dropFile, false);
 		fileList.addEventListener("dragover", hoverFile, false);
@@ -36,19 +38,8 @@ var FileList = (function() {
 	
 
 	var loadProjectFiles = function() {
-		var xhr = new XMLHttpRequest();
-		xhr.open("get", "/scripts/build_file_tree.php?project_id="+projectId, true);
-		xhr.onload = function(e) {
-			if(e.target.status===200) {
-
-		  		var items;
-				try{
-					items = JSON.parse(e.target.responseText);
-				} catch(err) {
-					console.error("Error parsing json response", err);
-					return false;
-				}
-
+		Ajax.getJSON("/scripts/build_file_tree.php", {project_id: projectId},
+			function(items) {
 				files = {};
 				fileList.innerHTML = printFolder(items, "");
 
@@ -61,19 +52,18 @@ var FileList = (function() {
 					}
 				}
 
-
 				if(activeFile) selectActiveFile();
-			} else {
+			}, function(e) {
 				console.error("Error loading file tree", e);
 			}
-		};
-		xhr.send();	
+		);
 	};
 	
 	var printFolder = function(arr, path) {
 		var htm = [];
 		htm.push("<ul>");
-		$.each(arr, function(i, item) {
+		for(var i=0; i<arr.length; i++) {
+			var item = arr[i];
 			var imagePreview="";
 			if(item.type=="jpg" || item.type=="jpeg" || item.type=="gif" || item.type=="png" || item.type=="bmp" || item.type=="tif" || item.type=="tiff") {
 				imagePreview=" imagePreview";
@@ -96,7 +86,7 @@ var FileList = (function() {
 				htm.push(printFolder(item.leafs, item.path));
 			}
 			htm.push("</li>");		
-		});
+		}
 		htm.push("</ul>");
 		return htm.join("");
 	}
@@ -216,6 +206,34 @@ var FileList = (function() {
 	}
 	
 	
+	var showSpinner = function(uri) {
+		var li = fileList.querySelector("li[data-uri='"+uri+"']");		
+		if(li) {
+			var img = document.createElement("img");
+			img.src = "/images/ajax-loader.gif";
+			img.classList.add("spinner");
+			li.appendChild(img);
+		}
+	};
+	var hideSpinner = function(uri) {
+		var spinner = fileList.querySelector("li[data-uri='"+uri+"'] img");
+		if(spinner) spinner.parentElement.removeChild(spinner);
+	};
+	
+	
+	
+	var setFileAsClean = function(uri) {
+		var li = fileList.querySelector("li[data-uri='"+uri+"']");		
+		if(li) li.classList.remove("changed");
+	};
+	var setFileAsDirty = function(uri) {
+		var li = fileList.querySelector("li[data-uri='"+uri+"']");		
+		if(li) li.classList.add("changed");
+	};
+	
+	
+	
+	
 	function uploadFiles(filesToUpload, folder, overwrite) {
 		console.log("start upload:", filesToUpload, "to", folder);
 
@@ -284,7 +302,7 @@ var FileList = (function() {
 		var uri = target.dataset.uri;
 		var file = files[uri];
 		
-		var mime = "css/text"; //$(this).data("mime");
+		var mime = "css/text"; //target.dataset.mime;
 		var filePath = location.origin + "/scripts/load_file.php?project_id=" + projectId + "&uri=" + encodeURI(uri);
 		var fileDetails = mime + ":" + file.filename + ":" + filePath;
 		console.log("fileDetails", fileDetails, e);
@@ -297,14 +315,6 @@ var FileList = (function() {
 		hoverFile(e);
 		console.log("drop in fileList", e);
 		
-		// Upload files
-		var filesToUpload = e.target.files || e.dataTransfer.files;
-		if(filesToUpload.length > 0) {
-			uploadFiles(filesToUpload, folder, false);
-			return;
-		}
-		
-		// Move files
 		var target = e.target;
 		while(target!==fileList) {
 			if(target.nodeName === "LI" && target.dataset.type === "folder") break;
@@ -319,22 +329,25 @@ var FileList = (function() {
 		
 		var fileDragged = e.dataTransfer.getData("uri");
 		
-		
-		if(folder+files[fileDragged].filename === fileDragged) {
-			console.log("drop to same place, abort");
+		if(fileDragged) {
+			// Move files
+			if(folder+files[fileDragged].filename === fileDragged) {
+				console.log("drop to same place, abort");
+			} else {
+				Ajax.get("/scripts/move_file.php", {'project_id': projectId, 'uri': encodeURI(fileDragged), 'toFolder': encodeURI(folder)+"/"},
+					function(e) {
+						FileList.loadProjectFiles();
+					}
+				);
+			}
 		} else {
-			var xhr = new XMLHttpRequest();
-			var params = {
-				'project_id': projectId,
-				'uri': encodeURI(fileDragged),
-				'toFolder': encodeURI(folder)+"/"	
-			};
-
-			xhr.open("get", "/scripts/move_file.php?"+toQueryString(params), true);
-			xhr.onload = function(e) {
-				FileList.loadProjectFiles();
-			};
-			xhr.send();
+			// Upload files
+			var filesToUpload = e.target.files || e.dataTransfer.files;
+			console.log("upload files:", filesToUpload);
+			if(filesToUpload.length > 0) {
+				uploadFiles(filesToUpload, folder, false);
+				return;
+			}
 		}
 		
 	};
@@ -372,17 +385,19 @@ var FileList = (function() {
 	*/
 	
 	
-	$("#fileListRightClickMenu li").on("click", function() {
-		var uri = $(this).parent().parent().data("uri");
+	
+	var rightClickClickHandler = function(e) {
+		var target=e.target;
+		var uri = rightClickMenu.dataset.uri;
 		var path = (uri)? files[uri].path : "";
 		var filename = (uri)? files[uri].filename : "";
-		switch($(this).data("do")) {
+		switch(target.dataset.do) {
 
 			case "newFolder":
 				var folderName = prompt("Enter the name of the folder");
 				if(folderName) {
 					if(uri && files[uri].type=='folder') path+=filename + "/";
-					$.get("/scripts/create_folder.php",  {'project_id':activeProject.id, 'uri':encodeURI(path + folderName)}, function() {
+					Ajax.get("/scripts/create_folder.php", {'project_id':projectId, 'uri':encodeURI(path + folderName)}, function() {
 						FileList.loadProjectFiles();
 					});
 				}
@@ -392,7 +407,7 @@ var FileList = (function() {
 				var newFileName = prompt("Enter the filename");
 				if(newFileName) {
 					if(uri && files[uri].type=='folder') path+=filename + "/";
-					$.post("/scripts/save.php",  {'project_id':activeProject.id, 'uri':encodeURI(path + newFileName)}, function() {
+					Ajax.post("/scripts/save.php",  {'project_id':activeProject.id, 'uri':encodeURI(path + newFileName)}, function() {
 						FileList.loadProjectFiles();
 						openFile(path + newFileName);
 					});
@@ -408,14 +423,14 @@ var FileList = (function() {
 				if(files[uri].type=='folder') { 
 					answer = confirm("Are you sure you want to delete the folder and all its content?\n"+uri+"?");
 					if(answer) {
-						$.get("/scripts/delete_folder.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
+						Ajax.get("/scripts/delete_folder.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
 							FileList.loadProjectFiles();
 						});
 					}
 				} else {
 					answer = confirm("Are you sure you want to delete the file: '"+uri+"'?");
 					if(answer) {
-						$.get("/scripts/delete_file.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
+						ajax("get", "/scripts/delete_file.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
 							FileList.loadProjectFiles();
 						});
 					}
@@ -425,7 +440,7 @@ var FileList = (function() {
 			case "rename":
 				var new_name = prompt("Enter the new name of the file/folder", filename);
 				if(new_name) {
-					$.get("/scripts/rename.php",  {'project_id':activeProject.id, 'from':encodeURI(uri), 'to':encodeURI(path + new_name)}, function() {
+					Ajax.get("/scripts/rename.php",  {'project_id':activeProject.id, 'from':encodeURI(uri), 'to':encodeURI(path + new_name)}, function() {
 						if(activeFile==uri) activeFile=path+new_name;
 						console.log(uri, "renamed to", path+new_name);
 						FileList.loadProjectFiles();
@@ -439,7 +454,7 @@ var FileList = (function() {
 
 		}
 		hideFileListRightClickMenu();
-	});
+	};
 	
 	function showFileListRightClickMenu(uri, e) {
 		rightClickMenu.classList.remove("hidden");
@@ -466,6 +481,30 @@ var FileList = (function() {
 			elements[i].classList.remove("rightClicked");
 		}		
 	}
+	
+	
+	
+	var getFiles = function() {
+		return files;
+	}
+	
+	
+	/*
+	function showImagePreview(uri) {
+		var imgsrc = projectId + "/" + uri;
+		var item = files[uri];
+
+		console.log("showImagePreview");
+		$("#imagePreview").show();
+		document.getElementById("imagePreviewImage").style.backgroundImage = "url('/scripts/image.php?src="+imgsrc+"&max_width=140&max_height=140')";
+		$("#imagePreviewInfo").html(
+			"<strong>" + item.filename + "</strong><br /><br />" +
+			"Width: <strong>" + item.width + "</strong> px<br />" +
+			"Height: <strong>" + item.height + "</strong> px<br />"
+		);
+	}
+	*/
+	
 
 
 
@@ -473,7 +512,12 @@ var FileList = (function() {
 		loadProjectFiles: loadProjectFiles,
 		setProjectId: setProjectId,
 		setActiveFile: setActiveFile,
-		clear: clear
+		clear: clear,
+		showSpinner: showSpinner,
+		hideSpinner: hideSpinner,
+		getFiles: getFiles,
+		setFileAsClean: setFileAsClean,
+		setFileAsDirty: setFileAsDirty
 	}
 
 })();
