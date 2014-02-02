@@ -291,7 +291,7 @@ addEventListener("userLogin", function(e) {
 
 function fixLayout() {
 	var height = document.getElementById("fileList").offsetHeight;
-	codeMirror.setSize(null, height);
+	codeMirror.setSize(null, height-2);
 }
 
 

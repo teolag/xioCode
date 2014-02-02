@@ -28,25 +28,23 @@
 	font-size: 1em;
 	font-family: 'Inconsolata', sans-serif;
 }
-.cm-s-default {background: #fff;}
-
+.cm-s-default {
+	background: #fff;
+}
 .CodeMirror-activeline-background {
 	background-color: rgba(150, 150, 150, 0.1);
 }
-
 .CodeMirror-focused .cm-matchhighlight {
 	background-color: rgba(150, 150, 150, 0.2);
 }
-
-
-.CodeMirror-focused .CodeMirror-selected { background: pink; }
-
+.CodeMirror-focused .CodeMirror-selected {
+	background: pink;
+}
 .CodeMirror-matchingbracket {
 }
 .CodeMirror-nonmatchingbracket {
 	border-bottom: 1px solid red;
 }
-
 .cm-searching {
 	background: rgba(255, 212, 121, 0.4);
 }

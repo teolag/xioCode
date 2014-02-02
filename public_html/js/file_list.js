@@ -430,7 +430,7 @@ var FileList = (function() {
 				} else {
 					answer = confirm("Are you sure you want to delete the file: '"+uri+"'?");
 					if(answer) {
-						ajax("get", "/scripts/delete_file.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
+						Ajax.get("/scripts/delete_file.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
 							FileList.loadProjectFiles();
 						});
 					}
