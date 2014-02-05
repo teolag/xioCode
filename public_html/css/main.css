@@ -87,15 +87,8 @@ h1 .second {
 	flex-direction: column;
 	align-self: flex-end;
 }
-#xioDocTop {
-	display: flex;
-	flex-direction: row;
-}
 
-#editorWrapper {
-	clear: both;
-	flex: 1;
-}
+
 
 
 .icon-small {
@@ -118,48 +111,17 @@ h1 .second {
 
 
 
-.button24 {
-	border:0 none;
-	cursor:pointer;
-	width:24px;
-	height:24px;
-	background: transparent url('/images/code_sprite.png') no-repeat 0 0;
-}
-
-
-#btnLogout 			{background-position: -24px -16px;}
-#btnChangePassword	{background-position: 0 -16px;}
-#btnChangeSkin 		{background-position: -72px -16px;}
-#btnExportAllZip 	{background-position: -96px -16px;}
-
-
-.button32 {
-	display: inline-block;
-	width:32px;
-	height:32px;
-	background:transparent url('/images/code_sprite.png') no-repeat 0 -40px;
-}
-
-#btnNew .button32				{background-position: 0 -40px;}
-#btnPreviewFile .button32		{background-position: -32px -40px;}
-#btnPreviewProject .button32		{background-position: -96px -40px;}
-#btnExportZip .button32			{background-position: -128px -40px;}
-#btnRevert .button32				{background-position: -160px -40px;}
-#btnColorPicker .button32		{background-position: -192px -40px;}
-#btnProjectConfig .button32		{background-position: -224px -40px;}
-
-
-
 
 
 
 #openedList {
 	padding: 0;
 	margin: 0 0 0 1em;
+	display: flex;
+	flex-direction: row;
 }
 #openedList li {
 	display: block;
-	float: left;
 	padding: 3px 7px 3px 10px;
 	background-color: #ddd;
 	margin-right: 4px;
@@ -176,7 +138,6 @@ h1 .second {
 	text-decoration: underline;
 }
 #openedList li span.close {
-	font-size: 0.9em;
 	color: rgba(0,0,0,0.3);
 	margin-left: 0.5em;
 }
@@ -227,46 +188,22 @@ h1 .second {
 	margin: 0;
 }
 .toolbar span {
-	padding: 0.3em;
+	padding: 0.3em 0;
 	margin: 0;
 	font-size: 1.1em;
 	border: 1px solid #ccc;
 	display: inline-block;
 	color: #474747;
 	background-color: #ECECEC;
+	width: 1.6em;
+	text-align: center;
 }
 .toolbar span:hover {
-
+	background-color: #bada55;
+	color: #444;
 }
-
-
-
-#imagePreview {
-	position:absolute;
-	box-shadow: 2px 4px 23px 4px rgba(0, 0, 0, 0.47);
-	border: 5px solid white;
-	background-color: #0ae;
-	background-image: url(data:image/bmp;base64,Qk1GAAAAAAAAADYAAAAoAAAAAgAAAAIAAAABABgAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAqKiow8PDAADDw8OoqKgAAA==);
-	-webkit-background-size: 20px 20px;
-	-moz-background-size: 20px 20px;
-	background-size: 20px 20px;
-	z-index:10;
-}
-
-#imagePreviewImage {
-	width: 150px;
-	height: 150px;
-	background-repeat: no-repeat;
-	background-position: center center;
-	float: left;
-}
-
-#imagePreviewInfo {
-	background-color: #fff;
-	padding: 0 0 0 10px;
-	float: left;
-	height: 150px;
-	width: 190px;
+.toolbar span.disabled:hover {
+	background-color: #ECECEC;
 }
 
 

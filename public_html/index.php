@@ -21,13 +21,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 	<head>
 		<title><?php echo $pageTitle; ?></title>
 		<meta charset="utf-8" />
-		<!--
-		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>lib/codemirror.css" type="text/css" />
-		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/ambiance.css" type="text/css" />
-		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/lesser-dark.css" type="text/css" />
-		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/neat.css" type="text/css" />
-		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>addon/dialog/dialog.css" type="text/css" />
-		-->
 		<link rel="stylesheet" href="http://xio.se/projects/xiopop/XioPop.css">
 		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
 		<link rel="shortcut icon" href="/images/favicon.ico" />
@@ -39,7 +32,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
 			<span id="pageTitle"></span>
 			<div id="userMenu">
-				<div><span class="el-icon-user"></span> <span id="username"></span></div>
+				<div><span class="icon-user"></span> <span id="username"></span></div>
 				<ul>
 					<li id="btnExportAllZip">Export all</li>
 					<li id="btnChangePassword">Change password</li>
@@ -52,7 +45,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
 		<div id="projectChooser" class="hidden">
 			<input type="search" placeholder="Filter projects" id="projectsFilter" />
-			<span id="btnNewProject" class="el-icon-plus-sign icon-small" title="Create a new project"></span>
+			<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
 			<ul id="projectsList"></ul>			
 		</div>
 		
@@ -72,11 +65,8 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			
 			
 			<div id="xioDoc">
-				<div id="xioDocTop">
-					<ul id="openedList"></ul>
-				</div>
-					<textarea name="code" id="code"></textarea>		
-				<!--<div id="editorWrapper"></div>-->
+				<ul id="openedList"></ul>
+				<textarea name="code" id="code"></textarea>
 			</div>
 		
 		</div>
@@ -117,20 +107,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		
 		
 		<script src="<?php echo CODEMIRRORPATH; ?>lib/codemirror.js"></script>
-		<!--
-		<script src="<?php echo CODEMIRRORPATH; ?>mode/xml/xml.js"></script>
-		<script src="<?php echo CODEMIRRORPATH; ?>mode/javascript/javascript.js"></script>
-		<script src="<?php echo CODEMIRRORPATH; ?>mode/css/css.js"></script>		
-		<script src="<?php echo CODEMIRRORPATH; ?>mode/clike/clike.js"></script>		
-		<script src="<?php echo CODEMIRRORPATH; ?>mode/php/php.js"></script>
-		<script src="<?php echo CODEMIRRORPATH; ?>addon/dialog/dialog.js"></script>
-		<script src="<?php echo CODEMIRRORPATH; ?>addon/edit/matchbrackets.js"></script>
-		<script src="<?php echo CODEMIRRORPATH; ?>addon/search/search.js"></script>		
-		<script src="<?php echo CODEMIRRORPATH; ?>addon/search/searchcursor.js"></script> 
-		<script src="<?php echo CODEMIRRORPATH; ?>addon/search/match-highlighter.js"></script>
-		<script src="<?php echo CODEMIRRORPATH; ?>addon/selection/active-line.js"></script>
-				
-		-->
 		<script src="http://xio.se/projects/xiopop/XioPop.js"></script>
 		
 		<script>
@@ -147,13 +123,5 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			?>
 		</script>
 		<script src="/scripts/minify_js.php"></script>
-		<!--
-		<script src="/js/ajax.js"></script>
-		<script src="/js/xioDocs.js"></script>
-		<script src="/js/project_list.js"></script>
-		<script src="/js/file_list.js"></script>
-		<script src="/js/writer.js"></script>
-		<script src="/js/main.js"></script>
-		-->
 	</body>
 </html>

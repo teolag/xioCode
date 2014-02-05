@@ -54,7 +54,7 @@ function redrawOpenedDocs(projectId) {
 			filename.classList.add("filename");
 			
 			var close = document.createElement("span");
-			close.classList.add("el-icon-remove-sign", "close");
+			close.classList.add("icon-close", "close");
 			
 			li.appendChild(filename);
 			li.appendChild(close);
