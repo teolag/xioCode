@@ -20,14 +20,16 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 <html>
 	<head>
 		<title><?php echo $pageTitle; ?></title>
-		<meta charset="utf-8" />	
+		<meta charset="utf-8" />
+		<!--
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>lib/codemirror.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/ambiance.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/lesser-dark.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>theme/neat.css" type="text/css" />
 		<link rel="stylesheet" href="<?php echo CODEMIRRORPATH; ?>addon/dialog/dialog.css" type="text/css" />
+		-->
 		<link rel="stylesheet" href="http://xio.se/projects/xiopop/XioPop.css">
-		<link rel="stylesheet" href="/scripts/cssMinify.php" type="text/css" />
+		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
 		<link rel="shortcut icon" href="/images/favicon.ico" />
 		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -58,12 +60,12 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 	
 			<div id="leftColumn">
 				<div id="toolbar" class="toolbar">						
-					<span id="btnNew" title="Create new file" class="icon-small el-icon-file-new"></span
-					><span id="btnSave" title="Save file" class="icon-small el-icon-inbox"></span
-					><span id="btnPreviewFile" title="Preview active file" class="icon-small el-icon-eye-open"></span
-					><span id="btnPreviewProject" title="Preview project" class="icon-small el-icon-screen"></span
-					><span id="btnExportZip" title="Export project to zip" class="icon-small el-icon-download"></span
-					><span id="btnProjectConfig" title="Project configurations" class="icon-small el-icon-cog"></span>
+					<span id="btnNew" title="Create new file" class="icon-small icon-new-file"></span
+					><span id="btnSave" title="Save file" class="icon-small icon-save"></span
+					><span id="btnPreviewFile" title="Preview active file" class="icon-small icon-preview"></span
+					><span id="btnPreviewProject" title="Preview project" class="icon-small icon-play"></span
+					><span id="btnExportZip" title="Export project to zip" class="icon-small icon-archive"></span
+					><span id="btnProjectConfig" title="Project configurations" class="icon-small icon-cog"></span>
 				</div>
 				<div id="fileList"></div>
 			</div>
@@ -112,8 +114,10 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 				<li data-do="upload">Upload files...</li>
 			</ul>
 		</div>		
-				
+		
+		
 		<script src="<?php echo CODEMIRRORPATH; ?>lib/codemirror.js"></script>
+		<!--
 		<script src="<?php echo CODEMIRRORPATH; ?>mode/xml/xml.js"></script>
 		<script src="<?php echo CODEMIRRORPATH; ?>mode/javascript/javascript.js"></script>
 		<script src="<?php echo CODEMIRRORPATH; ?>mode/css/css.js"></script>		
@@ -126,7 +130,9 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<script src="<?php echo CODEMIRRORPATH; ?>addon/search/match-highlighter.js"></script>
 		<script src="<?php echo CODEMIRRORPATH; ?>addon/selection/active-line.js"></script>
 				
+		-->
 		<script src="http://xio.se/projects/xiopop/XioPop.js"></script>
+		
 		<script>
 			var projectsURL = '<?php echo PROJECT_FOLDER; ?>';
 			var _USER = <?php echo $jsUser; ?>;
@@ -140,12 +146,14 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			
 			?>
 		</script>
+		<script src="/scripts/minify_js.php"></script>
+		<!--
 		<script src="/js/ajax.js"></script>
 		<script src="/js/xioDocs.js"></script>
 		<script src="/js/project_list.js"></script>
 		<script src="/js/file_list.js"></script>
 		<script src="/js/writer.js"></script>
 		<script src="/js/main.js"></script>
-		
+		-->
 	</body>
 </html>

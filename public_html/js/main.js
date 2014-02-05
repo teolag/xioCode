@@ -6,18 +6,7 @@ var fileListWidth = 220;
 var DEBUG_MODE_ON=true;
 var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 var KEY_ENTER = 13;
-
-var activeProject;
-var activeFile;
-var checkAccessInterval;
-var pageTitle;
-var title = document.getElementById("pageTitle");
-var hoverTimer;
-var fileToBeLoaded;
-
-var oldHash;//window.location.hash;
-
-
+var UNSAVED_FILENAME = "untitled";
 
 if (!DEBUG_MODE_ON) {
     console = console || {};
@@ -26,13 +15,74 @@ if (!DEBUG_MODE_ON) {
 
 
 
+var activeProject;
+var activeFile;
+var checkAccessInterval;
+var pageTitle;
+var title;
+var hoverTimer;
+var fileToBeLoaded;
+var oldHash;
 
-var username = document.getElementById("username");
+var loginBox, loginForm, loginButton;
+var username;
+var h1, toolbar, userMenu;
 
-var loginBox = document.getElementById("login");
-var loginForm = document.getElementById("loginForm");
-var loginButton = document.getElementById("btnLogin");
-loginForm.addEventListener("submit", loginRequest, false);
+
+function init() {
+	pageTitle = document.title;
+	title = document.getElementById("pageTitle");
+	console.log("Init " + pageTitle);
+	
+	username = document.getElementById("username");
+	loginBox = document.getElementById("login");
+	loginForm = document.getElementById("loginForm");
+	loginButton = document.getElementById("btnLogin");
+	loginForm.addEventListener("submit", loginRequest, false);
+
+	window.onresize = fixLayout;
+	window.onhashchange = readHash;
+	window.onbeforeunload = warnBeforeUnload;
+	window.addEventListener("userLogin", loginAccepted, false);
+	document.addEventListener("DOMContentLoaded", startup, false);
+
+	h1 = document.querySelector("#header h1");
+	h1.addEventListener("click", function(){setHash()}, false);
+
+	toolbar = document.getElementById("toolbar");
+	toolbar.addEventListener("click", toolbarHandler, false);
+
+	userMenu = document.getElementById("userMenu");
+	userMenu.addEventListener("click", userMenuHandler, false);
+	
+}
+
+function startup() {
+	if(_USER && _USER.username) {
+		window.dispatchEvent(new CustomEvent("userLogin"));
+	}
+}
+
+
+function warnBeforeUnload(e) {
+	var n = numberOfUnsavedFiles();
+	if(n>0) {
+		return "You have "+n+" unsaved files. Are you sure you want to navigate away from this page";
+	}
+}
+
+function numberOfUnsavedFiles() {
+	var counter = 0;
+	if(activeProject) {
+		for(var uri in xioDocs[activeProject.id]) {
+			if(!xioDocs[activeProject.id][uri].isClean()) {
+				counter++;
+			}
+		}
+	}
+	return counter;
+} 
+
 
 
 function loginRequest(e) {
@@ -50,7 +100,6 @@ function loginRequest(e) {
 	xhr.onload = loginCallback;
 	xhr.send(new FormData(loginForm));
 }
-
 
 function loginCallback(e) {
 	var user = JSON.parse(e.target.responseText);
@@ -72,22 +121,82 @@ function loginCallback(e) {
 	loginForm.elements.code_username.focus();
 }
 
+function loginAccepted(e) {
+	console.log("Login accepted", e);	
+	console.log(_USER);
+
+	document.body.classList.add("authorized");
+	username.textContent = _USER.username;
+
+	//Access check every minute
+	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
+
+	initWriter();
+	ProjectList.loadProjects();
+}
+
+function logout() {
+	document.body.classList.remove("authorized");
+	ProjectList.clear();
+	FileList.clear();
+	openedList.innerHTML="";
+	var doc = CodeMirror.Doc("");
+	var old = codeMirror.swapDoc(doc);
+	activeProject = null;
+	activeFile = null;
+	xioDocs = {};
+	loginForm.elements.code_username.focus();	
+	clearInterval(checkAccessInterval);
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open("get", "/scripts/gatekeeper_logout.php", true);
+	xhr.send();
+}
+
+function checkAccess() {
+	console.log(new Date().toTimeString().substr(0,5), "Access check");
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET","/scripts/gatekeeper_check_access.php");
+	xhr.onload = function(e) {		
+		if(xhr.status !== 202) {
+			logout();
+		}
+	};
+	xhr.send();
+}
 
 
 
 
+function openProjectConfig(projectId) {
+	XioPop.load("/scripts/project_config.php?project_id="+projectId, function(e) {
+		var frmProjectConfig = document.getElementById("frmProjectConfig");
+		frmProjectConfig.addEventListener("submit", function(e) {
+			e.preventDefault();
+			console.log("Save project configurations...");
+			Ajax.postForm("/scripts/project_config.php?do=save", frmProjectConfig, 
+				function(xhr) {
+					console.log("Project configurations saved!");
+					XioPop.close();
+					ProjectList.loadProjects();
+				}, function(e) {
+					console.err("Error saving config", e);
+				}
+			);
+		}, false);
 
-document.querySelector("#header h1").addEventListener("click", function() {
-	setHash();
-}, false);
+		var btnConfigCancel = document.getElementById("btnConfigCancel");
+		btnConfigCancel.addEventListener("click", function(e) {
+			XioPop.close();
+		}, false);
+	});
+}
+
+
 
 
 
 /***************** TOOLBAR **********************************************************************/
-
-var toolbar = document.getElementById("toolbar");
-toolbar.addEventListener("click", toolbarHandler, false);
-
 
 function toolbarHandler(e) {
 	if(e.button!==0) return false;
@@ -102,7 +211,7 @@ function toolbarHandler(e) {
 		break;
 
 		case "btnSave":
-			if(activeFile==="untitled") {
+			if(activeFile===UNSAVED_FILENAME) {
 				console.log("Save As...  ");
 				XioPop.prompt("Save file as...", "Enter the filename", "", function(answer) {
 					if(answer) {
@@ -131,27 +240,7 @@ function toolbarHandler(e) {
 
 
 		case "btnProjectConfig":
-		XioPop.load("/scripts/project_config.php?project_id="+activeProject.id, function(e) {
-			var frmProjectConfig = document.getElementById("frmProjectConfig");
-			frmProjectConfig.addEventListener("submit", function(e) {
-				e.preventDefault();
-				console.log("Save project configurations...");
-				Ajax.postForm("/scripts/project_config.php?do=save", frmProjectConfig, 
-					function(xhr) {
-						console.log("Project configurations saved!");
-						XioPop.close();
-						ProjectList.loadProjects();
-					}, function(e) {
-						console.err("Error saving config", e);
-					}
-				);
-			}, false);
-
-			var btnConfigCancel = document.getElementById("btnConfigCancel");
-			btnConfigCancel.addEventListener("click", function(e) {
-				XioPop.close();
-			}, false);
-		});
+		openProjectConfig(activeProject.id);
 		break;
 
 		case "btnExportZip":
@@ -168,8 +257,7 @@ function toolbarHandler(e) {
 
 /***************** USER MENU **********************************************************************/
 
-var userMenu = document.getElementById("userMenu");
-userMenu.addEventListener("click", function(e) {
+function userMenuHandler(e) {
 	if(e.button!==0) return false;
 
 	var target = e.target;
@@ -209,93 +297,21 @@ userMenu.addEventListener("click", function(e) {
 		});		
 		break;
 	}
-});
-
-
-
-
-
-window.onresize = function(e) {
-	fixLayout();
-};
-
-window.onhashchange = readHash;
-
-window.onbeforeunload = function (evt) {
-	var n = numberOfUnsavedFiles();
-	if(n>0) {
-		return "You have "+n+" unsaved files. Are you sure you want to navigate away from this page";
-	}
-};
-
-
-
-function init() {
-	pageTitle = document.title;
-	console.log("Init " + pageTitle);
-	
-	if(_USER && _USER.username) {
-		var userLogin = new CustomEvent("userLogin");
-		window.dispatchEvent(userLogin);
-	}	
-}
-
-
-function logout() {
-	document.body.classList.remove("authorized");
-	ProjectList.clear();
-	FileList.clear();
-	openedList.innerHTML="";
-	var doc = CodeMirror.Doc("");
-	var old = codeMirror.swapDoc(doc);
-	activeProject = null;
-	activeFile = null;
-	xioDocs = {};
-	loginForm.elements.code_username.focus();	
-	clearInterval(checkAccessInterval);
-	
-	var xhr = new XMLHttpRequest();
-	xhr.open("get", "/scripts/gatekeeper_logout.php", true);
-	xhr.send();
 }
 
 
 
-function checkAccess() {
-	console.log(new Date().toTimeString().substr(0,5), "Access check");
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET","/scripts/gatekeeper_check_access.php");
-	xhr.onload = function(e) {		
-		if(xhr.status !== 202) {
-			logout();
-		}
-	};
-	xhr.send();
-}
 
 
 
-addEventListener("userLogin", function(e) {
-	console.log("Login accepted");	
-	console.log(_USER);
-	
-	document.body.classList.add("authorized");
-	username.textContent = _USER.username;
-	
-	//Access check every minute
-	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
-	
-	initWriter();
-	ProjectList.loadProjects();
-});
+
+
+
 
 function fixLayout() {
 	var height = document.getElementById("fileList").offsetHeight;
 	codeMirror.setSize(null, height-2);
 }
-
-
-
 
 
 
@@ -333,9 +349,7 @@ function openFile(uri) {
 
 
 function unloadFile() {
-	openFile("untitled");
-	//getOrCreateDoc(activeProject.id, "untitled")
-	//setActiveFile("untitled");
+	openFile(UNSAVED_FILENAME);
 	codeMirror.focus();
 	
 }
@@ -427,7 +441,7 @@ function saveFileAs(newFileName, overwrite) {
 			console.log("file saved as ", json.uri);
 			FileList.loadProjectFiles();
 			openFile(json.uri);
-			if(activeFile==="untitled") {
+			if(activeFile===UNSAVED_FILENAME) {
 				delete xioDocs[activeProject.id][activeFile];
 			}
 			break;
@@ -462,12 +476,12 @@ function saveFileAs(newFileName, overwrite) {
 
 function setHash(newHash) {
 	if(!newHash) {
-		oldHash = "";
 		history.pushState({foo: "bar"}, "kokooo", "/");
-		chooseProject();
+		readHash();
+		oldHash = "";
 	} else if(newHash!=oldHash) {
-		oldHash = newHash;
 		window.location.hash = newHash;
+		oldHash = newHash;
 	}
 }
 
@@ -475,7 +489,7 @@ function readHash() {
 	var hash = window.location.hash;
 	if(oldHash===hash) return;
 	
-	console.log("Read hash", hash);
+	console.log("Read hash", hash, window.location.hash);
 	var match = hash.match(/^#([^\/]*)\/?(.*)$/);
 	if(match) {
 		var project_id = match[1];
@@ -538,17 +552,7 @@ function updateCleanStatus(uri) {
 	}
 }
 
-function numberOfUnsavedFiles() {
-	var counter = 0;
-	if(activeProject) {
-		for(var uri in xioDocs[activeProject.id]) {
-			if(!xioDocs[activeProject.id][uri].isClean()) {
-				counter++;
-			}
-		}
-	}
-	return counter;
-} 
+
 
 
 

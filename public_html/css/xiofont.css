@@ -1,0 +1,85 @@
+@font-face {
+	font-family: 'xiocode';
+	src:url('/fonts/xiocode.eot?gu0bbb');
+	src:url('/fonts/xiocode.eot?#iefixgu0bbb') format('embedded-opentype'),
+		url('/fonts/xiocode.woff?gu0bbb') format('woff'),
+		url('/fonts/xiocode.ttf?gu0bbb') format('truetype'),
+		url('/fonts/xiocode.svg?gu0bbb#xiocode') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'xiocode';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-save:before {
+	content: "\e607";
+}
+.icon-user:before {
+	content: "\e60a";
+}
+.icon-archive:before {
+	content: "\e60b";
+}
+.icon-play:before {
+	content: "\e600";
+}
+.icon-cog:before {
+	content: "\e601";
+}
+.icon-filter:before {
+	content: "\e602";
+}
+.icon-database:before {
+	content: "\e603";
+}
+.icon-key:before {
+	content: "\e612";
+}
+.icon-file-xml:before {
+	content: "\e604";
+}
+.icon-file-css:before {
+	content: "\e60c";
+}
+.icon-file:before {
+	content: "\e60d";
+}
+.icon-preview:before {
+	content: "\e60f";
+}
+.icon-spinner:before {
+	content: "\e60e";
+}
+.icon-spinner2:before {
+	content: "\e611";
+}
+.icon-image:before {
+	content: "\e613";
+}
+.icon-off:before {
+	content: "\e605";
+}
+.icon-plus:before {
+	content: "\e606";
+}
+.icon-folder:before {
+	content: "\e608";
+}
+.icon-folder-open:before {
+	content: "\e609";
+}
+.icon-new-file:before {
+	content: "\e610";
+}

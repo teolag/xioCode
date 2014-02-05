@@ -97,7 +97,7 @@ function getOrCreateDoc(projectId, uri) {
 }
 
 function loadDoc(projectId, uri) {		
-	if(uri==="untitled") {
+	if(uri===UNSAVED_FILENAME) {
 		docLoaded(projectId, uri, "");
 		return;
 	}

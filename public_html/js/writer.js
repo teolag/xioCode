@@ -77,63 +77,7 @@ function initWriter() {
 		}
 	});	
 	
-	codeMirror.on("scroll", function(cm) {
-		//console.log("Scroll", cm.getScrollInfo());
-	});
 	
-	/*
-	codeMirror.on("focus", function() {
-		document.getElementById("btnColorPicker").removeAttribute("disabled");
-	});
-	codeMirror.on("blur", function() {
-		document.getElementById("btnColorPicker").disabled='disabled';
-	});
-	*/
-	
-	codeMirror.on("cursorActivity", function(cm) {
-		//console.log("Cursor activity", cm);
-		
-		/*
-		var cur = editor.getCursor();
-		var c = editor.getSearchCursor(/[ \s:;]/i);
-		
-		matchStart = c.matches(true, cur);
-		matchEnd = c.matches(false, cur);
-		if(matchStart && matchEnd) {
-			text = editor.getRange(matchStart.to, matchEnd.from).trim();
-			if(text.match("^#[A-Fa-f0-9]{6}$") || text.match("^#[A-Fa-f0-9]{3}$")) {
-				console.log("Color found:", text);
-				return;
-			}
-		}
-		console.log("hide picker");
-		*/
-	});
-
-	
-	/*
-	$(codeMirror.getScrollerElement()).ColorPicker({
-		flat:true,
-		
-		onSubmit: function(hsb, hex, rgb, el) {
-			codeMirror.setSelection(selStart, selEnd);
-			codeMirror.replaceSelection(hex);
-			$(el).ColorPickerHide();
-		}	
-	});
-	$(codeMirror.getScrollerElement()).ColorPickerHide();
-
-	$(codeMirror.getScrollerElement()).bind("contextmenu", function(e) {
-		selection = codeMirror.getSelection();
-		if(selection.match("^#?[A-Fa-f0-9]{6}$")) {
-			e.preventDefault();
-			$(this).ColorPickerSetColor(selection.replace("#",""));
-			selStart=codeMirror.getCursor(true);
-			selEnd=codeMirror.getCursor(false);
-			$(codeMirror.getScrollerElement()).ColorPickerShow();
-		}		
-	});
-	*/
 	
 }
 

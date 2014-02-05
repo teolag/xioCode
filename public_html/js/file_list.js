@@ -34,8 +34,7 @@ var FileList = (function() {
 		
 		selectActiveFile();
 	};
-	
-	
+
 
 	var loadProjectFiles = function() {
 		Ajax.getJSON("/scripts/build_file_tree.php", {project_id: projectId},
@@ -102,7 +101,7 @@ var FileList = (function() {
 		for(var i = 0; i<items.length; i++) {
 			items[i].classList.remove("selected");
 		}
-		if(activeFile==="untitled") return;
+		if(activeFile===UNSAVED_FILENAME) return;
 		console.log("Select: '" + activeFile + "' in fileList");
 				
 		var li = fileList.querySelector("li[data-uri='"+activeFile+"']");
@@ -232,8 +231,6 @@ var FileList = (function() {
 	};
 	
 	
-	
-	
 	function uploadFiles(filesToUpload, folder, overwrite) {
 		console.log("start upload:", filesToUpload, "to", folder);
 
@@ -324,7 +321,7 @@ var FileList = (function() {
 		if(target===fileList) {
 			var folder = "";	
 		} else {
-			var folder = target.dataset.uri;
+			var folder = target.dataset.uri+"/";
 		}
 		
 		var fileDragged = e.dataTransfer.getData("uri");
@@ -334,7 +331,7 @@ var FileList = (function() {
 			if(folder+files[fileDragged].filename === fileDragged) {
 				console.log("drop to same place, abort");
 			} else {
-				Ajax.get("/scripts/move_file.php", {'project_id': projectId, 'uri': encodeURI(fileDragged), 'toFolder': encodeURI(folder)+"/"},
+				Ajax.get("/scripts/move_file.php", {'project_id': projectId, 'uri': encodeURI(fileDragged), 'toFolder': encodeURI(folder)},
 					function(e) {
 						FileList.loadProjectFiles();
 					}

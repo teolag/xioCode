@@ -1,6 +1,6 @@
 var ProjectList = (function() {
 
-	var projects;
+	var projects, projectsArrayByName, projectsArrayByDate;
 	var projectsList, projectsFilter, btnNewProject;
 
 	var init = function() {
@@ -21,7 +21,30 @@ var ProjectList = (function() {
 		Ajax.getJSON("/scripts/get_all_projects.php", null, 
 			function(json) {
 				projects = json;
+				
+				projectsArrayByName = Object.keys(projects);
+				projectsArrayByDate = Object.keys(projects);
+				
+				projectsArrayByName.sort(function(a,b) {
+					var n1 = projects[a].name;
+					var n2 = projects[b].name;
+				
+					if (n1 < n2) return -1;
+					if (n1 > n2) return 1;
+					return 0;
+				});
+				console.log(projectsArrayByDate);
+				projectsArrayByDate.sort(function(a,b) {
+					var c1 = projects[a].created || 0;
+					var c2 = projects[b].created || 0;
+					return c2-c1;
+				});
+				console.log(projectsArrayByDate);
+				
 				display();
+				console.log("%i projects found", Object.keys(projects).length, projects);
+				filterProjects();
+				readHash();
 				
 				if(activeProject) {
 					var pId = activeProject.id
@@ -35,25 +58,22 @@ var ProjectList = (function() {
 	};
 	
 	
+	
 	var display = function() {
 		var projectsHTML=[];
-		for(var id in projects) {
-			if (projects.hasOwnProperty(id)) {
-				var item = projects[id];
-				projectsHTML.push("<li data-project_id='"+id+"'>");
-				projectsHTML.push("<h3>"+item.name+"</h3>");
-				projectsHTML.push("<div style='display: block;'>");
-				if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
-				projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
-				projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
-				projectsHTML.push("</div>");
-				projectsHTML.push("</li>");
-			}
-		}
-		console.log("%i projects found", Object.keys(projects).length, projects);
+		projectsArrayByDate.forEach(function(id, i) {
+			var item = projects[id];
+			projectsHTML.push("<li data-project_id='"+id+"'>");
+			projectsHTML.push("<h3>"+item.name+"</h3>");
+			projectsHTML.push("<div style='display: block;'>");
+			if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
+			projectsHTML.push("<a href='#' data-do='config'>Config</a>");
+			projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
+			projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
+			projectsHTML.push("</div>");
+			projectsHTML.push("</li>");
+		});
 		projectsList.innerHTML = projectsHTML.join("");
-		filterProjects();
-		readHash();
 	};
 	
 	
@@ -88,7 +108,7 @@ var ProjectList = (function() {
 						var xhr = e.target;
 						if(xhr.status===200) {
 							console.log("Project deleted");
-							findProjects();
+							loadProjects();
 						} else {
 							console.err("Error deleting project", xhr);
 						}
@@ -120,32 +140,36 @@ var ProjectList = (function() {
 			});
 			break;
 
+			case "config":
+			openProjectConfig(projectId);
+			break;
+
 
 			default:
-			setHash(projectId+"/untitled");
+			setHash(projectId+"/"+UNSAVED_FILENAME);
 		}	
 	};
 	
 	function filterProjects(e) {
 		var searchString = projectsFilter.value.toLowerCase();
 		if(e && e.which == KEY_ENTER && searchString) {
-			var firstItem = document.querySelector("#projectsList li:not(.hidden)");
-			setHash(firstItem.getAttribute('data-project_id')+"/untitled");
+			var firstItem = projectsList.querySelector("li:not(.hidden)");
+			setHash(firstItem.getAttribute('data-project_id')+"/"+UNSAVED_FILENAME);
 			return false;
 		} else {
 			console.log("filter projects '"+searchString+"'", projectsFilter, projects);
 
 			for(var id in projects) {
-		  if (projects.hasOwnProperty(id)) {
-			var project = projects[id];
+				if (projects.hasOwnProperty(id)) {
+					var project = projects[id];
 
-			var li = document.querySelector("#projectsList li[data-project_id='"+id+"']");
-			if(project.name.toLowerCase().search(searchString)!=-1) {
-			  li.classList.remove('hidden');
-			} else {
-			  li.classList.add('hidden');
-			}
-		  }
+					var li = projectsList.querySelector("li[data-project_id='"+id+"']");
+					if(project.name.toLowerCase().search(searchString)!=-1) {
+						li.classList.remove('hidden');
+					} else {
+						li.classList.add('hidden');
+					}
+				}
 			}
 		}
 	}	
@@ -177,7 +201,7 @@ var ProjectList = (function() {
 	};
 	
 	
-	var clean = function() {
+	var clear = function() {
 		projects = null;
 		projectsList.innerHTML = "";
 	};
@@ -191,7 +215,7 @@ var ProjectList = (function() {
 	
 	return {
 		isLoaded: isLoaded,
-		clean: clean,
+		clear: clear,
 		getProject: getProject,
 		loadProjects: loadProjects
 	};	
