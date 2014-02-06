@@ -79,8 +79,7 @@ var FileList = (function() {
 			var hidden  = (item.filename=='xiocode.properties')? ' hidden' : '';
 			var title = item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
 			htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + uri + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
-			htm.push("<span class='fileIcon "+item.type+"'></span>");
-			htm.push("<span class='fileName'>"+item.filename+"</span>");
+			htm.push("<span class='icon-"+item.icon+"'>"+item.filename+"</span>");
 			if(item.leafs) {
 				htm.push(printFolder(item.leafs, item.path));
 			}
@@ -170,8 +169,8 @@ var FileList = (function() {
 	
 	
 	function toggleFolder(li) {
-		var folderIcon = li.querySelector("span.fileIcon");
-		if(folderIcon.classList.contains("open")) {
+		var folderIcon = li.querySelector("span");
+		if(folderIcon.classList.contains("icon-folder-open")) {
 			closeFolder(li);
 		} else {
 			openFolder(li);
@@ -185,9 +184,10 @@ var FileList = (function() {
 			openedFolders.push(uri);
 		}
 
-		var folderIcon = li.querySelector("span.fileIcon");
+		var folderIcon = li.querySelector("span");
 		var folderList = li.querySelector("ul");
-		folderIcon.classList.add("open");
+		folderIcon.classList.add("icon-folder-open");
+		folderIcon.classList.remove("icon-folder");
 		folderList.style.display="block";
 	}
 	function closeFolder(li) {
@@ -198,9 +198,10 @@ var FileList = (function() {
 			openedFolders.splice(index, 1);
 		}
 
-		var folderIcon = li.querySelector("span.fileIcon");
+		var folderIcon = li.querySelector("span");
 		var folderList = li.querySelector("ul");
-		folderIcon.classList.remove("open");
+		folderIcon.classList.remove("icon-folder-open");
+		folderIcon.classList.add("icon-folder");
 		folderList.style.display="none";
 	}
 	
@@ -208,14 +209,13 @@ var FileList = (function() {
 	var showSpinner = function(uri) {
 		var li = fileList.querySelector("li[data-uri='"+uri+"']");		
 		if(li) {
-			var img = document.createElement("img");
-			img.src = "/images/ajax-loader.gif";
-			img.classList.add("spinner");
-			li.appendChild(img);
+			var span = document.createElement("span");
+			span.classList.add("spinner", "icon-spinner");
+			li.appendChild(span);
 		}
 	};
 	var hideSpinner = function(uri) {
-		var spinner = fileList.querySelector("li[data-uri='"+uri+"'] img");
+		var spinner = fileList.querySelector("li[data-uri='"+uri+"'] span.spinner");
 		if(spinner) spinner.parentElement.removeChild(spinner);
 	};
 	

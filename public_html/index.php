@@ -32,11 +32,11 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
 			<span id="pageTitle"></span>
 			<div id="userMenu">
-				<div><span class="icon-user"></span> <span id="username"></span></div>
+				<div class="icon-user" id="username"></div>
 				<ul>
-					<li id="btnExportAllZip">Export all</li>
-					<li id="btnChangePassword">Change password</li>
-					<li id="btnLogout">Logout</li>
+					<li id="btnExportAllZip" class="icon-archive">Export all</li>
+					<li id="btnChangePassword" class="icon-key">Change password</li>
+					<li id="btnLogout" class="icon-off">Logout</li>
 				</ul>
 			</div>
 		</div>

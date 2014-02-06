@@ -6,31 +6,34 @@
 	font-size: 0.7em;
 	padding: 0.5em;
 	flex: 1;
-	color: #101010;
+	color: #555;
 }
 
 #fileList ul{
 	list-style:none;
 	padding: 0;
 }
+#fileList>ul{
+	margin: 0;
+}
 
 #fileList ul ul{
-	display:none;
-	margin-left:20px;
+	display: none;
+	margin-left: 1.3em;
 }
 
 #fileList li{
 	cursor: pointer;
 	white-space: nowrap;
+	display: block;
 }
-
-#fileList span.fileName {	
-	margin-left:2px;
+#fileList li.hidden {
+	display: none;
 }
 
 
 #fileList li.selected{
-	background-color: #bbb;
+	background-color: #d2d2d2;
 }
 
 #fileList li.rightClicked {
@@ -42,33 +45,34 @@
 }
 
 #fileList .spinner {
-	margin: 1px 0 0 5px;
+	margin-left: 0.5em;
+	font-size: 0.92em;
 }
 
-#fileList span.fileIcon {
-	width:16px;
-	height:16px;
-	background: transparent url('/images/code_sprite.png') no-repeat -80px 0px;
+#fileList li>span {
 	display:inline-block;
+	padding: 0.4em 0.2em 0.2em 0.2em
+}
+#fileList li>span:before {
+	font-size: 1.4em;
+	width: 1.4em;
+	display: inline-block;
 	vertical-align: middle;
-	margin: 3px;
+	padding-bottom: 0.2em;
+}
+
+
+#fileList li>span:before {
+	color: #999;
+}
+#fileList li.selected>span:before {
+	color: #555;
 }
 
 #fileList.dropTo, #fileList li.dropTo {
 	background-color: rgba(186, 218, 85, 0.5);
 	border-radius: 0.5em;
 }
-
-#fileList span.fileIcon.folder.open { background-position: 0 0}
-#fileList span.fileIcon.folder { background-position: -16px 0}
-#fileList span.fileIcon.php { background-position: -32px 0}
-#fileList span.fileIcon.js { background-position: -48px 0}
-#fileList span.fileIcon.png { background-position: -64px 0}
-#fileList span.fileIcon.jpg { background-position: -64px 0}
-#fileList span.fileIcon.css { background-position: -96px 0}
-#fileList span.fileIcon.pdf { background-position: -112px 0}
-#fileList span.fileIcon.htm { background-position: -128px 0}
-#fileList span.fileIcon.xml { background-position: -144px 0}
 
 
 

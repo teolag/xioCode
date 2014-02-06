@@ -1,16 +1,16 @@
 @font-face {
-	font-family: 'xiocode';
-	src:url('/fonts/xiocode.eot?gu0bbe');
-	src:url('/fonts/xiocode.eot?#iefixgu0bbe') format('embedded-opentype'),
-		url('/fonts/xiocode.woff?gu0bbe') format('woff'),
-		url('/fonts/xiocode.ttf?gu0bbe') format('truetype'),
-		url('/fonts/xiocode.svg?gu0bbe#xiocode') format('svg');
+	font-family: 'xiofont';
+	src:url('/fonts/xiofont.eot?-5o7wj5');
+	src:url('/fonts/xiofont.eot?#iefix-5o7wj5') format('embedded-opentype'),
+		url('/fonts/xiofont.woff?-5o7wj5') format('woff'),
+		url('/fonts/xiofont.ttf?-5o7wj5') format('truetype'),
+		url('/fonts/xiofont.svg?-5o7wj5#xiofont') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
-[class^="icon-"], [class*=" icon-"] {
-	font-family: 'xiocode';
+[class^="icon-"]:before, [class*=" icon-"]:before {
+	font-family: 'xiofont';
 	speak: none;
 	font-style: normal;
 	font-weight: normal;
@@ -65,7 +65,7 @@
 .icon-spinner2:before {
 	content: "\e611";
 }
-.icon-image:before {
+.icon-file-image:before {
 	content: "\e613";
 }
 .icon-off:before {

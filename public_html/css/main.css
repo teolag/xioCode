@@ -90,7 +90,6 @@ h1 .second {
 
 
 
-
 .icon-small {
 	font-size: 1.3em;
 	color: #666;
@@ -111,14 +110,12 @@ h1 .second {
 
 
 
-
-
-
 #openedList {
 	padding: 0;
 	margin: 0 0 0 1em;
 	display: flex;
 	flex-direction: row;
+	flex-flow: row wrap;
 }
 #openedList li {
 	display: block;
@@ -129,6 +126,7 @@ h1 .second {
 	cursor: pointer;
 	color: #222;
 	font-size: 0.8em;
+	white-space: nowrap;
 }
 #openedList li.selected {
 	cursor: default;
@@ -139,7 +137,8 @@ h1 .second {
 }
 #openedList li span.close {
 	color: rgba(0,0,0,0.3);
-	margin-left: 0.5em;
+	margin: 0.3em 0 0 0.5em;
+	display: inline-block;
 }
 #openedList li span.close:hover {
 	color: rgba(0,0,0,0.8);
@@ -153,32 +152,29 @@ h1 .second {
 	display:none;
 }
 
-.file_loader {
+.spinner {
 	display: inline-block;
-	width: 10px;
-	height: 10px;
-	margin: 1px 0 0 5px;
-	background: transparent url('/images/code_sprite.png') no-repeat -7px -97px;
-	-webkit-animation-name: file_loader_move;
-	-webkit-animation-duration: 1s;
-	-webkit-animation-timing-function: linear;
-	-webkit-animation-iteration-count: infinite;	
-	animation-name: file_loader_move;
-	animation-duration: 1s;
-	animation-timing-function: linear;
-	animation-iteration-count: infinite;
+	line-height: 1;
+	height: 1em;
+	-webkit-animation: anim-rotate 2s infinite linear;	
+	animation: anim-rotate 2s infinite linear;	
 }
-
-@-webkit-keyframes file_loader_move {
-	from { background-position: -7px -97px }
-	to { background-position: 0 -97px }
+@-webkit-keyframes anim-rotate {
+	0% {
+		-webkit-transform: rotate(0);
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
 }
-@keyframes file_loader_move {
-	from { background-position: -7px -97px }
-	to { background-position: 0 -97px }
+@keyframes anim-rotate {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
- 
-
  
 
 
@@ -190,7 +186,8 @@ h1 .second {
 .toolbar span {
 	padding: 0.3em 0;
 	margin: 0;
-	font-size: 1.1em;
+	font-size: 1.3em;
+	line-height: 1em;
 	border: 1px solid #ccc;
 	display: inline-block;
 	color: #474747;
@@ -201,9 +198,11 @@ h1 .second {
 .toolbar span:hover {
 	background-color: #bada55;
 	color: #444;
+	border-color: #888;
 }
 .toolbar span.disabled:hover {
 	background-color: #ECECEC;
+	border-color: #ccc;
 }
 
 
@@ -277,6 +276,9 @@ body.authorized #login {
 	padding: 0.2em 0.5em;
 	color: #333;
 }
+#userMenu>div:before{
+	padding-right: 0.5em;
+}
 #userMenu:hover ul {
 	display: block;
 }
@@ -284,18 +286,20 @@ body.authorized #login {
 	display: none;
 	margin: 0;
 	padding: 0;
-	text-align: right;
 	background-color: #333;
 	position: absolute;
 	z-index: 8;
 	right: 0;
 }
-#userMenu ul  li{
+#userMenu ul li:before{
+	padding-right: 0.5em;
+}
+#userMenu ul li{
 	padding: 4px 10px;
 	border-bottom: 1px solid #444;
 	cursor: pointer;
 }
-#userMenu ul  li:hover{
+#userMenu ul li:hover{
 	background-color: #444;
 	color: #bada55;
 }

@@ -20,6 +20,7 @@ function lookInFolder($path, $relPath="") {
 		$branch['path']=$relPath;
 		if(is_dir($i)) {
 			$branch['type'] = FOLDER;
+			$branch['icon'] = "folder";
 			$branch['leafs'] = lookInFolder($i."/", $relPath.$parts['basename']."/");
 		}
 		else {
@@ -31,8 +32,21 @@ function lookInFolder($path, $relPath="") {
 			}
 			if(isset($parts['extension'])) {
 				$branch['type'] = strtolower($parts['extension']);
+				switch($branch['type']) {
+					case "png": case "jpg": case "jpeg": 
+					$branch['icon'] = "file-image"; break;
+
+					case "htm": case "html": case "xml": 
+					$branch['icon'] = "file-xml"; break;
+					
+					case "css":
+					$branch['icon'] = "file-css"; break;
+					
+					default: $branch['icon'] = "file";					
+				}				
 			} else {
 				$branch['type'] = "";
+				$branch['icon'] = "file";
 			}
 		}
 		$branches[] = $branch;
