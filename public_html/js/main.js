@@ -6,6 +6,8 @@ var fileListWidth = 220;
 var DEBUG_MODE_ON=true;
 var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 var KEY_ENTER = 13;
+var KEY_UP = 38;
+var KEY_DOWN = 40;
 var UNSAVED_FILENAME = "untitled";
 
 if (!DEBUG_MODE_ON) {
@@ -30,6 +32,8 @@ var h1, toolbar, userMenu;
 
 
 function init() {
+	initWriter();
+	
 	pageTitle = document.title;
 	title = document.getElementById("pageTitle");
 	console.log("Init " + pageTitle);
@@ -53,9 +57,9 @@ function init() {
 	toolbar.addEventListener("click", toolbarHandler, false);
 
 	userMenu = document.getElementById("userMenu");
-	userMenu.addEventListener("click", userMenuHandler, false);
-	
+	userMenu.addEventListener("click", userMenuHandler, false);	
 }
+
 
 function startup() {
 	if(_USER && _USER.username) {
@@ -131,8 +135,8 @@ function loginAccepted(e) {
 	//Access check every minute
 	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 
-	initWriter();
 	ProjectList.loadProjects();
+	readHash();
 }
 
 function logout() {
@@ -165,32 +169,6 @@ function checkAccess() {
 	xhr.send();
 }
 
-
-
-
-function openProjectConfig(projectId) {
-	XioPop.load("/scripts/project_config.php?project_id="+projectId, function(e) {
-		var frmProjectConfig = document.getElementById("frmProjectConfig");
-		frmProjectConfig.addEventListener("submit", function(e) {
-			e.preventDefault();
-			console.log("Save project configurations...");
-			Ajax.postForm("/scripts/project_config.php?do=save", frmProjectConfig, 
-				function(xhr) {
-					console.log("Project configurations saved!");
-					XioPop.close();
-					ProjectList.loadProjects();
-				}, function(e) {
-					console.err("Error saving config", e);
-				}
-			);
-		}, false);
-
-		var btnConfigCancel = document.getElementById("btnConfigCancel");
-		btnConfigCancel.addEventListener("click", function(e) {
-			XioPop.close();
-		}, false);
-	});
-}
 
 
 
@@ -231,16 +209,12 @@ function toolbarHandler(e) {
 		break;
 
 		case "btnPreviewProject":
-		var url = activeProject.run_url;
-		if(!url) {
-			url = projectsURL + activeProject.id + "/";
-		}
-		window.open(url, activeProject.id+'_preview');
+		previewProject(activeProject.id);
 		break;
 
 
 		case "btnProjectConfig":
-		openProjectConfig(activeProject.id);
+		ProjectConfig.open(activeProject.id);
 		break;
 
 		case "btnExportZip":
@@ -316,29 +290,30 @@ function fixLayout() {
 
 
 function openProject(id) {
-	if(!ProjectList.isLoaded()) { 
-		console.log("No projects loaded yet");
-		return false;
-	}
+	FileList.clear();
+	FileList.setProjectId(id);
+	redrawOpenedDocs(id);
 
-	var project = ProjectList.getProject(id);
-	if(!project) {
-		console.log("project id not found, return to base...");
-		setHash();
-		return;
+	activeProject = {'id':id};
+	if(ProjectList.getProject(id)) {
+		activeProject = ProjectList.getProject(id);
+		activeProject.id = id;
+		document.title = pageTitle + " - " + activeProject.name;
+		title.textContent = activeProject.name;
 	}
-	activeProject = project;
-	activeProject.id = id;
-	document.title = pageTitle + " - " + project.name;
-	title.textContent = project.name;
-
+	
 	document.getElementById("projectChooser").classList.add("hidden");
 	document.getElementById("projectArea").classList.remove("hidden");
 	fixLayout();
 	
-	FileList.clear();
-	FileList.setProjectId(id);
-	redrawOpenedDocs(id);
+}
+
+function previewProject(id) {
+	var url = ProjectList.getProject(id).run_url;
+	if(!url) {
+		url = projectsURL + id + "/";
+	}
+	window.open(url, id+'_preview');
 }
 
 
@@ -525,7 +500,7 @@ function chooseProject() {
 	title.textContent = "My projects";
 	activeProject = null;
 	document.tite = pageTitle;
-	projectsFilter.focus();
+	txtProjectFilter.focus();
 }
 
 

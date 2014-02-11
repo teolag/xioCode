@@ -18,25 +18,14 @@ foreach($files as $file) {
 }
 
 $tsstring = gmdate('D, d M Y H:i:s ', $last_modified) . 'GMT';
-$etag = $language . $last_modified;
-
 $if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
-$if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? $_SERVER['HTTP_IF_NONE_MATCH'] : false;
 if ($if_modified_since && $if_modified_since == $tsstring) {
     header('HTTP/1.1 304 Not Modified');
-	header("Cache-Control: public, max-age=3600", true);
     exit();
-} else {
-    header("Last-Modified: $tsstring");
-    header("ETag: \"{$etag}\"");
 }
 
 
-
-
 $minifile = "style.mini.".date("ymdHis", $last_modified).".css";
-
-
 
 if(file_exists($minifile)) {
 	//No updates, use existing file
@@ -63,7 +52,7 @@ else {
 	file_put_contents($minifile, $css);
 }
 
-
+header("Last-Modified: $tsstring");
 header("Content-type: text/css");
 echo $css;
 

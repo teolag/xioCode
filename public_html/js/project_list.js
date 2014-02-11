@@ -1,26 +1,36 @@
 var ProjectList = (function() {
 
 	var projects, projectsArrayByName, projectsArrayByDate;
-	var projectsList, projectsFilter, btnNewProject;
+	var projectList, txtProjectFilter, btnNewProject;
+	var tags, listTags;
 
 	var init = function() {
-		projectsList = document.getElementById('projectsList');
-		projectsList.addEventListener("click", clickHandler, false);
+		projectList = document.getElementById('projectList');
+		projectList.addEventListener("click", clickHandler, false);
+		projectList.addEventListener("mouseover", hoverSelect, false);
 		
-		projectsFilter = document.getElementById('projectsFilter');
-		projectsFilter.addEventListener("search", filterProjects);
-		projectsFilter.addEventListener("keyup", filterProjects);
+		txtProjectFilter = document.getElementById('txtProjectFilter');
+		txtProjectFilter.addEventListener("search", filterProjects);
+		txtProjectFilter.addEventListener("keydown", keyDown);
+		txtProjectFilter.addEventListener("keyup", filterProjects);
 		
 		btnNewProject = document.getElementById("btnNewProject");
 		btnNewProject.addEventListener("click", addNewProject, false);
+		
+		listTags = document.getElementById("listProjectTags");
+		//listTags.addEventListener("click", addNewProject, false);
+		
+		
 	};
 	
 	var loadProjects = function() {
-		if(!projectsList) init();
+		if(!projectList) init();
 		
 		Ajax.getJSON("/scripts/get_all_projects.php", null, 
 			function(json) {
 				projects = json;
+				
+				getUniqueTags();
 				
 				projectsArrayByName = Object.keys(projects);
 				projectsArrayByDate = Object.keys(projects);
@@ -33,18 +43,16 @@ var ProjectList = (function() {
 					if (n1 > n2) return 1;
 					return 0;
 				});
-				console.log(projectsArrayByDate);
 				projectsArrayByDate.sort(function(a,b) {
 					var c1 = projects[a].created || 0;
 					var c2 = projects[b].created || 0;
 					return c2-c1;
 				});
-				console.log(projectsArrayByDate);
 				
 				display();
+				updateTagList();
 				console.log("%i projects found", Object.keys(projects).length, projects);
 				filterProjects();
-				readHash();
 				
 				if(activeProject) {
 					var pId = activeProject.id
@@ -57,23 +65,50 @@ var ProjectList = (function() {
 		);	
 	};
 	
+	var getUniqueTags = function() {
+		tags = [];
+		for (var pId in projects) {
+			if (projects.hasOwnProperty(pId)) {
+				var t = projects[pId].tags;
+				if(t) {
+					t.forEach(function(tag, i) {
+						if(tags.indexOf(tag)===-1) {
+							tags.push(tag);
+						}
+					});
+				}
+			}
+		}
+	};
+	
+	
+	var updateTagList = function() {
+		tags.forEach(function(tag, i) {
+			var li = document.createElement("LI");
+			li.textContent = tag;
+			listTags.appendChild(li);
+		});
+	}
+	
 	
 	
 	var display = function() {
-		var projectsHTML=[];
-		projectsArrayByDate.forEach(function(id, i) {
+		var projectsHTML=["<table>"];
+		projectsArrayByName.forEach(function(id, i) {
 			var item = projects[id];
-			projectsHTML.push("<li data-project_id='"+id+"'>");
-			projectsHTML.push("<h3>"+item.name+"</h3>");
-			projectsHTML.push("<div style='display: block;'>");
-			if(item.description) projectsHTML.push("<p>"+item.description+"</p>");
+			projectsHTML.push("<tr data-project_id='"+id+"'>");
+			projectsHTML.push("<td class='name'>"+item.name+"</td>");
+			projectsHTML.push("<td class='description'>"+item.description+"</td>");
+			projectsHTML.push("<td class='functions'>");
 			projectsHTML.push("<a href='#' data-do='config'>Config</a>");
 			projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
 			projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
-			projectsHTML.push("</div>");
-			projectsHTML.push("</li>");
+			projectsHTML.push("<a href='#' data-do='preview'>Preview</a>");
+			projectsHTML.push("</td>");
+			projectsHTML.push("</tr>");
 		});
-		projectsList.innerHTML = projectsHTML.join("");
+		projectsHTML.push("</table>");
+		projectList.innerHTML = projectsHTML.join("");
 	};
 	
 	
@@ -87,12 +122,12 @@ var ProjectList = (function() {
 			e.preventDefault();
 		}
 
-		var li = target;		
-		while(li.nodeName!=="LI") {
-			if(li==projectsList) return;
-			li = li.parentElement;
+		var tr = target;		
+		while(tr.nodeName!=="TR") {
+			if(tr===projectList) return;
+			tr = tr.parentElement;
 		}
-		var projectId = li.dataset.project_id;
+		var projectId = tr.dataset.project_id;
 
 		switch(doo) {
 
@@ -141,7 +176,11 @@ var ProjectList = (function() {
 			break;
 
 			case "config":
-			openProjectConfig(projectId);
+			ProjectConfig.open(projectId);
+			break;
+			
+			case "preview":
+			previewProject(projectId);
 			break;
 
 
@@ -150,29 +189,84 @@ var ProjectList = (function() {
 		}	
 	};
 	
-	function filterProjects(e) {
-		var searchString = projectsFilter.value.toLowerCase();
-		if(e && e.which == KEY_ENTER && searchString) {
-			var firstItem = projectsList.querySelector("li:not(.hidden)");
-			setHash(firstItem.getAttribute('data-project_id')+"/"+UNSAVED_FILENAME);
-			return false;
+	
+	var hoverSelect = function(e) {
+		var target = e.target;
+		while(target.nodeName !== "TR") {
+			if(target === projectList) return;
+			target = target.parentElement;
+		}
+		deselectAll();
+		target.classList.add("selected");
+	};
+	
+	var deselectAll = function() {
+		var selected = projectList.getElementsByClassName("selected");
+		for(var i=0; i<selected.length; i++) {
+			selected[i].classList.remove("selected");
+		}
+	}
+	
+	var keyDown = function(e) {
+		if(e.which === KEY_ENTER) {
+			var projectElement = projectList.querySelector("tr.selected");
+			setHash(projectElement.getAttribute('data-project_id')+"/"+UNSAVED_FILENAME);
+			e.preventDefault();
+		} else if(e.which === KEY_DOWN) {
+			selectNextVisible();
+			e.preventDefault();
+		} else if(e.which === KEY_UP) {
+			selectNextVisible(true);
+			e.preventDefault();
 		} else {
-			console.log("filter projects '"+searchString+"'", projectsFilter, projects);
+			filterProjects();
+		}
+	};
+	
+	
+	function filterProjects(e) {
+		var searchString = txtProjectFilter.value.toLowerCase();
+		console.log("filter projects '"+searchString+"'", txtProjectFilter, projects);
 
-			for(var id in projects) {
-				if (projects.hasOwnProperty(id)) {
-					var project = projects[id];
+		for(var id in projects) {
+			if (projects.hasOwnProperty(id)) {
+				var project = projects[id];
 
-					var li = projectsList.querySelector("li[data-project_id='"+id+"']");
-					if(project.name.toLowerCase().search(searchString)!=-1) {
-						li.classList.remove('hidden');
-					} else {
-						li.classList.add('hidden');
-					}
+				var tr = projectList.querySelector("tr[data-project_id='"+id+"']");
+				if(project.name.toLowerCase().search(searchString)!=-1) {
+					tr.classList.remove('hidden');
+				} else {
+					tr.classList.add('hidden');
 				}
+				
 			}
 		}
-	}	
+		var sel = projectList.querySelector("tr.selected");
+		if(!sel || sel.classList.contains("hidden")) {
+			selectNextVisible(true);
+		}		
+	}
+	
+	var selectNextVisible = function(rev){
+		var sel = projectList.querySelector("tr.selected");
+		if(sel) {
+			var sib = rev? sel.previousSibling : sel.nextSibling;
+			while(sib !== null) {
+				if(!sib.classList.contains("hidden")) {
+					deselectAll();
+					sib.classList.add("selected");
+					return true;
+				}
+				sib = rev? sib.previousSibling : sib.nextSibling;
+			}			
+		} else {
+			sel = projectList.querySelector("tr");
+			deselectAll();
+			sel.classList.add("selected");
+			return true;
+		}
+		return false;
+	};
 
 	var addNewProject = function() {	
 		XioPop.prompt("Enter the projects name", "", "", function(projectName) {
@@ -194,7 +288,7 @@ var ProjectList = (function() {
 	
 
 	var getProject = function(id) {
-		if(projects[id]) {
+		if(projects && projects.hasOwnProperty(id)) {
 			return projects[id];
 		}
 		return false;
@@ -203,7 +297,7 @@ var ProjectList = (function() {
 	
 	var clear = function() {
 		projects = null;
-		projectsList.innerHTML = "";
+		projectList.innerHTML = "";
 	};
 	
 	var isLoaded = function() {

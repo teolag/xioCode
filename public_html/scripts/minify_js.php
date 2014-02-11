@@ -28,6 +28,14 @@ foreach($files as $file) {
 }
 $minifile = "js.mini.".date("ymdHis", $last_modified).".js";
 
+$tsstring = gmdate('D, d M Y H:i:s ', $last_modified) . 'GMT';
+$if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
+if ($if_modified_since && $if_modified_since == $tsstring) {
+    header('HTTP/1.1 304 Not Modified');
+    exit();
+}
+
+
 
 
 if(file_exists($minifile)) {
@@ -45,7 +53,7 @@ else {
 	}
 	
 	$before = strlen($js);
-	$js = JShrink\Minifier::minify($js);
+	//$js = JShrink\Minifier::minify($js);
 	$after = strlen($js);
 	$precent = 100-round(($after/$before)*100,1);
 
@@ -59,7 +67,7 @@ else {
 	file_put_contents($minifile, $js);
 }
 
-
+header("Last-Modified: $tsstring");
 header("Content-type: text/javascript");
 echo $js;
 

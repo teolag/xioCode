@@ -40,18 +40,22 @@ var FileList = (function() {
 		Ajax.getJSON("/scripts/build_file_tree.php", {project_id: projectId},
 			function(items) {
 				files = {};
-				fileList.innerHTML = printFolder(items, "");
+				
+				if(!items || items.length===0 || (items.length===1 && items[0].filename === "xiocode.properties")) {
+					fileList.innerHTML = "<li>No files...</li>";
+				} else {
+					fileList.innerHTML = printFolder(items, "");
 
-				console.log("File list loaded");
+					console.log("File list loaded", items);
 
-				for(var i=0; i<openedFolders.length; i++) {
-					var li = fileList.querySelector("li[data-uri='"+openedFolders[i]+"']");
-					if(li) {
-						openFolder(li);				
+					for(var i=0; i<openedFolders.length; i++) {
+						var li = fileList.querySelector("li[data-uri='"+openedFolders[i]+"']");
+						if(li) {
+							openFolder(li);				
+						}
 					}
+					if(activeFile) selectActiveFile();
 				}
-
-				if(activeFile) selectActiveFile();
 			}, function(e) {
 				console.error("Error loading file tree", e);
 			}

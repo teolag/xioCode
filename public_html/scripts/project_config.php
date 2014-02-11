@@ -25,6 +25,9 @@ if(isset($_GET['do']) && $_GET['do']=="save") {
 
 $created = getValue($config, 'created');
 
+$tags = getValue($config, 'tags');
+if(empty($tags)) $tags=array();
+
 
 function getValue(&$config, $key) {
 	if(isset($config[$key])) {
@@ -32,6 +35,8 @@ function getValue(&$config, $key) {
 	}
 	return "";
 }
+
+
 
 ?>
 
@@ -54,9 +59,18 @@ function getValue(&$config, $key) {
 			<label for="confDescription">Description:</label>
 			<textarea id="confDescription" name="config[description]"><?php echo getValue($config, 'description'); ?></textarea>
 		</li>
+		<li>
+			<label for="confTags">Tags:</label>
+			<input type="text" name="tags" id="confTags" />			
+			<ul id="listTags" class="tags"></ul>
+		</li>
 	</ul>
 	<div class="buttonset">
 		<button type="submit">Save</button>
 		<button type="button" id="btnConfigCancel">Cancel</button>
 	</div>
+	
+	<?php foreach($tags as $tag) { ?>
+		<input type="hidden" name="config[tags][]" value="<?php echo $tag ?>" />
+	<?php } ?>
 </form>

@@ -44,9 +44,12 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		
 
 		<div id="projectChooser" class="hidden">
-			<input type="search" placeholder="Filter projects" id="projectsFilter" />
-			<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
-			<ul id="projectsList"></ul>			
+			<div id="projectList"></div>		
+			<div id="projectFilter">
+				<input type="search" placeholder="Filter projects" id="txtProjectFilter" />
+				<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
+				<ul id="listProjectTags" class="tags"></ul>
+			</div>
 		</div>
 		
 		<div id="projectArea" class="hidden">
