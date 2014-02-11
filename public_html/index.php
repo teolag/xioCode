@@ -52,6 +52,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			</div>
 		</div>
 		
+		
 		<div id="projectArea" class="hidden">
 	
 			<div id="leftColumn">
@@ -66,6 +67,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 				<div id="fileList"></div>
 			</div>
 			
+			<div id="workspaceDivider"></div>
 			
 			<div id="xioDoc">
 				<ul id="openedList"></ul>

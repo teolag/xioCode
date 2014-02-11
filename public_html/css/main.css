@@ -103,7 +103,6 @@ ul.tags li {
 #leftColumn {
 	width: 220px;
 	display: flex;
-	padding-right: 0.5em;
 	flex-direction: column;
 }
 #xioDoc {
@@ -113,6 +112,13 @@ ul.tags li {
 	align-self: flex-end;
 }
 
+#workspaceDivider {
+	margin-top: 3em;
+	cursor: col-resize;
+	border-left: 2px dotted #ddd;
+	padding: 2px;
+	margin-left: 4px;
+}
 
 
 .icon-small {

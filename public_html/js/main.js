@@ -1,8 +1,6 @@
 "use strict";
 
 
-var fileListWidth = 220;
-
 var DEBUG_MODE_ON=true;
 var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 var KEY_ENTER = 13;
@@ -28,7 +26,7 @@ var oldHash;
 
 var loginBox, loginForm, loginButton;
 var username;
-var h1, toolbar, userMenu;
+var h1, toolbar, userMenu, leftColumn, workspaceDivider;
 
 
 function init() {
@@ -43,6 +41,10 @@ function init() {
 	loginForm = document.getElementById("loginForm");
 	loginButton = document.getElementById("btnLogin");
 	loginForm.addEventListener("submit", loginRequest, false);
+	
+	leftColumn = document.getElementById("leftColumn");
+	workspaceDivider = document.getElementById("workspaceDivider");
+	workspaceDivider.addEventListener("mousedown", startDivideDrag, false);
 
 	window.onresize = fixLayout;
 	window.onhashchange = readHash;
@@ -527,6 +529,29 @@ function updateCleanStatus(uri) {
 	}
 }
 
+
+
+
+
+function startDivideDrag(e) {
+	if(e.button===0) {
+		document.addEventListener("mouseup", endDivideDrag, false);
+		document.addEventListener("mousemove", divideDrag, false);
+		e.preventDefault();
+	}
+}
+
+function divideDrag(e) {	
+	console.log("dragging", e);
+	leftColumn.style.width = (e.pageX - leftColumn.offsetLeft*1.5) + "px";
+	
+}
+
+function endDivideDrag(e) {	
+	console.log("end drag", e);
+	document.removeEventListener("mouseup", endDivideDrag, false);
+	document.removeEventListener("mousemove", divideDrag, false);
+}
 
 
 
