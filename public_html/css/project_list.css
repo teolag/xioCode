@@ -21,6 +21,7 @@
 #projectList {
 	padding: 0.5em;
 	flex: 1;
+	overflow: auto;
 }
 
 #projectList table {
@@ -41,11 +42,18 @@
 
 
 #projectList td.name {
-	font-size: 20px;
 	font-weight: bold;
 	color: #555;
 	padding: 0.5em;
 }
+
+#projectList tr td.functions a {
+	visibility: hidden;
+}
+#projectList tr:hover td.functions a {
+	visibility: visible;
+}
+
 
 #projectList a {
 	color: #aaa;

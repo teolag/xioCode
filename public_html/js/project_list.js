@@ -98,7 +98,7 @@ var ProjectList = (function() {
 			var item = projects[id];
 			projectsHTML.push("<tr data-project_id='"+id+"'>");
 			projectsHTML.push("<td class='name'>"+item.name+"</td>");
-			projectsHTML.push("<td class='description'>"+item.description+"</td>");
+			projectsHTML.push("<td class='description'>"+(item.description? item.description : '')+"</td>");
 			projectsHTML.push("<td class='functions'>");
 			projectsHTML.push("<a href='#' data-do='config'>Config</a>");
 			projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
@@ -243,7 +243,8 @@ var ProjectList = (function() {
 		}
 		var sel = projectList.querySelector("tr.selected");
 		if(!sel || sel.classList.contains("hidden")) {
-			selectNextVisible(true);
+			var found = selectNextVisible(true);
+			if(!found) selectNextVisible();
 		}		
 	}
 	
