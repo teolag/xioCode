@@ -47,6 +47,7 @@ var ProjectConfig = (function() {
 				input.name="config[tags][]";
 				form.appendChild(input);
 				displayTags();
+				e.target.value="";
 			}			
 		} else if(e.type === "click" && e.target.nodeName==="LI") {
 			console.log("input[value='"+e.target.textContent+"']");

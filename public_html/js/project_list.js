@@ -36,8 +36,8 @@ var ProjectList = (function() {
 				projectsArrayByDate = Object.keys(projects);
 				
 				projectsArrayByName.sort(function(a,b) {
-					var n1 = projects[a].name;
-					var n2 = projects[b].name;
+					var n1 = projects[a].name.toLowerCase();
+					var n2 = projects[b].name.toLowerCase();
 				
 					if (n1 < n2) return -1;
 					if (n1 > n2) return 1;
@@ -83,6 +83,7 @@ var ProjectList = (function() {
 	
 	
 	var updateTagList = function() {
+		listTags.innerHTML="";
 		tags.forEach(function(tag, i) {
 			var li = document.createElement("LI");
 			li.textContent = tag;
