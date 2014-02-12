@@ -191,16 +191,7 @@ function toolbarHandler(e) {
 		break;
 
 		case "btnSave":
-			if(activeFile===UNSAVED_FILENAME) {
-				console.log("Save As...  ");
-				XioPop.prompt("Save file as...", "Enter the filename", "", function(answer) {
-					if(answer) {
-						saveFileAs(answer);
-					}
-				});
-			} else if(activeFile) {
-				saveFile();
-			}
+		saveFile();
 		break;
 
 		
@@ -286,6 +277,7 @@ function userMenuHandler(e) {
 
 function fixLayout() {
 	var height = document.getElementById("fileList").offsetHeight;
+	if(height===0) height=projectArea.offsetHeight - openedList.offsetHeight - 20;
 	codeMirror.setSize(null, height-2);
 }
 
@@ -372,6 +364,19 @@ function fileCreationCallback(json) {
 
 
 function saveFile() {
+	if(activeFile===UNSAVED_FILENAME) {
+		console.log("Save As...  ");
+		XioPop.prompt("Save file as...", "Enter the filename", "", function(answer) {
+			if(answer) {
+				saveFileAs(answer);
+			}
+		});
+		return;
+	} else if(!activeFile || xioDocs[activeProject.id][activeFile].isClean()) {
+		return;
+	}
+
+
 	codeMirror.save();
 	
 	var formData = new FormData();
@@ -540,15 +545,18 @@ function startDivideDrag(e) {
 		e.preventDefault();
 	}
 }
-
 function divideDrag(e) {	
-	console.log("dragging", e);
-	leftColumn.style.width = (e.pageX - leftColumn.offsetLeft*1.5) + "px";
-	
+	var left = e.pageX - leftColumn.offsetLeft*1.5;
+	if(left<100){
+		left=34;
+		projectArea.classList.add("compact");
+	} else {
+		projectArea.classList.remove("compact");
+	}
+	fixLayout();
+	leftColumn.style.width = left + "px";
 }
-
 function endDivideDrag(e) {	
-	console.log("end drag", e);
 	document.removeEventListener("mouseup", endDivideDrag, false);
 	document.removeEventListener("mousemove", divideDrag, false);
 }

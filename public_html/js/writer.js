@@ -64,8 +64,25 @@ function initWriter() {
 	codeMirror.on("drop", function(cm, e) {
 		var uri = e.dataTransfer.getData("uri");
 		if(uri) {
-			console.log("Drop on cm", e.dataTransfer.getData("uri"));
-			cm.replaceSelection(e.dataTransfer.getData("uri"));
+			var replace = uri;
+			switch(true) {
+			
+				case uri.match(/css$/)!==null:
+				replace = '<link rel="stylesheet" href="'+uri+'" type="text/css" />';
+				break;
+				
+				case uri.match(/js$/)!==null:
+				replace = '<script src="'+uri+'"></script>';
+				break;
+				
+				case uri.match(/php$/)!==null:
+				replace = 'require "'+uri+'";';
+				break;
+				
+			
+			}
+			console.log("Drop on cm", uri);
+			cm.replaceSelection(replace);
 			e.preventDefault();
 		}
 	});

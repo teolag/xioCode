@@ -142,7 +142,6 @@ var FileList = (function() {
 				var uri = target.dataset.uri;			
 				var file = files[uri];
 				
-				console.log("Clicked on item", file);		
 				if(uri === activeFile) {
 					console.log("Already open");
 					e.preventDefault();
@@ -181,7 +180,6 @@ var FileList = (function() {
 		}
 	}
 	function openFolder(li) {
-		console.log("Open folder", li);
 		var uri = li.dataset.uri;
 		var index = openedFolders.indexOf(uri);
 		if (index === -1) {
@@ -195,7 +193,6 @@ var FileList = (function() {
 		folderList.style.display="block";
 	}
 	function closeFolder(li) {
-		console.log("Close folder", li);
 		var uri = li.dataset.uri;
 		var index = openedFolders.indexOf(uri);
 		if (index > -1) {
@@ -292,8 +289,6 @@ var FileList = (function() {
 	
 
 	var dragFile = function(e) {
-		console.log("Drag start", e);
-		
 		var target = e.target;
 		while(target.nodeName !== "LI") {
 			target = target.parentElement;
@@ -306,7 +301,6 @@ var FileList = (function() {
 		var mime = "css/text"; //target.dataset.mime;
 		var filePath = location.origin + "/scripts/load_file.php?project_id=" + projectId + "&uri=" + encodeURI(uri);
 		var fileDetails = mime + ":" + file.filename + ":" + filePath;
-		console.log("fileDetails", fileDetails, e);
 		e.dataTransfer.setData("DownloadURL", fileDetails);
 		e.dataTransfer.setData("uri", uri);
 		e.stopPropagation();
@@ -314,7 +308,6 @@ var FileList = (function() {
 	
 	var dropFile = function(e) {
 		hoverFile(e);
-		console.log("drop in fileList", e);
 		
 		var target = e.target;
 		while(target!==fileList) {
@@ -354,7 +347,6 @@ var FileList = (function() {
 	};
 
 	var hoverFile = function(e) {
-		e.stopPropagation();
 		e.preventDefault();
 		
 		var target = e.target;
@@ -506,6 +498,13 @@ var FileList = (function() {
 	}
 	*/
 	
+	var hide = function() {
+		fileList.style.display="none";
+	}
+	var show = function() {
+		fileList.style.display="block";
+	}
+	
 
 
 
@@ -518,7 +517,9 @@ var FileList = (function() {
 		hideSpinner: hideSpinner,
 		getFiles: getFiles,
 		setFileAsClean: setFileAsClean,
-		setFileAsDirty: setFileAsDirty
+		setFileAsDirty: setFileAsDirty,
+		hide: hide,
+		show: show
 	}
 
 })();

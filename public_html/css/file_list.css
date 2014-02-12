@@ -8,6 +8,9 @@
 	flex: 1;
 	color: #555;
 }
+#projectArea.compact #fileList {
+	display: none;
+}
 
 #fileList ul{
 	list-style:none;
