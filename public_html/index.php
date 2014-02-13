@@ -111,9 +111,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		</div>		
 		
 		
-		<script src="<?php echo CODEMIRRORPATH; ?>lib/codemirror.js"></script>
-		<script src="http://xio.se/projects/xiopop/XioPop.js"></script>
-		
 		<script>
 			var projectsURL = '<?php echo PROJECT_FOLDER; ?>';
 			var _USER = <?php echo $jsUser; ?>;
@@ -127,6 +124,9 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			
 			?>
 		</script>
+		<script src="<?php echo CODEMIRRORPATH; ?>lib/codemirror.js"></script>
+		<script src="http://xio.se/projects/xiopop/XioPop.js"></script>
+		
 		<script src="/scripts/minify_js.php"></script>
 	</body>
 </html>

@@ -23,7 +23,7 @@ function initWriter() {
 		//theme: 'ambiance',
         indentWithTabs: true,
 		//cursorScrollMargin: 75,
-        highlightSelectionMatches: true,
+        highlightSelectionMatches: {showToken: /\w/},
 		extraKeys: {
 			"Tab"			: "tabWithAutoComplete",
 			"Shift-Tab"		: "indentLess",

@@ -2,11 +2,8 @@
 require "/var/www/JShrink/src/JShrink/Minifier.php";
 
 
+$files = array();
 
-
-
-// Find the last updated file in the js folder
-$files = glob("../js/*.js");
 
 
 //$files[] = "../codemirror/lib/codemirror.js";
@@ -17,10 +14,16 @@ $files[] = "../codemirror/mode/clike/clike.js";
 $files[] = "../codemirror/mode/php/php.js";
 $files[] = "../codemirror/addon/dialog/dialog.js";
 $files[] = "../codemirror/addon/edit/matchbrackets.js";
+$files[] = "../codemirror/addon/search/match-highlighter.js";
 $files[] = "../codemirror/addon/search/search.js";
 $files[] = "../codemirror/addon/search/searchcursor.js";
-$files[] = "../codemirror/addon/search/match-highlighter.js";
 $files[] = "../codemirror/addon/selection/active-line.js";
+
+
+// Find the last updated file in the js folder
+$files = array_merge($files, glob("../js/*.js"));
+
+
 
 $last_modified = 0;
 foreach($files as $file) {
@@ -49,7 +52,7 @@ else {
 	
 	$js = "";
 	foreach($files as $file) {
-		$js .= file_get_contents($file) . "\n ";
+		$js .= file_get_contents($file) . "\n\n";
 	}
 	
 	$before = strlen($js);

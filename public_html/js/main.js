@@ -66,6 +66,8 @@ function init() {
 function startup() {
 	if(_USER && _USER.username) {
 		window.dispatchEvent(new CustomEvent("userLogin"));
+	} else {
+		showLogin();
 	}
 }
 
@@ -142,7 +144,6 @@ function loginAccepted(e) {
 }
 
 function logout() {
-	document.body.classList.remove("authorized");
 	ProjectList.clear();
 	FileList.clear();
 	openedList.innerHTML="";
@@ -151,13 +152,21 @@ function logout() {
 	activeProject = null;
 	activeFile = null;
 	xioDocs = {};
-	loginForm.elements.code_username.focus();	
 	clearInterval(checkAccessInterval);
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open("get", "/scripts/gatekeeper_logout.php", true);
 	xhr.send();
+	
+	showLogin();
 }
+
+function showLogin() {
+	document.body.classList.remove("authorized");
+	document.title = pageTitle + " - Login";
+	loginForm.elements.code_username.focus();	
+}
+
 
 function checkAccess() {
 	console.log(new Date().toTimeString().substr(0,5), "Access check");
@@ -170,9 +179,6 @@ function checkAccess() {
 	};
 	xhr.send();
 }
-
-
-
 
 
 
@@ -506,7 +512,7 @@ function chooseProject() {
 
 	title.textContent = "My projects";
 	activeProject = null;
-	document.tite = pageTitle;
+	document.title = pageTitle;
 	txtProjectFilter.focus();
 }
 
