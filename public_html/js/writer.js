@@ -33,12 +33,12 @@ function initWriter() {
 			"Cmd-N" 		: "newFile",
 			"Ctrl-S" 		: "shortcutSave",
 			"Cmd-S" 		: "shortcutSave",
-			"Alt-Down" 		: function(editor) { CodeMirror.commands.moveRow(editor, false); },
-			"Alt-Up" 		: function(editor) { CodeMirror.commands.moveRow(editor, true); },
-			"Ctrl-Alt-Down" : function(editor) { CodeMirror.commands.duplicateRow(editor, false); },
-			"Cmd-Alt-Down" 	: function(editor) { CodeMirror.commands.duplicateRow(editor, false); },
-			"Ctrl-Alt-Up" 	: function(editor) { CodeMirror.commands.duplicateRow(editor, true); },
-			"Cmd-Alt-Up" 	: function(editor) { CodeMirror.commands.duplicateRow(editor, true); },
+			"Alt-Down" 		: "moveRowDown",
+			"Alt-Up" 		: "moveRowUp",
+			"Ctrl-Alt-Down" : "duplicateRowDown",
+			"Cmd-Alt-Down" 	: "duplicateRowDown",
+			"Ctrl-Alt-Up" 	: "duplicateRowUp",
+			"Cmd-Alt-Up" 	: "duplicateRowUp",
 			"Cmd-I" 		: "selectLines",
 			"Ctrl-I" 		: "selectLines",			
 			"Cmd-L" 		: "jump2Line",
@@ -66,7 +66,6 @@ function initWriter() {
 		if(uri) {
 			var replace = uri;
 			switch(true) {
-			
 				case uri.match(/css$/)!==null:
 				replace = '<link rel="stylesheet" href="'+uri+'" type="text/css" />';
 				break;
@@ -78,8 +77,6 @@ function initWriter() {
 				case uri.match(/php$/)!==null:
 				replace = 'require "'+uri+'";';
 				break;
-				
-			
 			}
 			console.log("Drop on cm", uri);
 			cm.replaceSelection(replace);
@@ -98,53 +95,71 @@ function initWriter() {
 	
 }
 
-
-
+CodeMirror.commands.moveRowUp = function(editor) {
+	CodeMirror.commands.moveRow(editor, true);
+}
+CodeMirror.commands.moveRowDown = function(editor) {
+	CodeMirror.commands.moveRow(editor, false);
+}
 CodeMirror.commands.moveRow = function(editor, up) {
-	CodeMirror.commands.selectLines(editor);
-	var startLine = editor.getCursor("start").line;
-	var endLine = editor.getCursor("end").line;	
-	var nextRow = editor.getLine(endLine+1);
-	var prevRow = editor.getLine(startLine-1);
+	var start = editor.getCursor("start");
+	var end = editor.getCursor("end");	
+	var nextRow = editor.getLine(end.line+1);
+	var prevRow = editor.getLine(start.line-1);
 	
-	if(up && startLine>0) {
-		editor.removeLine(startLine-1);	
-		editor.setLine(endLine, prevRow + "\n" + nextRow);
-	} else if(!up) {
-		console.log(startLine);
-		editor.removeLine(endLine+1);
-		if(startLine==0) {
-			pos = {line:0, ch:0};
-			editor.replaceRange(nextRow+"\n",pos, pos);
+	if(up && start.line>0) {
+		editor.replaceRange("", {line:start.line-1, ch:0}, {line:start.line, ch:0});
+		if(end.line===editor.doc.lastLine()) {
+			editor.replaceRange("\n"+prevRow, {line:end.line});
+			editor.setSelection({line:start.line-1, ch:start.ch}, {line:end.line-1, ch:end.ch});
 		} else {
-			editor.setLine(startLine-1, prevRow + "\n" + nextRow);
+			editor.replaceRange(prevRow + "\n", {line:end.line, ch:0});
 		}
+	} else if(!up) {
+		if(end.line===editor.doc.lastLine()-1) {
+			editor.replaceRange("", {line:end.line}, {line:end.line+1});
+		} else if(end.line!==editor.doc.lastLine()) {
+			editor.replaceRange("", {line:end.line+1, ch:0}, {line:end.line+2, ch:0});
+		}
+		editor.replaceRange(nextRow+"\n",{line:start.line, ch:0});
 	}
 }
 
 
+CodeMirror.commands.duplicateRowUp = function(editor) {
+	CodeMirror.commands.duplicateRow(editor, true);
+}
+CodeMirror.commands.duplicateRowDown = function(editor) {
+	CodeMirror.commands.duplicateRow(editor, false);
+}
 CodeMirror.commands.duplicateRow = function(editor, up) {	
-	CodeMirror.commands.selectLines(editor);
-	var startLine = editor.getCursor("start").line;
-	var endLine = editor.getCursor("end").line;	
-	var text = editor.getSelection();
+	var start = editor.getCursor("start");
+	var end = editor.getCursor("end");	
+	var text = editor.getRange({line:start.line, ch:0}, {line:end.line});
 	if(up) {
-		var nextRow = editor.getLine(endLine+1);
-		editor.setLine(endLine+1, text + "\n" + nextRow);
+		if(end.line===editor.doc.lastLine()) {
+			editor.replaceRange("\n"+text, {line:end.line});
+			editor.setSelection(start, end);
+		} else {
+			editor.replaceRange(text + "\n", {line:end.line+1, ch:0});
+		}
 	} else {
-		var prevRow = editor.getLine(startLine-1);
-		editor.setLine(startLine-1, prevRow + "\n" + text);
+		if(start.line===0) {
+			editor.replaceRange(text+"\n", {line:0, ch:0});
+		} else {
+			editor.replaceRange("\n"+text, {line:start.line-1});
+		}
 	}
-	
 }
 
 
 
 
 CodeMirror.commands.removeLines = function(editor) {
-	editor.replaceSelection("");
-	var pos = editor.getCursor();
-	editor.removeLine(pos.line);
+	var startLine = editor.getCursor("start").line;
+	var endLine = editor.getCursor("end").line;	
+	var pos = editor.getCursor();	
+	editor.replaceRange("", {line:startLine,ch:0}, {line:endLine+1,ch:0});
 	editor.setCursor(pos);
 }
 

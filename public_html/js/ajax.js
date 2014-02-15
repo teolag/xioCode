@@ -13,7 +13,7 @@ var Ajax = (function() {
 			} else {
 				if(errorCallback) errorCallback(e.target);
 			}
-		}
+		};
 		xhr.send();
 	},
 	
@@ -30,7 +30,7 @@ var Ajax = (function() {
 			} else {
 				if(errorCallback) errorCallback(e.target);
 			}
-		}
+		};
 		xhr.send();	
 		
 	},
@@ -50,7 +50,7 @@ var Ajax = (function() {
 			} else {
 				if(errorCallback) errorCallback(e.target);
 			}
-		}
+		};
 		xhr.send(sendData);
 	},
 	
@@ -67,24 +67,6 @@ var Ajax = (function() {
 		};
 		xhr.send(formData);
 	},
-	
-	/*
-	validateCallback = function(e) {
-		if(e.target.status===200) {
-			try {
-				var json = JSON.parse(e.target.responseText);
-				return json;
-			}
-			catch(err) {
-				console.error("Ajax callback not valid json", e.target.responseText, err);
-				return false;
-			}		
-		} else {
-			console.error("Error during ajax call", e);
-			return false;
-		}
-	},
-	*/
 	
 	obj2querystring = function(obj) {
 		var parts = [];

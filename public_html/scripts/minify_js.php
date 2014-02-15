@@ -1,6 +1,4 @@
 <?php
-require "/var/www/JShrink/src/JShrink/Minifier.php";
-
 
 $files = array();
 
@@ -48,7 +46,6 @@ if(file_exists($minifile)) {
 else {
 	//File updated, save new version	
 	
-	require_once('../../includes/jsmin-1.1.1.php');
 	
 	$js = "";
 	foreach($files as $file) {
