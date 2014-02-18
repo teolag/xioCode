@@ -8,37 +8,36 @@ var ProjectList = (function() {
 		projectList = document.getElementById('projectList');
 		projectList.addEventListener("click", clickHandler, false);
 		projectList.addEventListener("mouseover", hoverSelect, false);
-		
+
 		txtProjectFilter = document.getElementById('txtProjectFilter');
 		txtProjectFilter.addEventListener("search", filterProjects);
 		txtProjectFilter.addEventListener("keydown", keyDown);
 		txtProjectFilter.addEventListener("keyup", filterProjects);
-		
+
 		btnNewProject = document.getElementById("btnNewProject");
 		btnNewProject.addEventListener("click", addNewProject, false);
-		
+
 		listTags = document.getElementById("listProjectTags");
 		//listTags.addEventListener("click", addNewProject, false);
-		
-		
+
 	};
-	
+
 	var loadProjects = function() {
 		if(!projectList) init();
-		
+
 		Ajax.getJSON("/scripts/get_all_projects.php", null, 
 			function(json) {
 				projects = json;
-				
+
 				getUniqueTags();
-				
+
 				projectsArrayByName = Object.keys(projects);
 				projectsArrayByDate = Object.keys(projects);
-				
+
 				projectsArrayByName.sort(function(a,b) {
 					var n1 = projects[a].name.toLowerCase();
 					var n2 = projects[b].name.toLowerCase();
-				
+
 					if (n1 < n2) return -1;
 					if (n1 > n2) return 1;
 					return 0;
@@ -48,12 +47,12 @@ var ProjectList = (function() {
 					var c2 = projects[b].created || 0;
 					return c2-c1;
 				});
-				
+
 				display();
 				updateTagList();
 				console.log("%i projects found", Object.keys(projects).length, projects);
 				filterProjects();
-				
+
 				if(activeProject) {
 					var pId = activeProject.id
 					activeProject = projects[pId];
@@ -62,9 +61,9 @@ var ProjectList = (function() {
 					title.textContent = activeProject.name;
 				}
 			}
-		);	
+		);
 	};
-	
+
 	var getUniqueTags = function() {
 		tags = [];
 		for (var pId in projects) {
@@ -80,8 +79,8 @@ var ProjectList = (function() {
 			}
 		}
 	};
-	
-	
+
+
 	var updateTagList = function() {
 		listTags.innerHTML="";
 		tags.forEach(function(tag, i) {
@@ -90,9 +89,8 @@ var ProjectList = (function() {
 			listTags.appendChild(li);
 		});
 	}
-	
-	
-	
+
+
 	var display = function() {
 		var projectsHTML=["<table>"];
 		projectsArrayByName.forEach(function(id, i) {
@@ -111,8 +109,8 @@ var ProjectList = (function() {
 		projectsHTML.push("</table>");
 		projectList.innerHTML = projectsHTML.join("");
 	};
-	
-	
+
+
 	var clickHandler = function(e) {
 		var target = e.target;
 		var doo;
@@ -123,7 +121,7 @@ var ProjectList = (function() {
 			e.preventDefault();
 		}
 
-		var tr = target;		
+		var tr = target;
 		while(tr.nodeName!=="TR") {
 			if(tr===projectList) return;
 			tr = tr.parentElement;
@@ -171,7 +169,7 @@ var ProjectList = (function() {
 							console.err("Error renaming project", xhr);
 						}
 					};
-					xhr.send(formData);				
+					xhr.send(formData);
 				}
 			});
 			break;
@@ -179,7 +177,7 @@ var ProjectList = (function() {
 			case "config":
 			ProjectConfig.open(projectId);
 			break;
-			
+
 			case "preview":
 			previewProject(projectId);
 			break;
@@ -187,10 +185,9 @@ var ProjectList = (function() {
 
 			default:
 			setHash(projectId+"/"+UNSAVED_FILENAME);
-		}	
+		}
 	};
-	
-	
+
 	var hoverSelect = function(e) {
 		var target = e.target;
 		while(target.nodeName !== "TR") {
@@ -200,14 +197,14 @@ var ProjectList = (function() {
 		deselectAll();
 		target.classList.add("selected");
 	};
-	
+
 	var deselectAll = function() {
 		var selected = projectList.getElementsByClassName("selected");
 		for(var i=0; i<selected.length; i++) {
 			selected[i].classList.remove("selected");
 		}
 	}
-	
+
 	var keyDown = function(e) {
 		if(e.which === KEY_ENTER) {
 			var projectElement = projectList.querySelector("tr.selected");
@@ -223,8 +220,8 @@ var ProjectList = (function() {
 			filterProjects();
 		}
 	};
-	
-	
+
+
 	function filterProjects(e) {
 		var searchString = txtProjectFilter.value.toLowerCase();
 		console.log("filter projects '"+searchString+"'", txtProjectFilter, projects);
@@ -239,16 +236,16 @@ var ProjectList = (function() {
 				} else {
 					tr.classList.add('hidden');
 				}
-				
+
 			}
 		}
 		var sel = projectList.querySelector("tr.selected");
 		if(!sel || sel.classList.contains("hidden")) {
 			var found = selectNextVisible(true);
 			if(!found) selectNextVisible();
-		}		
+		}
 	}
-	
+
 	var selectNextVisible = function(rev){
 		var sel = projectList.querySelector("tr.selected");
 		if(sel) {
@@ -260,7 +257,7 @@ var ProjectList = (function() {
 					return true;
 				}
 				sib = rev? sib.previousSibling : sib.nextSibling;
-			}			
+			}
 		} else {
 			sel = projectList.querySelector("tr");
 			deselectAll();
@@ -270,7 +267,7 @@ var ProjectList = (function() {
 		return false;
 	};
 
-	var addNewProject = function() {	
+	var addNewProject = function() {
 		XioPop.prompt("Enter the projects name", "", "", function(projectName) {
 			if(projectName) {
 				var xhr = new XMLHttpRequest();
@@ -283,11 +280,9 @@ var ProjectList = (function() {
 				};
 				xhr.send();
 			}
-		});	
+		});
 	};
 
-	
-	
 
 	var getProject = function(id) {
 		if(projects && projects.hasOwnProperty(id)) {
@@ -295,24 +290,21 @@ var ProjectList = (function() {
 		}
 		return false;
 	};
-	
-	
+
 	var clear = function() {
 		projects = null;
 		projectList.innerHTML = "";
 	};
-	
+
 	var isLoaded = function() {
 		return projects!==null;
 	};
 
-	
-	
-	
+
 	return {
 		isLoaded: isLoaded,
 		clear: clear,
 		getProject: getProject,
 		loadProjects: loadProjects
-	};	
+	};
 })();

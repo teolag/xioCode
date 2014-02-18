@@ -68,6 +68,23 @@ var Ajax = (function() {
 		xhr.send(formData);
 	},
 	
+	
+	postFormDataWithJsonResponse = function(url, formData, successCallback, errorCallback) {
+		var xhr = new XMLHttpRequest();
+		xhr.responseType='json';
+		xhr.open("post", url, true);
+		xhr.onload = function(e) {
+			if(e.target.status===200) {
+				if(successCallback) successCallback(e.target.response);
+			} else {
+				if(errorCallback) errorCallback(e.target);
+			}
+		};
+		xhr.send(formData);	
+	},
+	
+	
+	
 	obj2querystring = function(obj) {
 		var parts = [];
 		for (var i in obj) {
@@ -82,6 +99,7 @@ var Ajax = (function() {
 		get: get,
 		getJSON: getJSON,
 		post: post,
-		postForm: postForm
+		postForm: postForm,
+		postFormDataWithJsonResponse: postFormDataWithJsonResponse
 	};
 })();

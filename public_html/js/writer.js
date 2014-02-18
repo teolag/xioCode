@@ -12,7 +12,7 @@ var snippets = {
 
 function initWriter() {
 	if(codeMirror) return;
-	
+
 	codeMirror = CodeMirror.fromTextArea(document.getElementById("code"), {
 		lineNumbers: true,
         matchBrackets: true,
@@ -40,26 +40,24 @@ function initWriter() {
 			"Ctrl-Alt-Up" 	: "duplicateRowUp",
 			"Cmd-Alt-Up" 	: "duplicateRowUp",
 			"Cmd-I" 		: "selectLines",
-			"Ctrl-I" 		: "selectLines",			
+			"Ctrl-I" 		: "selectLines",
 			"Cmd-L" 		: "jump2Line",
-			"Ctrl-L" 		: "jump2Line",			
+			"Ctrl-L" 		: "jump2Line",
 			"Cmd-O" 		: "showAllFunctions",
 			"Ctrl-O" 		: "showAllFunctions"
 		}
 	});
-	
-	
-	
-	
+
+
 	console.groupCollapsed("CodeMirror" , CodeMirror.version, "loaded");
 	console.log("Modes", CodeMirror.modes);
 	console.log("Mimes", CodeMirror.mimeModes);
 	console.groupEnd();
-	
+
 	codeMirror.on("dragover", function(cm, e) {
 		cm.setCursor(cm.coordsChar({left:e.x, top:e.y}));
 		cm.focus();
-		
+
 	});
 	codeMirror.on("drop", function(cm, e) {
 		var uri = e.dataTransfer.getData("uri");
@@ -69,11 +67,11 @@ function initWriter() {
 				case uri.match(/css$/)!==null:
 				replace = '<link rel="stylesheet" href="'+uri+'" type="text/css" />';
 				break;
-				
+
 				case uri.match(/js$/)!==null:
 				replace = '<script src="'+uri+'"></script>';
 				break;
-				
+
 				case uri.match(/php$/)!==null:
 				replace = 'require "'+uri+'";';
 				break;
@@ -83,16 +81,13 @@ function initWriter() {
 			e.preventDefault();
 		}
 	});
-	
+
 	codeMirror.on("change", function(cm, change) {
 		if(activeFile) {
 			//console.log("CodeMirror Change", cm, change);
 			updateCleanStatus(activeFile);
 		}
-	});	
-	
-	
-	
+	});
 }
 
 CodeMirror.commands.moveRowUp = function(editor) {
@@ -103,10 +98,10 @@ CodeMirror.commands.moveRowDown = function(editor) {
 }
 CodeMirror.commands.moveRow = function(editor, up) {
 	var start = editor.getCursor("start");
-	var end = editor.getCursor("end");	
+	var end = editor.getCursor("end");
 	var nextRow = editor.getLine(end.line+1);
 	var prevRow = editor.getLine(start.line-1);
-	
+
 	if(up && start.line>0) {
 		editor.replaceRange("", {line:start.line-1, ch:0}, {line:start.line, ch:0});
 		if(end.line===editor.doc.lastLine()) {
@@ -132,9 +127,9 @@ CodeMirror.commands.duplicateRowUp = function(editor) {
 CodeMirror.commands.duplicateRowDown = function(editor) {
 	CodeMirror.commands.duplicateRow(editor, false);
 }
-CodeMirror.commands.duplicateRow = function(editor, up) {	
+CodeMirror.commands.duplicateRow = function(editor, up) {
 	var start = editor.getCursor("start");
-	var end = editor.getCursor("end");	
+	var end = editor.getCursor("end");
 	var text = editor.getRange({line:start.line, ch:0}, {line:end.line});
 	if(up) {
 		if(end.line===editor.doc.lastLine()) {
@@ -157,26 +152,26 @@ CodeMirror.commands.duplicateRow = function(editor, up) {
 
 CodeMirror.commands.removeLines = function(editor) {
 	var startLine = editor.getCursor("start").line;
-	var endLine = editor.getCursor("end").line;	
-	var pos = editor.getCursor();	
+	var endLine = editor.getCursor("end").line;
+	var pos = editor.getCursor();
 	editor.replaceRange("", {line:startLine,ch:0}, {line:endLine+1,ch:0});
 	editor.setCursor(pos);
 }
 
 CodeMirror.commands.selectLines = function(editor) {
 	var posStart = editor.getCursor("start");
-	var posEnd = editor.getCursor("end");	
+	var posEnd = editor.getCursor("end");
 	posStart.ch=0;
-	posEnd.ch=editor.getLine(posEnd.line).length;	
-	editor.setSelection(posStart, posEnd);	
+	posEnd.ch=editor.getLine(posEnd.line).length;
+	editor.setSelection(posStart, posEnd);
 }
 
 CodeMirror.commands.tabWithAutoComplete = function(editor) {
 	console.log("tabWithAutoComplete");
 	var cur = editor.getCursor();
-					
+
 	var c = editor.getSearchCursor(/\s/);
-	
+
 	match = c.matches(true, cur);
 	console.log("match", match);
 	var start;
@@ -185,7 +180,7 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 	} else {
 		start = {line:cur.line, ch:0};
 	}
-	text = editor.getRange(start, cur).trim(); 
+	text = editor.getRange(start, cur).trim();
 	if(snippets[text]) {
 		editor.replaceRange(snippets[text],start, cur);
 	} else {
@@ -216,27 +211,24 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 	codeMirror.focus();
 }
 CodeMirror.commands.rightTrimLines = function(editor, line) {
-	
+
 }
 
 
 CodeMirror.commands.showAllFunctions = function(editor) {
-	
 	var functions = findFunctions();
-	
+
 	console.log(functions);
-	
 	var div = document.createElement("div");
 	div.classList.add("filteredSelectList");
-	
-	
+
 	var filter = document.createElement("input");
 	filter.type="search";
 	filter.addEventListener("keyup", function(e) {
-		if(e && e.which == 13) {
-			var first = list.querySelector("li");	
+		if(e && e.which === 13) {
+			var first = list.querySelector("li");
 			if(!first) return;
-			
+
 			console.log("Choose the first", first);
 			var line = Number(first.getAttribute("data-line"));
 			XioPop.close();
@@ -244,11 +236,11 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 		} else {
 			var searchString = e.target.value.toLowerCase();
 			console.log("filter functions '"+searchString+"'");
-			
+
 			for(var id in functions) {
 				var func = functions[id];
 				console.log(id, func);
-				
+
 				var li = list.querySelector("li[data-id='"+id+"']");
 				if(func.name.toLowerCase().search(searchString)!=-1) {
 					li.classList.remove('hidden');
@@ -258,8 +250,7 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 			}
 	}
 	});
-	
-	
+
 	var list = document.createElement("ul");
 	list.classList.add("selectableList", "functions");
 	list.addEventListener("click", function(e) {
@@ -267,18 +258,18 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 		if(target.nodeName==="LI") {
 			var line = Number(target.getAttribute("data-line"));
 			XioPop.close();
-			CodeMirror.commands.jump2Line(editor, line);			
-		}		
+			CodeMirror.commands.jump2Line(editor, line);
+		}
 	});
 	for(var i=0; i<functions.length; i++) {
 		var f = functions[i];
 		var item = document.createElement("li");
 		item.textContent = f.name + " (" + f.args.join(", ") + ")";
-		item.setAttribute("data-line", f.line); 
-		item.setAttribute("data-id", i); 
+		item.setAttribute("data-line", f.line);
+		item.setAttribute("data-id", i);
 		list.appendChild(item);
 	}
-	
+
 	div.appendChild(filter);
 	div.appendChild(list);
 	XioPop.showElement(div);
@@ -286,18 +277,5 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 
 }
 
-
-
-
-var selStart, selEnd;
-
-
-
-function selectTheme() {
-	var input = document.getElementById("skinSelect");
-	var theme = input.options[input.selectedIndex].innerHTML;
-	codeMirror.setOption("theme", theme);
-	console.log("Set theme to:", theme);
-}
 
 

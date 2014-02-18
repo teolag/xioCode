@@ -4,13 +4,13 @@ var openedList = document.getElementById("openedList");
 openedList.addEventListener("click", function(e) {
 	var target=e.target;
 	while(target.nodeName!=="LI") {
-		if(target==openedList) return;
+		if(target===openedList) return;
 		target = target.parentElement;
 	}
 	console.log("Click on tab", target, e.target, e);
-	
+
 	if(e.target.classList.contains("close") || e.which===2) {
-		
+
 		console.log("Close tab", target);
 		var doc = xioDocs[activeProject.id][target.dataset.uri];
 		if(!doc.isClean()) {
@@ -22,47 +22,46 @@ openedList.addEventListener("click", function(e) {
 		}
 		return;
 	}
-	
-	
+
 	openFile(target.dataset.uri);
-	
+
 }, false);
 
 
 
 
-function redrawOpenedDocs(projectId) {	
+function redrawOpenedDocs(projectId) {
 	var html="";
 	var oFiles = xioDocs[projectId];
 	openedList.innerHTML="";
-			
+
 	for (var property in oFiles) {
 		if (oFiles.hasOwnProperty(property)) {
 			var doc = oFiles[property];
 			var active = activeFile===property;
 			var classes = [];
-			
+
 			var li = document.createElement("LI");
 			li.dataset.uri=property;
-						
-			if(active) li.classList.add("selected");			
+
+			if(active) li.classList.add("selected");
 			if(!doc.isClean()) li.classList.add("changed");
-			
+
 			var filename = document.createElement("span");
 			filename.textContent = property.replace(/^.*[\\\/]/, '');
 			filename.title = property;
 			filename.classList.add("filename");
-			
+
 			var close = document.createElement("span");
 			close.classList.add("icon-close", "close");
-			
+
 			li.appendChild(filename);
 			li.appendChild(close);
-					
+
 			openedList.appendChild(li);
 		}
 	}
-	
+
 }
 
 function closeDoc(projectId, uri) {
@@ -76,7 +75,7 @@ function closeDoc(projectId, uri) {
 	} else if(oUri===undefined) {
 		console.log("Open empty");
 		openFile();
-	} 
+	}
 }
 
 
@@ -92,26 +91,26 @@ function getOrCreateDoc(projectId, uri) {
 		redrawOpenedDocs(projectId);
 		console.log("Doc", doc);
 	} else {
-		loadDoc(projectId, uri);	
+		loadDoc(projectId, uri);
 	}
 }
 
-function loadDoc(projectId, uri) {		
+function loadDoc(projectId, uri) {
 	if(uri===UNSAVED_FILENAME) {
 		docLoaded(projectId, uri, "");
 		return;
 	}
-	
+
 	var xhr = new XMLHttpRequest();
 	xhr.open("get", "/scripts/load_file.php?project_id="+projectId+"&uri="+encodeURI(uri), true);
 	console.log("Loading '" + uri + "' from disk.");
-	
+
 	xhr.onload = function(e) {
 		docLoaded(projectId, uri, e.target.responseText);
 	};
-	
+
 	xhr.send();
-	
+
 }
 
 function docLoaded(projectId, uri, data) {
@@ -140,7 +139,7 @@ function setActiveFile(projectId, uri) {
 function getDocType(uri) {
 	var re = /(?:\.([^.]+))?$/;
 	var ext = re.exec(uri);
-	
+
 	switch(ext[1]) {
 		case "php": 				return "application/x-httpd-php"; 	break;
 		case "js": 					return "text/javascript"; 			break;

@@ -29,19 +29,30 @@ var username;
 var h1, toolbar, userMenu, leftColumn, workspaceDivider;
 
 
+document.addEventListener("DOMContentLoaded", startup, false);
+function startup() {
+	init();
+	if(_USER && _USER.username) {
+		window.dispatchEvent(new CustomEvent("userLogin"));
+	} else {
+		showLogin();
+	}
+}
+
+
 function init() {
 	initWriter();
-	
+
 	pageTitle = document.title;
 	title = document.getElementById("pageTitle");
 	console.log("Init " + pageTitle);
-	
+
 	username = document.getElementById("username");
 	loginBox = document.getElementById("login");
 	loginForm = document.getElementById("loginForm");
 	loginButton = document.getElementById("btnLogin");
 	loginForm.addEventListener("submit", loginRequest, false);
-	
+
 	leftColumn = document.getElementById("leftColumn");
 	workspaceDivider = document.getElementById("workspaceDivider");
 	workspaceDivider.addEventListener("mousedown", startDivideDrag, false);
@@ -50,7 +61,6 @@ function init() {
 	window.onhashchange = readHash;
 	window.onbeforeunload = warnBeforeUnload;
 	window.addEventListener("userLogin", loginAccepted, false);
-	document.addEventListener("DOMContentLoaded", startup, false);
 
 	h1 = document.querySelector("#header h1");
 	h1.addEventListener("click", function(){setHash()}, false);
@@ -59,16 +69,7 @@ function init() {
 	toolbar.addEventListener("click", toolbarHandler, false);
 
 	userMenu = document.getElementById("userMenu");
-	userMenu.addEventListener("click", userMenuHandler, false);	
-}
-
-
-function startup() {
-	if(_USER && _USER.username) {
-		window.dispatchEvent(new CustomEvent("userLogin"));
-	} else {
-		showLogin();
-	}
+	userMenu.addEventListener("click", userMenuHandler, false);
 }
 
 
@@ -89,13 +90,13 @@ function numberOfUnsavedFiles() {
 		}
 	}
 	return counter;
-} 
+}
 
 
 
 function loginRequest(e) {
 	e.preventDefault();
-	if(!loginForm.elements.code_username.value || 
+	if(!loginForm.elements.code_username.value ||
 		!loginForm.elements.code_password.value) {
 		return;
 	}
@@ -130,7 +131,7 @@ function loginCallback(e) {
 }
 
 function loginAccepted(e) {
-	console.log("Login accepted", e);	
+	console.log("Login accepted", e);
 	console.log(_USER);
 
 	document.body.classList.add("authorized");
@@ -153,18 +154,18 @@ function logout() {
 	activeFile = null;
 	xioDocs = {};
 	clearInterval(checkAccessInterval);
-	
+
 	var xhr = new XMLHttpRequest();
 	xhr.open("get", "/scripts/gatekeeper_logout.php", true);
 	xhr.send();
-	
+
 	showLogin();
 }
 
 function showLogin() {
 	document.body.classList.remove("authorized");
 	document.title = pageTitle + " - Login";
-	loginForm.elements.code_username.focus();	
+	loginForm.elements.code_username.focus();
 }
 
 
@@ -172,7 +173,7 @@ function checkAccess() {
 	console.log(new Date().toTimeString().substr(0,5), "Access check");
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET","/scripts/gatekeeper_check_access.php");
-	xhr.onload = function(e) {		
+	xhr.onload = function(e) {
 		if(xhr.status !== 202) {
 			logout();
 		}
@@ -200,7 +201,6 @@ function toolbarHandler(e) {
 		saveFile();
 		break;
 
-		
 		case "btnPreviewFile":
 		var path = projectsURL + activeProject.id +"/"+ activeFile;
 		console.log("Preview:", projectsURL + activeProject.id +"/"+ activeFile);
@@ -235,20 +235,20 @@ function userMenuHandler(e) {
 
 	var target = e.target;
 	while(target.nodeName!=="LI") {
-		if(target==userMenu) return;
+		if(target===userMenu) return;
 		target = target.parentElement;
 	}
-	
+
 	switch(target.id) {
 		case "btnLogout":
 		logout();
 		break;
-		
+
 		case "btnExportAllZip":
 		var d = new Date();
 		window.location="/scripts/export_zip.php?path=" + "&filename=Projects_"+d.toISOString().substring(0,10)+'.zip';
 		break;
-		
+
 		case "btnChangePassword":
 		XioPop.prompt("Change password", "Enter your new password", "", function(newPass) {
 			if(newPass) {
@@ -267,7 +267,7 @@ function userMenuHandler(e) {
 				};
 				xhr.send(formData);
 			}
-		});		
+		});
 		break;
 	}
 }
@@ -301,11 +301,10 @@ function openProject(id) {
 		document.title = pageTitle + " - " + activeProject.name;
 		title.textContent = activeProject.name;
 	}
-	
+
 	document.getElementById("projectChooser").classList.add("hidden");
 	document.getElementById("projectArea").classList.remove("hidden");
 	fixLayout();
-	
 }
 
 function previewProject(id) {
@@ -326,7 +325,6 @@ function openFile(uri) {
 function unloadFile() {
 	openFile(UNSAVED_FILENAME);
 	codeMirror.focus();
-	
 }
 
 
@@ -341,31 +339,31 @@ function createNewFile() {
 				createNewFile();
 			});
 		} else {
-			Ajax.getJSON("/scripts/file_handler.php", {do:"new", project_id:activeProject.id, uri:escape(newFileName)}, fileCreationCallback);
+			Ajax.getJSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:escape(newFileName)}, fileCreationCallback);
 		}
-	});	
+	});
 }
 function fileCreationCallback(json) {
 	if(!json) return false;
-	
+
 	switch(json.status) {
-		case STATUS_OK:		
+		case STATUS_OK:
 		console.log("file saved as ", json.uri);
 		FileList.loadProjectFiles();
 		openFile(json.uri);
 		break;
-		
+
 		case STATUS_FILE_COLLISION:
 		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
 			if(answer) {
-				Ajax.getJSON("/scripts/file_handler.php", {do:"new", project_id:activeProject.id, uri:escape(newFileName), overwrite:true}, fileCreationCallback);
+				Ajax.getJSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:escape(newFileName), overwrite:true}, fileCreationCallback);
 			}
 		});
 		break;
-		
+
 		default:
 		console.warn("handle callback", json);
-	}	
+	}
 }
 
 
@@ -382,80 +380,113 @@ function saveFile() {
 		return;
 	}
 
-
-	codeMirror.save();
-	
 	var formData = new FormData();
 	formData.append("uri", activeFile);
 	formData.append("project_id", activeProject.id);
 	formData.append("code", codeMirror.getValue());
+	formData.append("action", "save");
 
 	console.log("Save file '"+ activeFile+"'...");
-	
+
 	FileList.showSpinner(activeFile);
-	
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "/scripts/save.php", true);	
-	xhr.onload = function(e) {
-		if(e.target.status===200) {
-			setFileToClean(activeFile);
-			console.log("File saved");
-		} else {
-			console.error("Error saving file", e);
-		}
-		FileList.hideSpinner(activeFile);
-	};		
-	xhr.send(formData);
+	Ajax.postFormDataWithJsonResponse("/scripts/file_handler.php", formData, saveSuccess, errorCallback);
 }
 
+
+function saveSuccess(json) {
+	switch(json.status) {
+		case STATUS_OK:
+		console.log("file saved as ", json.uri);
+		setFileToClean(json.uri);
+		break;
+
+		default:
+		console.warn("handle callback", json);
+	}
+	FileList.hideSpinner(activeFile);
+}
+
+
 function saveFileAs(newFileName, overwrite) {
-	codeMirror.save();
-	
+
 	var formData = new FormData();
 	formData.append("uri", newFileName);
 	formData.append("project_id", activeProject.id);
 	formData.append("code", codeMirror.getValue());
-	formData.append("do", "saveAs");
+	formData.append("action", "saveAs");
 	if(overwrite) formData.append("overwrite", true);
-	
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "/scripts/file_handler.php", true);
-	xhr.onload = function(e) {
-		var json = validateCallback(e);
-		if(!json) return false;	
-		
-		switch(json.status) {
-			case STATUS_OK:
-			console.log("file saved as ", json.uri);
-			FileList.loadProjectFiles();
-			openFile(json.uri);
-			if(activeFile===UNSAVED_FILENAME) {
-				delete xioDocs[activeProject.id][activeFile];
-			}
-			break;
-			
-			case STATUS_FILE_COLLISION:
-			XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
-				if(answer) {
-					saveFileAs(newFileName, true);
-				}
-			});
-			break;
-			
-			default:
-			console.warn("handle callback", json);
-		}
-	};
-	
-	xhr.send(formData);
 
+	Ajax.postFormDataWithJsonResponse("/scripts/file_handler.php", formData, saveAsSuccess, errorCallback);	
+}
+
+function saveAsSuccess(json) {
+	switch(json.status) {
+		case STATUS_OK:
+		console.log("file saved as ", json.uri);
+		FileList.loadProjectFiles();
+		openFile(json.uri);
+		if(activeFile===UNSAVED_FILENAME) {
+			delete xioDocs[activeProject.id][activeFile];
+		}
+		break;
+
+		case STATUS_FILE_COLLISION:
+		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
+			if(answer) {
+				saveFileAs(newFileName, true);
+			}
+		});
+		break;
+
+		default:
+		console.warn("handle callback", json);
+	}
 }
 
 
+function renameFile(uri, newUri, overwrite) {
+	var parameters = {
+		'action':'rename',
+		'project_id':activeProject.id,
+		'uri':encodeURI(uri),
+		'new_uri':encodeURI(newUri)
+	};
+	if(overwrite===true) parameters['overwrite']=true;
+	Ajax.getJSON("/scripts/file_handler.php", parameters, renameCallback, errorCallback);
+}
+
+function renameCallback(json) {
+		switch(json.status) {
+			case STATUS_OK:
+			console.log(json.uri, "renamed to", json.newUri);
+			FileList.loadProjectFiles();
+			if(activeFile===json.uri) {
+				openFile(json.newUri);
+			}
+			if(xioDocs[activeProject.id].hasOwnProperty(json.uri)) {
+				xioDocs[activeProject.id][json.newUri] = xioDocs[activeProject.id][json.uri];
+				delete xioDocs[activeProject.id][json.uri];
+				redrawOpenedDocs(activeProject.id);
+			}
+			break;
+
+			case STATUS_FILE_COLLISION:
+			XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.newUri+"?", function(answer) {
+				if(answer) {
+					renameFile(json.uri, json.newUri, true);
+				}
+			});
+			break;
+
+			default:
+			console.warn("handle callback", json);
+		}
+	}
 
 
-
-
+function errorCallback(e) {
+	console.error("Error callback", e);
+}
 
 
 
@@ -476,16 +507,16 @@ function setHash(newHash) {
 function readHash() {
 	var hash = window.location.hash;
 	if(oldHash===hash) return;
-	
+
 	console.log("Read hash", hash, window.location.hash);
 	var match = hash.match(/^#([^\/]*)\/?(.*)$/);
 	if(match) {
 		var project_id = match[1];
 		var uri = match[2];
-		
+
 		console.log("   project_id:", project_id);
 		console.log("   uri:", uri);
-	
+
 		if(!activeProject || (activeProject && project_id!=activeProject.id)) {
 			console.log("Open project", project_id);
 			openProject(project_id);
@@ -498,11 +529,11 @@ function readHash() {
 		} else {
 			unloadFile();
 		}
-		
+
 	} else {
 		console.log("  Show projects page");
 		chooseProject();
-	}	
+	}
 	oldHash=hash;
 }
 
@@ -523,7 +554,7 @@ function chooseProject() {
 function setFileToClean(uri) {
 	console.log(uri, "is now clean");
 	var doc = xioDocs[activeProject.id][uri];
-	doc.markClean();	
+	doc.markClean();
 	updateCleanStatus(uri);
 }
 
@@ -551,7 +582,7 @@ function startDivideDrag(e) {
 		e.preventDefault();
 	}
 }
-function divideDrag(e) {	
+function divideDrag(e) {
 	var left = e.pageX - leftColumn.offsetLeft*1.5;
 	if(left<100){
 		left=34;
@@ -562,7 +593,7 @@ function divideDrag(e) {
 	fixLayout();
 	leftColumn.style.width = left + "px";
 }
-function endDivideDrag(e) {	
+function endDivideDrag(e) {
 	document.removeEventListener("mouseup", endDivideDrag, false);
 	document.removeEventListener("mousemove", divideDrag, false);
 }
@@ -579,15 +610,13 @@ function endDivideDrag(e) {
 
 function findFunctions() {
 	console.log("Finding functions");
-	
+
 	var text = codeMirror.getValue();
-	
+
 	var doc = codeMirror.getDoc();
 	var functions = [];
-	
-	
 	var hit;
-	
+
 	// Find functions in the format:   function pelle(arg1, arg2) {
 	var re = new RegExp("function\\s+([A-Z0-9_]+)\\s*\\(([^\\)]*)\\)", "gmi");
 	while(hit = re.exec(text)) {
@@ -595,18 +624,16 @@ function findFunctions() {
 		var argus = hit[2].replace(" ","").split(",");
 		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
 	}
-	
+
 	// Find functions in the format:   pelle = function(arg1, arg2) {
 	re = new RegExp("([A-Z0-9_]+)\\s*=\\s*function\\s*\\(([^\\)]*)\\)", "gmi");
 	while(hit = re.exec(text)) {
 		console.log("func 2", hit);
-		
 		var pos = doc.posFromIndex(hit.index);
 		var argus = hit[2].replace(" ","").split(",");
 		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
-		
 	}
-	
+
 	function compare(a,b) {
 		if (a.name < b.name) return -1;
 		if (a.name > b.name) return 1;
@@ -614,9 +641,8 @@ function findFunctions() {
 	}
 
 	functions.sort(compare);
-	
 	return functions;
-	
+
 }
 
 
@@ -631,17 +657,10 @@ function toHumanReadableFileSize(bytes, si) {
 
 
 
-
-
-
-var clone = (function(){ 
+var clone = (function(){
   return function (obj) { Clone.prototype=obj; return new Clone(); };
   function Clone(){}
 }());
 
 
 
-
-
-
-init();

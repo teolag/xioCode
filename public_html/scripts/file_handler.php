@@ -1,5 +1,7 @@
 <?php
 
+$startTime = microtime(true);
+
 require "../../includes/init.php";
 Gatekeeper::checkAccess();
 
@@ -15,7 +17,7 @@ $overwrite = $_REQUEST['overwrite']==="true";
 
 
 $response = array();
-switch($_REQUEST['do']) {
+switch($_REQUEST['action']) {
 
 	case "saveAs":
 		$code = $_REQUEST['code'];
@@ -38,50 +40,40 @@ switch($_REQUEST['do']) {
 	
 	
 	case "save";
-	/*
-	if(get_magic_quotes_gpc()) $code = stripslashes($_POST['code']);
-	else $code = $_POST['code'];
-	
-	
-	$path = PROJECT_PATH . $_POST['project_id'] . "/" . $_POST['uri'];
-	if(is_dir(dirname($path))) {
-		if(file_put_contents($path, $code)===FALSE) {
-			http_response_code(400);
-			die("Could not save file: ". $path);
+	$response['uri'] = $uri;
+	$code = $_REQUEST['code'];
+	if($exists) {
+		if(file_put_contents($path.$uri, $code)) {
+			$response['status'] = STATUS_OK;
+			$response['message'] = "file saved";
+		} else {
+			$response['status'] = STATUS_FILE_COULD_NOT_UPDATE;
+			$response['message'] = "could not save to file";
 		}
-		http_response_code(200);
-		die("File saved");
+	} else {
+		$response['status'] = STATUS_FILE_NOT_EXIST;
+		$response['message'] = "file does not exist";
 	}
-	else {
-		http_response_code(400);
-		die("Can't find: '".$path."'");
-	}
-	*/
 	break;
 	
 	
 	
 	
 	case "rename";
-	/*
-	if(empty($_GET['new_uri'])) die("new_uri must be set");
-
-	$from = PROJECT_PATH . $_GET['project_id'] ."/". urldecode($_GET['from']);
-	$to = PROJECT_PATH . $_GET['project_id'] ."/".  urldecode($_GET['to']);
-
-	rename($from, $to);
-	
-	/*
-	$projectPath = PROJECT_PATH . $_GET['project_id'] . "/";
-	$from = urldecode($_GET['uri']);
-	$to = urldecode($_GET['toFolder']) . basename($from);
-	
-	echo "Move ".$from." to " .$to;
-	if(!rename($projectPath.$from, $projectPath.$to)) {
-		http_response_code(400);
-		die("Could not move file '$projectPath$from' to '$projectPath.$to'");
+	$response['uri'] = $uri;
+	$newUri = urldecode($_GET['new_uri']);
+	$response['newUri'] = $newUri;
+	if(empty($newUri)) die("new_uri must be set");
+	if(!$overwrite && is_file($path.$newUri)) {
+		$response['status'] = STATUS_FILE_COLLISION;
+		$response['message'] = "filename already exists";
+	} elseif(rename($path.$uri, $path.$newUri)) {
+		$response['status'] = STATUS_OK;
+		$response['message'] = "file renamed";
+	} else {
+		$response['status'] = STATUS_FILE_COULD_NOT_UPDATE;
+		$response['message'] = "could not rename file";
 	}
-	*/
 	break;
 	
 	
@@ -92,10 +84,14 @@ switch($_REQUEST['do']) {
 	unlink($path.$uri);
 	*/
 	break;
-
+	
+	
+	default:
+	die("unknown action: " . $_REQUEST['action']);
 }
 
 http_response_code(200);
+$response['timer'] = microtime(true)-$startTime;
 echo json_encode($response);
 
 ?>

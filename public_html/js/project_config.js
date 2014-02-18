@@ -1,11 +1,10 @@
 var ProjectConfig = (function() {
 	var form, btnCancel, confTags, listTags,
-		
 
 	open = function(projectId) {
 		XioPop.load("/scripts/project_config.php?project_id="+projectId, display);
 	},
-	
+
 	display = function(e) {
 		form = document.getElementById("frmProjectConfig");
 		form.addEventListener("submit", onSubmit, false);
@@ -13,28 +12,28 @@ var ProjectConfig = (function() {
 		btnCancel.addEventListener("click", close, false);
 		confTags = document.getElementById("confTags");
 		confTags.addEventListener("keypress", tagHandler, false);
-		
+
 		listTags = document.getElementById("listTags");
 		listTags.addEventListener("click", tagHandler, false);
 		displayTags();
 	},
-	
-	onSubmit = function(e) {	
+
+	onSubmit = function(e) {
 		e.preventDefault();
 		console.log("Save project configurations...");
 		Ajax.postForm("/scripts/project_config.php?do=save", form, onSaveSuccess, onSaveError);
 	},
-	
+
 	onSaveSuccess = function(xhr) {
 		console.log("Project configurations saved!");
 		close();
 		ProjectList.loadProjects();
 	},
-	
+
 	onSaveError = function(e) {
 		console.err("Error saving config", e);
 	},
-	
+
 	tagHandler = function(e) {
 		if(e.type === "keypress" && e.keyCode === KEY_ENTER) {
 			e.preventDefault();
@@ -48,14 +47,14 @@ var ProjectConfig = (function() {
 				form.appendChild(input);
 				displayTags();
 				e.target.value="";
-			}			
+			}
 		} else if(e.type === "click" && e.target.nodeName==="LI") {
 			console.log("input[value='"+e.target.textContent+"']");
 			form.removeChild(form.querySelector("input[value='"+e.target.textContent+"']"));
 			displayTags();
 		}
 	},
-	
+
 	displayTags = function() {
 		var tags = form.querySelectorAll("input[name='config[tags][]']");
 		listTags.innerHTML = "";
@@ -69,11 +68,11 @@ var ProjectConfig = (function() {
 			}
 		}
 	}
-	
-	close = function(e) {		
+
+	close = function(e) {
 		XioPop.close();
 	};
-	
+
 
 
 	return {
