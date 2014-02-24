@@ -56,6 +56,10 @@ var FileList = (function() {
 					if(activeFile) selectActiveFile();
 				}
 			}, function(e) {
+				if(e.status===403) {
+					console.log("Access denied. You must login again to liad files");
+					showLogin();
+				}
 				console.error("Error loading file tree", e);
 			}
 		);

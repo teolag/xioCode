@@ -21,7 +21,7 @@ class Gatekeeper {
 	
 	public static function checkAccess() {
 		if(!self::hasAccess()) {
-			http_response_code(401);
+			header('HTTP/1.1 403 Forbidden');
 			exit();
 		}
 	}

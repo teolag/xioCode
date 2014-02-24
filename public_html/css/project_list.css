@@ -24,44 +24,65 @@
 	overflow: auto;
 }
 
-#projectList table {
-	width: 100%;
-	border-collapse: collapse;
+#projectList ul {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
 }
 
-#projectList td {
-	cursor:pointer;
-	border-bottom: 1px dotted #ddd;
+#projectList .project {
+	cursor: pointer;
+	border: 1px dotted #ddd;
+	margin: 0.5em;
+	width: 150px;
+	height: 100px;
+	display: flex;
+	flex-direction: column;
+	padding: 0.5em;
+}
+#projectList .hidden {
+	display: none;
 }
 
-#projectList tr.selected {
+#projectList .selected {
 	background-color: #bada55;
 	background-color: rgba(186, 218, 85, 0.32);
 }
 
 
 
-#projectList td.name {
+#projectList .name {
 	font-weight: bold;
-	color: #555;
-	padding: 0.5em;
+	color: #8A8A8A;
+	font-size: 1.2em;
+	margin-bottom: 0.5em;
 }
 
-#projectList tr td.functions a {
-	visibility: hidden;
-}
-#projectList tr:hover td.functions a {
-	visibility: visible;
-}
-
-
-#projectList a {
+#projectList .description {
 	color: #aaa;
-	padding: 3px 5px;
-	text-decoration: none;
-	font-size: 0.6em;
-	text-transform: uppercase;
+	font-size: 0.8em;
+	flex: 1;
+	overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+#projectList .functions {
+	display: none;
+	text-align: right;
+	
+}
+
+#projectList .functions a {
+	color: #aaa;
+	text-decoration: none;
+	padding-left: 0.5em;
+	
+}
+#projectList .selected .functions {
+	display: inline;
+}
+
 
 #projectList a:hover {
 	color:#000;

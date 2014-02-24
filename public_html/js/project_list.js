@@ -92,10 +92,27 @@ var ProjectList = (function() {
 
 
 	var display = function() {
+		var projectsHTML=["<ul>"];
+		projectsArrayByName.forEach(function(id, i) {
+			var item = projects[id];
+			projectsHTML.push("<li data-project_id='"+id+"' class='project'>");
+			projectsHTML.push("<div class='name'>"+item.name+"</div>");
+			projectsHTML.push("<div class='description'>"+item.description+"</div>");
+			projectsHTML.push("<div class='functions'>");
+			projectsHTML.push("<a href='#' data-do='config' class='icon icon-cog'></a>");
+			projectsHTML.push("<a href='#' data-do='preview' class='icon icon-preview'></a>");
+			projectsHTML.push("</div>");
+			projectsHTML.push("</li>");
+		});
+		projectsHTML.push("</ul>");
+		projectList.innerHTML = projectsHTML.join("");
+	};
+
+	var display2 = function() {
 		var projectsHTML=["<table>"];
 		projectsArrayByName.forEach(function(id, i) {
 			var item = projects[id];
-			projectsHTML.push("<tr data-project_id='"+id+"'>");
+			projectsHTML.push("<tr data-project_id='"+id+"' class='project'>");
 			projectsHTML.push("<td class='name'>"+item.name+"</td>");
 			projectsHTML.push("<td class='description'>"+(item.description? item.description : '')+"</td>");
 			projectsHTML.push("<td class='functions'>");
@@ -121,12 +138,12 @@ var ProjectList = (function() {
 			e.preventDefault();
 		}
 
-		var tr = target;
-		while(tr.nodeName!=="TR") {
-			if(tr===projectList) return;
-			tr = tr.parentElement;
+		var p = target;
+		while(!p.classList.contains("project")) {
+			if(p===projectList) return;
+			p = p.parentElement;
 		}
-		var projectId = tr.dataset.project_id;
+		var projectId = p.dataset.project_id;
 
 		switch(doo) {
 
@@ -190,7 +207,7 @@ var ProjectList = (function() {
 
 	var hoverSelect = function(e) {
 		var target = e.target;
-		while(target.nodeName !== "TR") {
+		while(!target.classList.contains("project")) {
 			if(target === projectList) return;
 			target = target.parentElement;
 		}
@@ -207,7 +224,7 @@ var ProjectList = (function() {
 
 	var keyDown = function(e) {
 		if(e.which === KEY_ENTER) {
-			var projectElement = projectList.querySelector("tr.selected");
+			var projectElement = projectList.querySelector(".selected");
 			setHash(projectElement.getAttribute('data-project_id')+"/"+UNSAVED_FILENAME);
 			e.preventDefault();
 		} else if(e.which === KEY_DOWN) {
@@ -230,16 +247,16 @@ var ProjectList = (function() {
 			if (projects.hasOwnProperty(id)) {
 				var project = projects[id];
 
-				var tr = projectList.querySelector("tr[data-project_id='"+id+"']");
+				var p = projectList.querySelector(".project[data-project_id='"+id+"']");
 				if(project.name.toLowerCase().search(searchString)!=-1) {
-					tr.classList.remove('hidden');
+					p.classList.remove('hidden');
 				} else {
-					tr.classList.add('hidden');
+					p.classList.add('hidden');
 				}
 
 			}
 		}
-		var sel = projectList.querySelector("tr.selected");
+		var sel = projectList.querySelector(".selected");
 		if(!sel || sel.classList.contains("hidden")) {
 			var found = selectNextVisible(true);
 			if(!found) selectNextVisible();
@@ -247,7 +264,7 @@ var ProjectList = (function() {
 	}
 
 	var selectNextVisible = function(rev){
-		var sel = projectList.querySelector("tr.selected");
+		var sel = projectList.querySelector(".selected");
 		if(sel) {
 			var sib = rev? sel.previousSibling : sel.nextSibling;
 			while(sib !== null) {
@@ -259,7 +276,7 @@ var ProjectList = (function() {
 				sib = rev? sib.previousSibling : sib.nextSibling;
 			}
 		} else {
-			sel = projectList.querySelector("tr");
+			sel = projectList.querySelector(".project");
 			deselectAll();
 			sel.classList.add("selected");
 			return true;
