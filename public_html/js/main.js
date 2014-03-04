@@ -293,6 +293,7 @@ function openProject(id) {
 	FileList.clear();
 	FileList.setProjectId(id);
 	redrawOpenedDocs(id);
+	ProjectConfig.updateLastOpened(id);
 
 	activeProject = {'id':id};
 	if(ProjectList.getProject(id)) {

@@ -18,10 +18,15 @@ var ProjectConfig = (function() {
 		displayTags();
 	},
 
+	updateLastOpened = function(projectId) {
+		console.log("Update last opened...");
+		Ajax.post("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, onSaveSuccess, onSaveError);
+	},
+
 	onSubmit = function(e) {
 		e.preventDefault();
 		console.log("Save project configurations...");
-		Ajax.postForm("/scripts/project_config.php?do=save", form, onSaveSuccess, onSaveError);
+		Ajax.postForm("/scripts/project_config.php?action=save", form, onSaveSuccess, onSaveError);
 	},
 
 	onSaveSuccess = function(xhr) {
@@ -76,6 +81,7 @@ var ProjectConfig = (function() {
 
 
 	return {
-		open: open
+		open: open,
+		updateLastOpened: updateLastOpened
 	};
 })();

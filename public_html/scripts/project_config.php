@@ -8,13 +8,26 @@ if(empty($_REQUEST['project_id'])) {
 
 $configFile = PROJECT_PATH . $_REQUEST['project_id'] . "/" . PROJECT_CONFIG_FILE;
 $config = json_decode(file_get_contents($configFile), 1);
-if(isset($_GET['do']) && $_GET['do']=="save") {
-	echo "sparar";
+if(isset($_GET['action'])) {
+
+	switch($_GET['action']) {
 	
-	foreach($_POST['config'] as $key => $value) {
-		$config[$key] = $value;
+		case "save":
+		echo "sparar";	
+		foreach($_POST['config'] as $key => $value) {
+			$config[$key] = $value;
+		}
+		print_r($config);
+		break;
+		
+		
+		case "updateLastOpened":
+		$config["last_opened"] = time();		
+		break;
+		
+		
+		default: die("unkown action");
 	}
-	print_r($config);
 	
 	if(!file_put_contents($configFile, json_encode($config))) {
 		http_response_code(400);

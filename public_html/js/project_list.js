@@ -1,13 +1,17 @@
 var ProjectList = (function() {
 
-	var projects, projectsArrayByName, projectsArrayByDate;
-	var projectList, txtProjectFilter, btnNewProject;
+	var projects, projectOrder="name", projectOrderDir="asc", lastSearchString;
+	var projectList, txtProjectFilter, btnNewProject, listProjectOrderBy;
 	var tags, listTags;
 
 	var init = function() {
 		projectList = document.getElementById('projectList');
 		projectList.addEventListener("click", clickHandler, false);
 		projectList.addEventListener("mouseover", hoverSelect, false);
+		projectList.addEventListener("drop", dropHandler, false);
+		projectList.addEventListener("dragover", dropHandler, false);
+		projectList.addEventListener("dragleave", dropHandler, false);
+		
 
 		txtProjectFilter = document.getElementById('txtProjectFilter');
 		txtProjectFilter.addEventListener("search", filterProjects);
@@ -19,7 +23,10 @@ var ProjectList = (function() {
 
 		listTags = document.getElementById("listProjectTags");
 		//listTags.addEventListener("click", addNewProject, false);
-
+		
+		listProjectOrderBy = document.getElementById("listProjectOrderBy");
+		listProjectOrderBy.addEventListener("change", setOrderBy, false);
+		
 	};
 
 	var loadProjects = function() {
@@ -28,30 +35,11 @@ var ProjectList = (function() {
 		Ajax.getJSON("/scripts/get_all_projects.php", null, 
 			function(json) {
 				projects = json;
-
+				console.log("%i projects found", Object.keys(projects).length, projects);
+		
 				getUniqueTags();
 
-				projectsArrayByName = Object.keys(projects);
-				projectsArrayByDate = Object.keys(projects);
-
-				projectsArrayByName.sort(function(a,b) {
-					var n1 = projects[a].name.toLowerCase();
-					var n2 = projects[b].name.toLowerCase();
-
-					if (n1 < n2) return -1;
-					if (n1 > n2) return 1;
-					return 0;
-				});
-				projectsArrayByDate.sort(function(a,b) {
-					var c1 = projects[a].created || 0;
-					var c2 = projects[b].created || 0;
-					return c2-c1;
-				});
-
 				display();
-				updateTagList();
-				console.log("%i projects found", Object.keys(projects).length, projects);
-				filterProjects();
 
 				if(activeProject) {
 					var pId = activeProject.id
@@ -62,6 +50,14 @@ var ProjectList = (function() {
 				}
 			}
 		);
+	};
+	
+	
+	var setOrderBy = function(e) {
+		var option = e.target.selectedOptions[0];
+		projectOrder = option.dataset.order;
+		projectOrderDir = option.dataset.order_dir;
+		display();
 	};
 
 	var getUniqueTags = function() {
@@ -92,49 +88,43 @@ var ProjectList = (function() {
 
 
 	var display = function() {
+		var sel = projectList.querySelector(".selected");
+	
+		var projectIds = Object.keys(projects);
+		projectIds = sortProjects(projectIds, projectOrder);
+	
 		var projectsHTML=["<ul>"];
-		projectsArrayByName.forEach(function(id, i) {
+		projectIds.forEach(function(id, i) {
 			var item = projects[id];
 			projectsHTML.push("<li data-project_id='"+id+"' class='project'>");
 			projectsHTML.push("<div class='name'>"+item.name+"</div>");
 			projectsHTML.push("<div class='description'>"+item.description+"</div>");
 			projectsHTML.push("<div class='functions'>");
-			projectsHTML.push("<a href='#' data-do='config' class='icon icon-cog'></a>");
-			projectsHTML.push("<a href='#' data-do='preview' class='icon icon-preview'></a>");
+			projectsHTML.push("<a href='#' data-action='config' class='icon icon-cog'></a>");
+			projectsHTML.push("<a href='#' data-action='preview' class='icon icon-preview'></a>");
 			projectsHTML.push("</div>");
 			projectsHTML.push("</li>");
 		});
 		projectsHTML.push("</ul>");
 		projectList.innerHTML = projectsHTML.join("");
+		
+		if(sel) {
+			var id = sel.dataset.project_id;
+			projectList.querySelector("li[data-project_id="+id+"]").classList.add("selected");
+		}
+		
+		updateTagList();
+		filterProjects();
 	};
 
-	var display2 = function() {
-		var projectsHTML=["<table>"];
-		projectsArrayByName.forEach(function(id, i) {
-			var item = projects[id];
-			projectsHTML.push("<tr data-project_id='"+id+"' class='project'>");
-			projectsHTML.push("<td class='name'>"+item.name+"</td>");
-			projectsHTML.push("<td class='description'>"+(item.description? item.description : '')+"</td>");
-			projectsHTML.push("<td class='functions'>");
-			projectsHTML.push("<a href='#' data-do='config'>Config</a>");
-			projectsHTML.push("<a href='#' data-do='rename'>Rename</a>");
-			projectsHTML.push("<a href='#' data-do='delete'>Delete</a>");
-			projectsHTML.push("<a href='#' data-do='preview'>Preview</a>");
-			projectsHTML.push("</td>");
-			projectsHTML.push("</tr>");
-		});
-		projectsHTML.push("</table>");
-		projectList.innerHTML = projectsHTML.join("");
-	};
-
-
+	
 	var clickHandler = function(e) {
 		var target = e.target;
-		var doo;
+		var action;
 
 		if(target.nodeName==="A") {
-			doo = target.dataset.do;
-			console.log("Do", doo);
+			action = target.dataset.action;
+			console.log("Do", action);
 			e.preventDefault();
 		}
 
@@ -145,7 +135,7 @@ var ProjectList = (function() {
 		}
 		var projectId = p.dataset.project_id;
 
-		switch(doo) {
+		switch(action) {
 
 			case "delete":
 			var project = projects[projectId];
@@ -241,6 +231,8 @@ var ProjectList = (function() {
 
 	function filterProjects(e) {
 		var searchString = txtProjectFilter.value.toLowerCase();
+		if(searchString===lastSearchString) return;
+		lastSearchString=searchString;
 		console.log("filter projects '"+searchString+"'", txtProjectFilter, projects);
 
 		for(var id in projects) {
@@ -253,7 +245,6 @@ var ProjectList = (function() {
 				} else {
 					p.classList.add('hidden');
 				}
-
 			}
 		}
 		var sel = projectList.querySelector(".selected");
@@ -262,6 +253,36 @@ var ProjectList = (function() {
 			if(!found) selectNextVisible();
 		}
 	}
+	
+	function sortProjects(projectIds) {
+		projectIds.sort(function(id1,id2) {
+			var p1 = projects[id1];
+			var p2 = projects[id2];
+			
+			switch(projectOrder) {
+				case "name":
+				var n1 = p1.name.toLowerCase();
+				var n2 = p2.name.toLowerCase();
+				if (n1 < n2) return -1;
+				if (n1 > n2) return 1;
+				return 0;
+				
+				case "created":
+				var c1 = p1.created || 0;
+				var c2 = p2.created || 0;
+				return c2-c1;
+				
+				case "opened":
+				var c1 = p1.last_opened || 0;
+				var c2 = p2.last_opened || 0;
+				return c2-c1;
+			}
+		});
+		if(projectOrderDir==="desc") {
+			projectIds.reverse();
+		}
+		return projectIds;
+	};
 
 	var selectNextVisible = function(rev){
 		var sel = projectList.querySelector(".selected");
@@ -282,6 +303,30 @@ var ProjectList = (function() {
 			return true;
 		}
 		return false;
+	};
+	
+	
+	var dropHandler = function(e) {
+		switch(e.type) {
+		
+			case "dragover":
+			projectList.classList.add("dropzone");
+			e.preventDefault();
+			break;
+			
+			case "dragleave":
+			projectList.classList.remove("dropzone");
+			break;
+			
+			case "drop":
+			e.preventDefault();
+			projectList.classList.remove("dropzone");
+			var filesToUpload = e.target.files || e.dataTransfer.files;
+			console.log("upload files:", filesToUpload);
+			
+			break;
+		}
+		
 	};
 
 	var addNewProject = function() {

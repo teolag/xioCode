@@ -24,6 +24,11 @@
 	overflow: auto;
 }
 
+#projectList.dropzone {
+	background-color: rgba(186, 218, 85, 0.5);
+	
+}
+
 #projectList ul {
 	margin: 0;
 	padding: 0;

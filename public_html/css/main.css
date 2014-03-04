@@ -78,7 +78,7 @@ ul.tags {
 }
 
 ul.tags li {
-	float: left;
+	display: inline-block;
 	padding: 0.3em 0.8em;
 	background-color: #DBDBDB;
 	border-radius: 0.5em;
