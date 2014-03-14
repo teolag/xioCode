@@ -141,6 +141,7 @@ function loginAccepted(e) {
 	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 
 	ProjectList.loadProjects();
+	ProjectList.loadListOrder(_USER.projects_order_by, _USER.projects_order_dir);
 	readHash();
 }
 
@@ -152,6 +153,7 @@ function logout() {
 	var old = codeMirror.swapDoc(doc);
 	activeProject = null;
 	activeFile = null;
+	oldHash = null;
 	xioDocs = {};
 	clearInterval(checkAccessInterval);
 
@@ -329,8 +331,9 @@ function unloadFile() {
 }
 
 
-function createNewFile() {
-	XioPop.prompt("Enter the new filename", "", "", function(newFileName) {
+function createNewFile(path) {
+	if(!path) path="";
+	XioPop.prompt("Enter the new filename", "", path, function(newFileName) {
 		if(newFileName===false) {
 			console.debug("abort file creation");
 			return;

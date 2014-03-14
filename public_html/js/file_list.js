@@ -385,14 +385,8 @@ var FileList = (function() {
 			break;
 
 			case "newFile":
-			var newFileName = prompt("Enter the filename");
-			if(newFileName) {
-				if(isFolder) path+=filename + "/";
-				Ajax.post("/scripts/save.php",  {'project_id':activeProject.id, 'uri':encodeURI(path + newFileName)}, function() {
-					FileList.loadProjectFiles();
-					openFile(path + newFileName);
-				});
-			}
+			if(isFolder) path+=filename + "/";
+			createNewFile(path);
 			break;
 
 			case "refresh":

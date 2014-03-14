@@ -36,7 +36,7 @@ class Gatekeeper {
 		if(empty($userid)) {
 			return null;
 		} else {
-			return $db->getRow("SELECT user_id, username, email FROM users WHERE user_id=?", array($userid));
+			return $db->getRow("SELECT user_id, username, email, projects_order_by, projects_order_dir FROM users WHERE user_id=?", array($userid));
 		}		
 	}
 	

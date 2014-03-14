@@ -28,40 +28,29 @@ class DatabasePDO {
 	}
 	
 	public function query($sql, $inputs=array()) {
-		$sth = $this->connection->prepare($sql);
-		$sth->execute($inputs) or die("SQL error: ".print_r($sth->errorInfo(),1));
-		return $sth;
-	}
-	public function insert($sql, $inputs=array()) {
 		try {
 			$sth = $this->connection->prepare($sql);
-			$sth->execute($inputs);
+			if(!$sth->execute($inputs)) {
+				die($sth->errorInfo()[2]);
+			}
 		}
 		catch(PDOException $e) {
 			die($e->getMessage());
 		}
+		return $sth;
+	}
+	public function insert($sql, $inputs=array()) {
+		$sth = $this->query($sql, $inputs);
 		return $this->connection->lastInsertId();
 	}
 	
 	public function update($sql, $inputs=array()) {
-		try {
-			$sth = $this->connection->prepare($sql);
-			$sth->execute($inputs);
-		}
-		catch(PDOException $e) {
-			die($e->getMessage());
-		}
+		$sth = $this->query($sql, $inputs);
 		return $sth->rowCount();
 	}
 	
 	public function execute($sql, $inputs=array()) {
-		try {
-			$sth = $this->connection->prepare($sql);
-			$sth->execute($inputs);
-		}
-		catch(PDOException $e) {
-			die($e->getMessage());
-		}
+		$sth = $this->query($sql, $inputs);
 	}
 	
 }

@@ -25,7 +25,7 @@ var ProjectList = (function() {
 		//listTags.addEventListener("click", addNewProject, false);
 		
 		listProjectOrderBy = document.getElementById("listProjectOrderBy");
-		listProjectOrderBy.addEventListener("change", setOrderBy, false);
+		listProjectOrderBy.addEventListener("change", selectOrderBy, false);
 		
 	};
 
@@ -53,12 +53,30 @@ var ProjectList = (function() {
 	};
 	
 	
-	var setOrderBy = function(e) {
+	var selectOrderBy = function(e) {
 		var option = e.target.selectedOptions[0];
-		projectOrder = option.dataset.order;
-		projectOrderDir = option.dataset.order_dir;
+		setOrderBy(option.dataset.order, option.dataset.order_dir);
+		
+		Ajax.post("/scripts/save_user_settings.php", {"projects_order_by":projectOrder, "projects_order_dir":projectOrderDir}, function(e) {
+			console.log("User settings callback", e);
+		});		
+	};
+	
+	var loadListOrder = function(column, dir) {
+		var option = listProjectOrderBy.querySelector("option[data-order='"+column+"'][data-order_dir='"+dir+"']");
+		console.log("load order option", option);
+		if(option) {
+			option.selected="true";
+		}
+		setOrderBy(column, dir);	
+	};
+	
+	var setOrderBy = function(column, dir) {
+		projectOrder = column;
+		projectOrderDir = dir;
 		display();
 	};
+	
 
 	var getUniqueTags = function() {
 		tags = [];
@@ -88,6 +106,8 @@ var ProjectList = (function() {
 
 
 	var display = function() {
+		if(!projects) return;
+	
 		var sel = projectList.querySelector(".selected");
 	
 		var projectIds = Object.keys(projects);
@@ -367,6 +387,7 @@ var ProjectList = (function() {
 		isLoaded: isLoaded,
 		clear: clear,
 		getProject: getProject,
-		loadProjects: loadProjects
+		loadProjects: loadProjects,
+		loadListOrder: loadListOrder
 	};
 })();
