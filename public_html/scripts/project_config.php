@@ -13,7 +13,7 @@ if(isset($_GET['action'])) {
 	switch($_GET['action']) {
 	
 		case "save":
-		echo "sparar";	
+		echo "saving...";	
 		foreach($_POST['config'] as $key => $value) {
 			$config[$key] = $value;
 		}
@@ -22,7 +22,8 @@ if(isset($_GET['action'])) {
 		
 		
 		case "updateLastOpened":
-		$config["last_opened"] = time();		
+		$config["last_opened"] = time();
+		echo "updated last opened for project id: " . $_REQUEST['project_id'];
 		break;
 		
 		

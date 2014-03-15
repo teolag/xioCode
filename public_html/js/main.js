@@ -42,6 +42,7 @@ function startup() {
 
 function init() {
 	initWriter();
+	Todo.init();
 
 	pageTitle = document.title;
 	title = document.getElementById("pageTitle");
@@ -148,6 +149,7 @@ function loginAccepted(e) {
 function logout() {
 	ProjectList.clear();
 	FileList.clear();
+	Todo.clear();
 	openedList.innerHTML="";
 	var doc = CodeMirror.Doc("");
 	var old = codeMirror.swapDoc(doc);
@@ -296,6 +298,7 @@ function openProject(id) {
 	FileList.setProjectId(id);
 	redrawOpenedDocs(id);
 	ProjectConfig.updateLastOpened(id);
+	Todo.loadAll(id);
 
 	activeProject = {'id':id};
 	if(ProjectList.getProject(id)) {

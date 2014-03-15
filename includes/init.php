@@ -8,6 +8,7 @@ define("PROJECT_FOLDER", $config['project_url']);
 define("PROJECT_PATH", $config['project_uri']);
 define("SALT", $config['database']['salt']);
 define("PROJECT_CONFIG_FILE", "xiocode.properties");
+define("PROJECT_TODO_FILE", "xiocode.todo");
 
 
 
@@ -16,7 +17,7 @@ define("STATUS_FILE_COLLISION", 2001);
 define("STATUS_FILE_COULD_NOT_CREATE", 2002);
 define("STATUS_FILE_COULD_NOT_UPDATE", 2003);
 define("STATUS_FILE_NOT_EXIST", 2004);
-
+define("STATUS_TODO_COULD_NOT_BE_SAVED", 2101);
 
 
 

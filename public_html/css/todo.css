@@ -1,0 +1,37 @@
+#todoArea {
+	width: 200px;
+	background-color: #ddd;
+	padding: 0.5em;
+	overflow: auto;
+}
+
+#listTodos {
+	margin: 0;
+	padding: 0;
+}
+
+#listTodos li {
+	padding: 0.3em;
+	margin-bottom: 0.5em;
+	font-size: 0.8em;
+}
+
+#listTodos li.feature {
+	background-color: #fff;
+}
+#listTodos li.bug {
+	background-color: #fee;
+}
+
+
+
+#listTodos li .dragHandle {
+	width: 20px;
+	background-color: #555;
+	height: 20px;
+	display: inline-block;
+}
+
+#listTodos li .title {
+	display: inline-block;
+}

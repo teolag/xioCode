@@ -20,7 +20,7 @@ var ProjectConfig = (function() {
 
 	updateLastOpened = function(projectId) {
 		console.log("Update last opened...");
-		Ajax.post("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, onSaveSuccess, onSaveError);
+		Ajax.post("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, null, onSaveError);
 	},
 
 	onSubmit = function(e) {
@@ -72,7 +72,7 @@ var ProjectConfig = (function() {
 				listTags.appendChild(li);
 			}
 		}
-	}
+	},
 
 	close = function(e) {
 		XioPop.close();
