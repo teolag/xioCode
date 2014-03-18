@@ -1,3 +1,6 @@
 [submodule "codemirror"]
 	path = public_html/codemirror
 	url = https://github.com/marijnh/CodeMirror.git
+[submodule "database-pdo"]
+	path = classes/database-pdo
+	url = https://github.com/teolag/database-pdo.git

@@ -40,21 +40,17 @@ var FileList = (function() {
 			function(items) {
 				files = {};
 
-				if(!items || items.length===0 || (items.length===1 && items[0].filename === "xiocode.properties")) {
-					fileList.innerHTML = "<li>No files...</li>";
-				} else {
-					fileList.innerHTML = printFolder(items, "");
+				fileList.innerHTML = printFolder(items, "");
 
-					console.log("File list loaded", items);
+				console.log("File list loaded", items);
 
-					for(var i=0; i<openedFolders.length; i++) {
-						var li = fileList.querySelector("li[data-uri='"+openedFolders[i]+"']");
-						if(li) {
-							openFolder(li);
-						}
+				for(var i=0; i<openedFolders.length; i++) {
+					var li = fileList.querySelector("li[data-uri='"+openedFolders[i]+"']");
+					if(li) {
+						openFolder(li);
 					}
-					if(activeFile) selectActiveFile();
 				}
+				if(activeFile) selectActiveFile();
 			}, function(e) {
 				if(e.status===403) {
 					console.log("Access denied. You must login again to liad files");
@@ -83,7 +79,7 @@ var FileList = (function() {
 				changed = " changed ";
 			}
 
-			var hidden  = (item.filename==='xiocode.properties')? ' hidden' : '';
+			var hidden  = (item.filename==='xiocode.properties' || item.filename==='xiocode.todo')? ' hidden' : '';
 			var title = item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
 			htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + uri + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
 			htm.push("<span class='icon-"+item.icon+"'>"+item.filename+"</span>");
