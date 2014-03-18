@@ -36,6 +36,10 @@ function __autoload($className) {
 		$file = ROOT."../classes/DatabasePDO/" . $className.".php";
 		break;
 		
+		case "PHPMailer":
+		$file = ROOT."../classes/PHPMailer/class.phpmailer.php";
+		break;
+		
 		default:
 		$file = ROOT."../classes/" . $className.".php";
 	}
