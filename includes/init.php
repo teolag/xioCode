@@ -30,8 +30,16 @@ define("STATUS_TODO_COULD_NOT_BE_SAVED", 2101);
 
 $db = new DatabasePDO($config['database']['server'], $config['database']['username'], $config['database']['password'], $config['database']['name']);
 
-function __autoload($className) {	
-	$file = ROOT."../classes/" . $className.".php";
+function __autoload($className) {
+	switch($className) {
+		case "DatabasePDO":
+		$file = ROOT."../classes/DatabasePDO/" . $className.".php";
+		break;
+		
+		default:
+		$file = ROOT."../classes/" . $className.".php";
+	}
+
 	if(is_file($file)) require($file);	
 	else die("Class not found: " . $file);
 }
