@@ -12,10 +12,31 @@ $todoFile = PROJECT_PATH . $_REQUEST['project_id'] . "/" . PROJECT_TODO_FILE;
 
 $response = array();
 
-if(!empty($_POST)) {
+if(!empty($_POST['prio'])) {
+	$order = explode(",", $_POST['prio']);
+	$todos = json_decode(file_get_contents($todoFile), true);
+		
+	foreach($order as $prio => $id) {
+		$todos[$id]['prio'] = $prio;
+		echo "sätt id $id till prio $prio<br />";
+	}
+	$response['message'] = "sätter prio";
+	if(file_put_contents($todoFile, json_encode($todos))) {
+		$response['status'] = STATUS_OK;
+	} else {
+		$response['status'] = STATUS_TODO_COULD_NOT_BE_SAVED;
+	}
+
+
+} elseif(!empty($_POST['description'])) {
 	if(is_file($todoFile)) {
 		$todos = json_decode(file_get_contents($todoFile), true);
-		$nextId = key(array_slice($todos, -1, 1, TRUE)) + 1;
+		if(empty($todos)) {
+			$nextId = 1;
+			$todos = array();
+		} else {
+			$nextId = key(array_slice($todos, -1, 1, TRUE)) + 1;
+		}
 	} else {
 		$todos = array();
 		$nextId = 1;

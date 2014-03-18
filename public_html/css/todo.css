@@ -11,9 +11,12 @@
 }
 
 #listTodos li {
-	padding: 0.3em;
+	padding: 0.6em;
 	margin-bottom: 0.5em;
 	font-size: 0.8em;
+	transition:  -webkit-transform 0.5s ease, background-color 0.5s ease;
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
+	
 }
 
 #listTodos li.feature {
@@ -22,6 +25,24 @@
 #listTodos li.bug {
 	background-color: #fee;
 }
+
+#listTodos.reordered li.feature {
+	background-color: #eee;
+}
+#listTodos.reordered li.bug {
+	background-color: #edd;
+}
+
+#listTodos.reordered li.dragged {
+	background-color: #fff;
+	box-shadow: 1px 2px 5px rgba(0,0,0,0.4);
+	-webkit-transform: scale(1.05, 1.05);
+	transform: rotate(2deg);
+}
+#listTodos.reordered li.dragged.bug {
+	background-color: #fee;
+}
+
 
 
 
@@ -34,4 +55,23 @@
 
 #listTodos li .title {
 	display: inline-block;
+}
+
+#dropPlaceholder{
+	background-color: green;
+	height: 30px;
+}
+
+
+#formTodo h3 {
+	margin: 0 0 0.5em 0;
+}
+
+#formTodo textarea {
+	width: 400px;
+	height: 100px;
+}
+
+#formTodo button {
+	text-align: right;
 }
