@@ -51,6 +51,7 @@ class DatabasePDO {
 	
 	public function execute($sql, $inputs=array()) {
 		$sth = $this->query($sql, $inputs);
+		return $sth->rowCount();
 	}
 	
 }
