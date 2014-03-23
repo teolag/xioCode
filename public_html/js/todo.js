@@ -38,7 +38,6 @@ var Todo = (function() {
 		
 		list = document.getElementById("listTodos");
 		list.addEventListener("click", clickHandler, false);
-		list.addEventListener("mousedown", clickHandler, false);
 		list.addEventListener("dragover", dragHandler, false);
 		list.addEventListener("dragenter", dragHandler, false);
 		list.addEventListener("dragleave", dragHandler, false);
@@ -49,9 +48,7 @@ var Todo = (function() {
 	
 	clickHandler = function(e) {
 	
-		if(e.type==="mousedown" && e.target.classList.contains("dragHandle")) {
-			//e.target.parentElement.draggable="true";
-		} else if(e.type==="click") {
+		if(e.type==="click") {
 	
 			var li = e.target;
 			while(li.nodeName!=="LI") {
@@ -65,7 +62,6 @@ var Todo = (function() {
 			createTodoForm({
 				todoId: todoId,
 				type: todo.type,
-				editType: true,
 				title: "Edit " + todo.type + ": " + todoId,
 				description: todo.description
 			});
@@ -85,7 +81,6 @@ var Todo = (function() {
 		switch(e.type) {
 			case "dragenter":
 			e.preventDefault();
-			console.log("enter", e);
 			
 			list.insertBefore(dragElem, dragUp ? li : li.nextSibling);			
 			break;
@@ -100,16 +95,13 @@ var Todo = (function() {
 			break;
 			
 			case "dragend":
-			console.log("end", e);
 			list.classList.remove("reordered");
-			//e.target.removeAttribute("draggable");
 			e.target.classList.remove("dragged");
 			var items = list.children;
 			var ids = [];
 			for(var i=0; i<items.length; i++) {
 				ids.push(items[i].dataset.id);
 			}
-			console.log("order", ids.join(","));
 			var formData = new FormData(form);
 			formData.append("project_id", projectId);
 			formData.append("prio", ids);
@@ -118,7 +110,6 @@ var Todo = (function() {
 			
 			case "dragleave":
 			e.preventDefault();
-			console.log("leave", li);
 			break;
 		
 			case "dragover":
@@ -127,8 +118,6 @@ var Todo = (function() {
 				dragUp = dragY > e.pageY;
 			}
 			dragY = e.pageY;
-			console.log("up", dragUp);
-			
 			break;
 		}
 	},
@@ -156,12 +145,8 @@ var Todo = (function() {
 			return todos[a].prio-todos[b].prio;
 		});
 		
-		console.log("sorted", sortedTodoIds);
-		
-		
 		for(var i in sortedTodoIds) {
 			var todoId = sortedTodoIds[i];
-			console.log("Id:", todoId);
 			var todo = todos[todoId];
 			
 			if(!todo.type) todo.type="feature";
@@ -171,14 +156,10 @@ var Todo = (function() {
 			li.dataset.id = todoId;
 			li.draggable="true";
 			
-			var dragHandle = document.createElement("DIV");
-			dragHandle.classList.add("dragHandle");
-			
-			var title = document.createElement("DIV");
+			var title = document.createElement("span");
 			title.textContent = todo.description;
 			title.classList.add("title");
 			
-			//li.appendChild(dragHandle);
 			li.appendChild(title);
 			list.appendChild(li);
 		}
@@ -201,6 +182,8 @@ var Todo = (function() {
 	},
 	
 	createTodoForm = function(settings) {
+		var editMode = !!settings.todoId;
+	
 		form = document.createElement("FORM");
 		form.id = "formTodo";
 		form.addEventListener("submit", submitTodo, false);
@@ -222,7 +205,7 @@ var Todo = (function() {
 		description.name = "description";
 		description.value = settings.description || "";
 		
-		if(settings.editType) {
+		if(editMode) {
 			var typeChanger = document.createElement("div");
 			typeChanger.classList.add(settings.type);
 			typeChanger.textContent="toggle type";
@@ -243,12 +226,21 @@ var Todo = (function() {
 		saveButton.type="submit";
 		saveButton.textContent="Save";
 		
+		if(editMode) {
+			var deleteButton = document.createElement("BUTTON");
+			deleteButton.type="button";
+			deleteButton.textContent="Delete";
+			deleteButton.dataset.todoId = settings.todoId;
+			deleteButton.addEventListener("click", deleteTodo, false);
+		}
+		
 		form.appendChild(title);
 		form.appendChild(hiddenId);
 		form.appendChild(hiddenType);
 		form.appendChild(description);
-		if(typeChanger) form.appendChild(typeChanger);
+		if(editMode) form.appendChild(typeChanger);
 		form.appendChild(saveButton);
+		if(editMode) form.appendChild(deleteButton);
 		
 		XioPop.showElement(form);
 		description.focus();
@@ -265,6 +257,20 @@ var Todo = (function() {
 	submitCallback = function(json) {
 		console.log("submit callback", json);
 		todos[json.todo_id] = json.todo;
+		updateList();
+	},
+	
+	deleteTodo = function(e) {
+		var formData = new FormData();
+		formData.append("project_id", projectId);
+		formData.append("todo_id", e.target.dataset.todoId);
+		Ajax.postFormDataWithJsonResponse("/scripts/todo_handler.php?action=delete", formData, deleteCallback);
+		XioPop.close();
+	},
+	
+	deleteCallback = function(json) {
+		console.log("delete callback", json);
+		delete todos[json.todo_id];
 		updateList();
 	},
 	

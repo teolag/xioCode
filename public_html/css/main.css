@@ -111,8 +111,7 @@ ul.tags li {
 	display: flex;
 	flex-direction: column;
 	align-self: flex-end;
-	padding-bottom: 0.5em;
-	padding-right: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 #workspaceDivider {

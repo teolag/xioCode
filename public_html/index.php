@@ -88,7 +88,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 				<button type="button" id="btnAddFeature">New feature</button>
 				<button type="button" id="btnAddBug">New bug</button>
 				
-				<ul id="listTodos"></ul>
+				<ol id="listTodos"></ol>
 			</div>
 		</div>
 		

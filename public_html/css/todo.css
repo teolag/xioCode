@@ -1,6 +1,5 @@
 #todoArea {
 	width: 200px;
-	background-color: #ddd;
 	padding: 0.5em;
 	overflow: auto;
 }
@@ -16,31 +15,35 @@
 	font-size: 0.8em;
 	transition:  -webkit-transform 0.5s ease, background-color 0.5s ease;
 	box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
-	
+	list-style-type: decimal;
+	list-style-position: inside;
+	border-radius: 0.3em;
+	font-size: 18px;
+	color: rgba(0, 0, 0, 0.3);
 }
 
 #listTodos li.feature {
-	background-color: #fff;
+	background-color: #E2ECBF;
 }
 #listTodos li.bug {
-	background-color: #fee;
+	background-color: #F8E3CF;
 }
 
 #listTodos.reordered li.feature {
-	background-color: #eee;
+	background-color: #C5CCAA;
 }
 #listTodos.reordered li.bug {
-	background-color: #edd;
+	background-color: #D4BFAB;
 }
 
 #listTodos.reordered li.dragged {
-	background-color: #fff;
+	background-color: #E2ECBF;
 	box-shadow: 1px 2px 5px rgba(0,0,0,0.4);
 	-webkit-transform: scale(1.05, 1.05);
 	transform: rotate(2deg);
 }
 #listTodos.reordered li.dragged.bug {
-	background-color: #fee;
+	background-color: #F8E3CF;
 }
 
 
@@ -53,7 +56,9 @@
 }
 
 #listTodos li .title {
-	display: inline-block;
+	display: block;
+	font-size: 12px;
+	color: #666;
 }
 
 #dropPlaceholder{

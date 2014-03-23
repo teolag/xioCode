@@ -41,17 +41,20 @@ if(!empty($_POST['prio'])) {
 		$todos = array();
 		$nextId = 1;
 	}
-	$todo = array(
-		'description' => $_POST['description'],
-		'type' => $_POST['type']	
-	);
+	
+	$todo = array();
 	if(empty($_POST['todo_id'])) {
 		$response['message'] = "new " . $_POST['type'] . " saved";
+		$todo['created'] = time();
 		$todoId = $nextId;
 	} else {
-		$response['message'] = $_POST['type'] . " saved";
 		$todoId = $_POST['todo_id'];
+		$todo = $todos[$todoId];
+		$todo['edited'] = time();
+		$response['message'] = $_POST['type'] . " saved";
 	}
+	$todo['description'] = $_POST['description'];
+	$todo['type'] = $_POST['type'];
 	$todos[$todoId] = $todo;
 	$response['todo_id'] = $todoId;
 	$response['todo'] = $todo;
@@ -62,6 +65,17 @@ if(!empty($_POST['prio'])) {
 	} else {
 		$response['status'] = STATUS_TODO_COULD_NOT_BE_SAVED;
 	}
+} elseif($_GET['action']==="delete") {
+	$todos = json_decode(file_get_contents($todoFile), true);
+	$todoId = $_POST['todo_id'];
+	unset($todos[$todoId]);
+	if(file_put_contents($todoFile, json_encode($todos))) {
+		$response['status'] = STATUS_OK;
+	} else {
+		$response['status'] = STATUS_TODO_COULD_NOT_BE_SAVED;
+	}
+	$response['message'] = "delete todo";
+	$response['todo_id'] = $todoId;
 } elseif($_GET['action']==="getAll") {
 	$response['message'] = "returning all todos";
 	if(is_file($todoFile)) {
