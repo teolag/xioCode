@@ -26,7 +26,7 @@ FEATURES
 var Todo = (function() {
 
 	var btnAddFeature, btnAddBug, 
-	list, form, dragElem, dragUp, dragY,
+	list, dragElem, dragUp, dragY,
 	projectId, todos,
 	
 	init = function() {
@@ -62,6 +62,9 @@ var Todo = (function() {
 			createTodoForm({
 				todoId: todoId,
 				type: todo.type,
+				status: todo.status,
+				created: todo.created,
+				edited: todo.edited,
 				title: "Edit " + todo.type + ": " + todoId,
 				description: todo.description
 			});
@@ -102,7 +105,7 @@ var Todo = (function() {
 			for(var i=0; i<items.length; i++) {
 				ids.push(items[i].dataset.id);
 			}
-			var formData = new FormData(form);
+			var formData = new FormData();
 			formData.append("project_id", projectId);
 			formData.append("prio", ids);
 			Ajax.postFormDataWithJsonResponse("/scripts/todo_handler.php", formData, prioritizeCallback);
@@ -183,44 +186,54 @@ var Todo = (function() {
 	
 	createTodoForm = function(settings) {
 		var editMode = !!settings.todoId;
-	
-		form = document.createElement("FORM");
-		form.id = "formTodo";
-		form.addEventListener("submit", submitTodo, false);
 		
-		var hiddenId = document.createElement("INPUT");
-		hiddenId.type = "hidden";
-		hiddenId.name = "todo_id";
+		
+		var template = document.getElementById('tplTodoEdit').content;
+		
+		
+		var hiddenId = template.querySelector("input[name=todo_id]");
 		hiddenId.value = settings.todoId || "";
 		
-		var hiddenType = document.createElement("INPUT");
-		hiddenType.type = "hidden";
-		hiddenType.name = "type";
-		hiddenType.value = settings.type;
+		var todoTimeCreated = template.querySelector("#todoTimeCreated");
+		todoTimeCreated.textContent = settings.created;
 		
-		var title = document.createElement("h3");
+		var todoTimeEdited = template.querySelector("#todoTimeEdited");
+		todoTimeEdited.textContent = settings.edited;
+		
+		var description = template.querySelector("textarea");
+		description.textContent = settings.description || "";
+		
+		var title = template.querySelector("h3");
 		title.textContent = settings.title;
+		
+		var radioTypeSelected = template.querySelector("input[name=type][value="+settings.type+"]");
+		radioTypeSelected.checked="checked";
+		
+		console.log("settingss attus", settings.status);
+		if(!settings.status) settings.status="new";
+		var radioStatusSelected = template.querySelector("input[name=status][value="+settings.status+"]");
+		radioStatusSelected.checked="checked";
+			
+		/*
+		form.id = "formTodo";
+		
+		
 		
 		var description = document.createElement("TEXTAREA");
 		description.name = "description";
 		description.value = settings.description || "";
 		
-		if(editMode) {
-			var typeChanger = document.createElement("div");
-			typeChanger.classList.add(settings.type);
-			typeChanger.textContent="toggle type";
-			typeChanger.addEventListener("click", function(e) {
-				if(hiddenType.value==="feature") {
-					hiddenType.value = "bug";
-					typeChanger.classList.add("bug");
-					typeChanger.classList.remove("feature");
-				} else {
-					hiddenType.value = "feature";
-					typeChanger.classList.add("feature");
-					typeChanger.classList.remove("bug");
-				}
-			}, false);
-		}
+		var radioFeature = document.createElement("input");
+		radioFeature.type="radio";
+		radioFeature.value="feature";
+		radioFeature.name="type";
+		if(settings.type==="feature") radioFeature.checked="checked";
+
+		var radioBug = document.createElement("input");
+		radioBug.type="radio";
+		radioBug.value="bug";
+		radioBug.name="type";
+		if(settings.type==="bug") radioBug.checked="checked";
 		
 		var saveButton = document.createElement("BUTTON");
 		saveButton.type="submit";
@@ -236,19 +249,25 @@ var Todo = (function() {
 		
 		form.appendChild(title);
 		form.appendChild(hiddenId);
-		form.appendChild(hiddenType);
 		form.appendChild(description);
-		if(editMode) form.appendChild(typeChanger);
+		form.appendChild(radioFeature);
+		form.appendChild(radioBug);
 		form.appendChild(saveButton);
 		if(editMode) form.appendChild(deleteButton);
+		*/
 		
-		XioPop.showElement(form);
+		XioPop.showElement(document.importNode(template, true));
+		
+		var form = document.getElementById("formTodo");
+		
+		form.addEventListener("submit", submitTodo, false);
+		
 		description.focus();
 	},
 	
 	submitTodo = function(e) {
 		e.preventDefault();
-		var formData = new FormData(form);
+		var formData = new FormData(e.target);
 		formData.append("project_id", projectId);
 		Ajax.postFormDataWithJsonResponse("/scripts/todo_handler.php", formData, submitCallback);
 		XioPop.close();

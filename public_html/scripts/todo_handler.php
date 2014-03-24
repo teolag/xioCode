@@ -55,6 +55,7 @@ if(!empty($_POST['prio'])) {
 	}
 	$todo['description'] = $_POST['description'];
 	$todo['type'] = $_POST['type'];
+	$todo['status'] = $_POST['status'];
 	$todos[$todoId] = $todo;
 	$response['todo_id'] = $todoId;
 	$response['todo'] = $todo;

@@ -126,6 +126,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			</ul>
 		</div>		
 		
+		<?php require $_SERVER['DOCUMENT_ROOT']."/html_templates.php"; ?>
 		
 		<script>
 			var projectsURL = '<?php echo PROJECT_FOLDER; ?>';

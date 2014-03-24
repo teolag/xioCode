@@ -145,6 +145,9 @@ var FileList = (function() {
 					e.preventDefault();
 				} else if(file.type==='folder') {
 					toggleFolder(target);
+				} else if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
+					console.log("Download file...");
+					window.location.href = "/scripts/load_file.php?project_id="+projectId+"&uri="+uri+"&download";
 				} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
 					console.log("Open in new tab");
 					window.open(projectsURL + projectId + "/" + uri);

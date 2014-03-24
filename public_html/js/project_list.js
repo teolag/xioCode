@@ -118,7 +118,7 @@ var ProjectList = (function() {
 			var item = projects[id];
 			projectsHTML.push("<li data-project_id='"+id+"' class='project'>");
 			projectsHTML.push("<div class='name'>"+item.name+"</div>");
-			projectsHTML.push("<div class='description'>"+item.description+"</div>");
+			projectsHTML.push("<div class='description'>"+ (item.description||"") +"</div>");
 			projectsHTML.push("<div class='functions'>");
 			projectsHTML.push("<a href='#' data-action='config' class='icon icon-cog'></a>");
 			projectsHTML.push("<a href='#' data-action='preview' class='icon icon-preview'></a>");
