@@ -147,12 +147,11 @@ var FileList = (function() {
 					toggleFolder(target);
 				} else if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
 					console.log("Download file...");
-					window.location.href = "/scripts/load_file.php?project_id="+projectId+"&uri="+uri+"&download";
+					window.location.href = "/scripts/file_handler.php?action=download&project_id="+projectId+"&uri="+uri;
 				} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
 					console.log("Open in new tab");
 					window.open(projectsURL + projectId + "/" + uri);
 				} else {
-					console.log("Mime type text/* -> open in textarea");
 					openFile(uri);
 				}
 				e.stopPropagation();
@@ -300,7 +299,7 @@ var FileList = (function() {
 		var file = files[uri];
 
 		var mime = "css/text"; //target.dataset.mime;
-		var filePath = location.origin + "/scripts/load_file.php?project_id=" + projectId + "&uri=" + encodeURI(uri);
+		var filePath = location.origin + "/scripts/file_handler.php?action=load_raw&project_id=" + projectId + "&uri=" + encodeURI(uri);
 		var fileDetails = mime + ":" + file.filename + ":" + filePath;
 		e.dataTransfer.setData("DownloadURL", fileDetails);
 		e.dataTransfer.setData("uri", uri);
@@ -326,10 +325,11 @@ var FileList = (function() {
 
 		if(fileDragged) {
 			// Move files
-			if(folder+files[fileDragged].filename === fileDragged) {
+			var newUri = folder+files[fileDragged].filename;
+			if(newUri === fileDragged) {
 				console.log("drop to same place, abort");
 			} else {
-				Ajax.get("/scripts/move_file.php", {'project_id': projectId, 'uri': encodeURI(fileDragged), 'toFolder': encodeURI(folder)},
+				Ajax.getJSON("/scripts/file_handler.php", {'action':'rename', 'project_id': projectId, 'uri': encodeURI(fileDragged), 'new_uri': encodeURI(newUri)},
 					function(e) {
 						FileList.loadProjectFiles();
 					}
@@ -393,22 +393,20 @@ var FileList = (function() {
 			break;
 
 			case "delete":
-			var answer;
 			if(isFolder) {
-				answer = confirm("Are you sure you want to delete the folder and all its content?\n"+uri+"?");
-				if(answer) {
-					Ajax.get("/scripts/delete_folder.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
-						FileList.loadProjectFiles();
-					});
-				}
+				var title = "Delete folder";
+				var question = "Are you sure you want to delete the folder '"+uri+"' and all of its content?";
 			} else {
-				answer = confirm("Are you sure you want to delete the file: '"+uri+"'?");
+				var title = "Delete file";
+				var question = "Are you sure you want to delete the file: '"+uri+"'?";
+			}
+			XioPop.confirm(title, question, function(answer) {
 				if(answer) {
-					Ajax.get("/scripts/delete_file.php",  {'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
+					Ajax.get("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
 						FileList.loadProjectFiles();
 					});
 				}
-			}
+			});
 			break;
 
 			case "rename":
@@ -417,6 +415,10 @@ var FileList = (function() {
 					renameFile(uri, path+newName);
 				}
 			});
+			break;
+			
+			case "export":
+			window.location.href = "/scripts/file_handler.php?action=download&project_id="+projectId+"&uri="+uri;
 			break;
 
 			case "upload":

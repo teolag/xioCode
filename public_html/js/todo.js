@@ -195,10 +195,10 @@ var Todo = (function() {
 		hiddenId.value = settings.todoId || "";
 		
 		var todoTimeCreated = template.querySelector("#todoTimeCreated");
-		todoTimeCreated.textContent = settings.created;
+		if(settings.created) todoTimeCreated.textContent = toHumanReadableDateTime(parseInt(settings.created));
 		
 		var todoTimeEdited = template.querySelector("#todoTimeEdited");
-		todoTimeEdited.textContent = settings.edited;
+		if(settings.edited) todoTimeEdited.textContent = toHumanReadableDateTime(parseInt(settings.edited));
 		
 		var description = template.querySelector("textarea");
 		description.textContent = settings.description || "";
@@ -269,6 +269,7 @@ var Todo = (function() {
 		e.preventDefault();
 		var formData = new FormData(e.target);
 		formData.append("project_id", projectId);
+		formData.append("ts", (new Date()).getTime());
 		Ajax.postFormDataWithJsonResponse("/scripts/todo_handler.php", formData, submitCallback);
 		XioPop.close();
 	},

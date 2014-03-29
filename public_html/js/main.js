@@ -662,6 +662,26 @@ function toHumanReadableFileSize(bytes, si) {
     return val.toFixed(1) + " " + pre + "B";
 }
 
+function toHumanReadableDateTime(ts) {
+	if(!ts) return "";
+	var ts = new Date(ts);
+	var now = new Date();
+	var time = ts.toISOString().substr(11,5);
+	var date = ts.toISOString().substr(0,10);
+	
+	var diff = ts - now;
+	var yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+	
+	if(diff<24*60*60*1000 && now.getDate()===ts.getDate()) {
+		return "Today " + time;
+	} else if(diff<2*24*60*60*1000 && yesterday.getDate()===ts.getDate()) {
+		return "Yesterday " + time;
+	}
+	return date + " " + time;
+}
+
+
 
 
 var clone = (function(){

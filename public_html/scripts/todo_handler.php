@@ -45,12 +45,12 @@ if(!empty($_POST['prio'])) {
 	$todo = array();
 	if(empty($_POST['todo_id'])) {
 		$response['message'] = "new " . $_POST['type'] . " saved";
-		$todo['created'] = time();
+		$todo['created'] = $_POST['ts'];
 		$todoId = $nextId;
 	} else {
 		$todoId = $_POST['todo_id'];
 		$todo = $todos[$todoId];
-		$todo['edited'] = time();
+		$todo['edited'] = $_POST['ts'];
 		$response['message'] = $_POST['type'] . " saved";
 	}
 	$todo['description'] = $_POST['description'];

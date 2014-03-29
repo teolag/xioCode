@@ -22,7 +22,9 @@ define("STATUS_OK", 1000);
 define("STATUS_FILE_COLLISION", 2001);
 define("STATUS_FILE_COULD_NOT_CREATE", 2002);
 define("STATUS_FILE_COULD_NOT_UPDATE", 2003);
-define("STATUS_FILE_NOT_EXIST", 2004);
+define("STATUS_FILE_COULD_NOT_DELETE", 2004);
+define("STATUS_FILE_NOT_EXIST", 2005);
+define("STATUS_FILE_NOT_READABLE", 2006);
 define("STATUS_TODO_COULD_NOT_BE_SAVED", 2101);
 
 
@@ -62,20 +64,25 @@ function fixURI($name, $allLower=true) {
 }
 
 function rrmdir($dir) { 
-	if (is_dir($dir)) {
+	if(is_dir($dir)) {
 		$objects = scandir($dir);
 		foreach ($objects as $object) {
 			if ($object != "." && $object != "..") {
 				if (filetype($dir."/".$object) == "dir") {
-					rrmdir($dir."/".$object); 
+					if(!rrmdir($dir."/".$object)) {
+						return false;
+					}
 				} else {
-					unlink($dir."/".$object);
+					if(!unlink($dir."/".$object)) {
+						return false;
+					}
 				}
 			}
 		} 
 		reset($objects);
 		rmdir($dir);
-	} 
+		return true;
+	}
 } 
 
 ?>

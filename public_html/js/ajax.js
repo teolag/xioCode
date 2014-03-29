@@ -25,10 +25,11 @@ var Ajax = (function() {
 		xhr.responseType='json';
 		xhr.open("get", url, true);
 		xhr.onload = function(e) {
-			if(e.target.status===200) {
+			if(e.target.status===200 && e.target.response) {
 				if(successCallback) successCallback(e.target.response);
 			} else {
 				if(errorCallback) errorCallback(e.target);
+				else console.error("Error: ", e);
 			}
 		};
 		xhr.send();	
@@ -49,6 +50,7 @@ var Ajax = (function() {
 				if(successCallback) successCallback(e.target);
 			} else {
 				if(errorCallback) errorCallback(e.target);
+				else console.error("Error: ", e);
 			}
 		};
 		xhr.send(sendData);
@@ -63,6 +65,7 @@ var Ajax = (function() {
 				if(successCallback) successCallback(e.target);
 			} else {
 				if(errorCallback) errorCallback(e.target);
+				else console.error("Error: ", e);
 			}
 		};
 		xhr.send(formData);
@@ -74,10 +77,11 @@ var Ajax = (function() {
 		xhr.responseType='json';
 		xhr.open("post", url, true);
 		xhr.onload = function(e) {
-			if(e.target.status===200) {
+			if(e.target.status===200 && e.target.response) {
 				if(successCallback) successCallback(e.target.response);
 			} else {
 				if(errorCallback) errorCallback(e.target);
+				else console.error("Error: ", e);
 			}
 		};
 		xhr.send(formData);	

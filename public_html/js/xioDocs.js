@@ -100,17 +100,20 @@ function loadDoc(projectId, uri) {
 		docLoaded(projectId, uri, "");
 		return;
 	}
-
-	var xhr = new XMLHttpRequest();
-	xhr.open("get", "/scripts/load_file.php?project_id="+projectId+"&uri="+encodeURI(uri), true);
-	console.log("Loading '" + uri + "' from disk.");
-
-	xhr.onload = function(e) {
-		docLoaded(projectId, uri, e.target.responseText);
+	
+	var parameters = {
+		action: "load",
+		project_id: projectId,
+		uri: encodeURI(uri)
 	};
-
-	xhr.send();
-
+	console.log("Loading '" + uri + "' from disk.");
+	Ajax.getJSON("/scripts/file_handler.php", parameters, function(json) {
+		if(json.status === STATUS_OK) {
+			docLoaded(projectId, uri, json.text);
+		} else {
+			console.error("Error: " + json.status + " " + json.message);
+		}
+	});
 }
 
 function docLoaded(projectId, uri, data) {
