@@ -26,7 +26,7 @@ FEATURES
 var Todo = (function() {
 
 	var btnAddFeature, btnAddBug, 
-	list, dragElem, dragUp, dragY,
+	list, listDone, dragElem, dragUp, dragY,
 	projectId, todos,
 	
 	init = function() {
@@ -43,6 +43,10 @@ var Todo = (function() {
 		list.addEventListener("dragleave", dragHandler, false);
 		list.addEventListener("dragstart", dragHandler, false);
 		list.addEventListener("dragend", dragHandler, false);
+		
+		listDone = document.getElementById("listTodosDone");
+		listDone.addEventListener("click", clickHandler, false);
+		
 		
 	},
 	
@@ -143,6 +147,7 @@ var Todo = (function() {
 	
 	updateList = function() {
 		list.innerHTML="";
+		listDone.innerHTML="";
 		
 		var sortedTodoIds = Object.keys(todos).sort(function(a,b){
 			return todos[a].prio-todos[b].prio;
@@ -151,20 +156,26 @@ var Todo = (function() {
 		for(var i in sortedTodoIds) {
 			var todoId = sortedTodoIds[i];
 			var todo = todos[todoId];
+			var done = todo.status==="done";
 			
 			if(!todo.type) todo.type="feature";
+			
 			
 			var li = document.createElement("LI");
 			li.classList.add(todo.type)
 			li.dataset.id = todoId;
-			li.draggable="true";
+			if(!done) li.draggable="true";
 			
 			var title = document.createElement("span");
 			title.textContent = todo.description;
 			title.classList.add("title");
 			
 			li.appendChild(title);
-			list.appendChild(li);
+			if(done) {
+				listDone.appendChild(li);
+			} else {
+				list.appendChild(li);
+			}
 		}
 	},
 	

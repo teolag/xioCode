@@ -4,7 +4,7 @@
 	overflow: auto;
 }
 
-#listTodos {
+#listTodos, #listTodosDone{
 	margin: 0;
 	padding: 0;
 }
@@ -12,7 +12,6 @@
 #listTodos li {
 	padding: 0.6em;
 	margin-bottom: 0.5em;
-	font-size: 0.8em;
 	transition:  -webkit-transform 0.5s ease, background-color 0.5s ease;
 	box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
 	list-style-type: decimal;
@@ -47,18 +46,22 @@
 }
 
 
-
-#listTodos li .dragHandle {
-	width: 20px;
-	background-color: #555;
-	height: 20px;
-	display: inline-block;
-}
-
 #listTodos li .title {
 	display: block;
 	font-size: 12px;
 	color: #666;
+}
+
+
+#listTodosDone li {
+	padding: 0.6em;
+	margin-bottom: 0.5em;
+	list-style-type: none;
+	border-radius: 0.3em;
+	display: block;
+	font-size: 12px;
+	color: #666;
+	background-color: #eee;
 }
 
 #dropPlaceholder{
