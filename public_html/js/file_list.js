@@ -387,6 +387,14 @@ var FileList = (function() {
 			if(isFolder) path+=filename + "/";
 			createNewFile(path);
 			break;
+			
+			case "saveAs":
+			var newName = XioPop.prompt("Save as", "Enter the new name of the file/folder", filename, function(newName) {
+				if(newName) {
+					saveFileAs(newName, false);
+				}
+			});
+			break;
 
 			case "refresh":
 			FileList.loadProjectFiles();

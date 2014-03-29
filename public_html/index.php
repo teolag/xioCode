@@ -121,6 +121,7 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 				<li data-do="refresh">Refresh</li>
 				<li data-do="newFolder">New folder...</li>
 				<li data-do="newFile">New file...</li>
+				<li data-do="saveAs">Save As...</li>
 				<li data-do="rename" class="fileOnly">Rename...</li>
 				<li data-do="export" class="fileOnly">Export</li>
 				<li data-do="delete" class="fileOnly">Delete</li>

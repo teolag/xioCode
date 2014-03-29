@@ -80,7 +80,7 @@ switch($_REQUEST['action']) {
 		$finfo = finfo_open(FILEINFO_MIME);
 		$mime = finfo_file($finfo, $path.$uri);
 		$response['mime'] = $mime;
-		if(substr($mime, 0, 4) == 'text') {
+		if(substr($mime, 0, 4) === "text" || substr($mime, 0, 13) === "inode/x-empty") {
 			$text = file_get_contents($path.$uri);
 			if($text === false) {
 				$response['status'] = STATUS_FILE_NOT_READABLE;
