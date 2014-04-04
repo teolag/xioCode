@@ -518,23 +518,24 @@ function readHash() {
 	console.log("Read hash", hash, window.location.hash);
 	var match = hash.match(/^#([^\/]*)\/?(.*)$/);
 	if(match) {
-		var project_id = match[1];
+		var projectId = match[1];
 		var uri = match[2];
 
-		console.log("   project_id:", project_id);
+		console.log("   projectId:", projectId);
 		console.log("   uri:", uri);
 
-		if(!activeProject || (activeProject && project_id!=activeProject.id)) {
-			console.log("Open project", project_id);
-			openProject(project_id);
+		if(!activeProject || (activeProject && projectId!=activeProject.id)) {
+			console.log("Open project", projectId);
+			openProject(projectId);
 		}
 		if(uri) {
 			if(uri!==activeFile) {
-				getOrCreateDoc(project_id, uri);
-				FileList.setActiveFile(uri);
+				getOrCreateDoc(projectId, uri);
+				activeFile = uri;
+				FileList.selectFile(uri);
 			}
 		} else {
-			unloadFile();
+			setActiveFile(projectId, null);
 		}
 
 	} else {
@@ -566,15 +567,19 @@ function setFileToClean(uri) {
 }
 
 function updateCleanStatus(uri) {
-	var tab = openedList.querySelector("li[data-uri='"+uri+"']");
-	if(xioDocs[activeProject.id][uri].isClean()) {
+	if(uri===null) {
 		document.getElementById("btnSave").classList.add("disabled");
-		FileList.setFileAsClean(uri);
-		if(tab) tab.classList.remove("changed");
 	} else {
-		document.getElementById("btnSave").classList.remove("disabled");
-		FileList.setFileAsDirty(uri);
-		if(tab) tab.classList.add("changed");
+		var tab = openedList.querySelector("li[data-uri='"+uri+"']");
+		if(xioDocs[activeProject.id][uri].isClean()) {
+			document.getElementById("btnSave").classList.add("disabled");
+			FileList.setFileAsClean(uri);
+			if(tab) tab.classList.remove("changed");
+		} else {
+			document.getElementById("btnSave").classList.remove("disabled");
+			FileList.setFileAsDirty(uri);
+			if(tab) tab.classList.add("changed");
+		}
 	}
 }
 

@@ -26,13 +26,12 @@ var ProjectList = (function() {
 		
 		listProjectOrderBy = document.getElementById("listProjectOrderBy");
 		listProjectOrderBy.addEventListener("change", selectOrderBy, false);
-		
 	};
 
 	var loadProjects = function() {
 		if(!projectList) init();
 
-		Ajax.getJSON("/scripts/get_all_projects.php", null, 
+		Ajax.getJSON("/scripts/get_projects.php", null, 
 			function(json) {
 				projects = json;
 				console.log("%i projects found", Object.keys(projects).length, projects);
@@ -211,7 +210,7 @@ var ProjectList = (function() {
 
 
 			default:
-			setHash(projectId+"/"+UNSAVED_FILENAME);
+			setHash(projectId);
 		}
 	};
 
@@ -235,7 +234,7 @@ var ProjectList = (function() {
 	var keyDown = function(e) {
 		if(e.which === KEY_ENTER) {
 			var projectElement = projectList.querySelector(".selected");
-			setHash(projectElement.getAttribute('data-project_id')+"/"+UNSAVED_FILENAME);
+			setHash(projectElement.getAttribute('data-project_id'));
 			e.preventDefault();
 		} else if(e.which === KEY_DOWN) {
 			selectNextVisible();

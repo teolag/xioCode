@@ -19,7 +19,7 @@ function initWriter() {
 		smartIndent: false,
 		styleActiveLine: true,
         indentUnit: 4,
-		//theme: 'neat',
+		theme: 'neat',
 		//theme: 'ambiance',
         indentWithTabs: true,
 		//cursorScrollMargin: 75,
@@ -88,14 +88,14 @@ function initWriter() {
 			updateCleanStatus(activeFile);
 		}
 	});
-}
+};
 
 CodeMirror.commands.moveRowUp = function(editor) {
 	CodeMirror.commands.moveRow(editor, true);
-}
+};
 CodeMirror.commands.moveRowDown = function(editor) {
 	CodeMirror.commands.moveRow(editor, false);
-}
+};
 CodeMirror.commands.moveRow = function(editor, up) {
 	var start = editor.getCursor("start");
 	var end = editor.getCursor("end");
@@ -118,15 +118,15 @@ CodeMirror.commands.moveRow = function(editor, up) {
 		}
 		editor.replaceRange(nextRow+"\n",{line:start.line, ch:0});
 	}
-}
+};
 
 
 CodeMirror.commands.duplicateRowUp = function(editor) {
 	CodeMirror.commands.duplicateRow(editor, true);
-}
+};
 CodeMirror.commands.duplicateRowDown = function(editor) {
 	CodeMirror.commands.duplicateRow(editor, false);
-}
+};
 CodeMirror.commands.duplicateRow = function(editor, up) {
 	var start = editor.getCursor("start");
 	var end = editor.getCursor("end");
@@ -145,7 +145,7 @@ CodeMirror.commands.duplicateRow = function(editor, up) {
 			editor.replaceRange("\n"+text, {line:start.line-1});
 		}
 	}
-}
+};
 
 
 
@@ -156,7 +156,7 @@ CodeMirror.commands.removeLines = function(editor) {
 	var pos = editor.getCursor();
 	editor.replaceRange("", {line:startLine,ch:0}, {line:endLine+1,ch:0});
 	editor.setCursor(pos);
-}
+};
 
 CodeMirror.commands.selectLines = function(editor) {
 	var posStart = editor.getCursor("start");
@@ -164,7 +164,7 @@ CodeMirror.commands.selectLines = function(editor) {
 	posStart.ch=0;
 	posEnd.ch=editor.getLine(posEnd.line).length;
 	editor.setSelection(posStart, posEnd);
-}
+};
 
 CodeMirror.commands.tabWithAutoComplete = function(editor) {
 	console.log("tabWithAutoComplete");
@@ -186,16 +186,16 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 	} else {
 		CodeMirror.commands[editor.getSelection().length ? "indentMore" : "insertTab"](editor);
 	}
-}
+};
 CodeMirror.commands.shortcutSave = function(editor) {
 	console.log("Ctrl/Cmd+s pressed, saving...");
 	saveFile();
-}
+};
 CodeMirror.commands.newFile = function(editor) {
 	//Does not work in chrome...
 	console.log("Ctrl/Cmd+n pressed, new file...");
 	unloadFile();
-}
+};
 CodeMirror.commands.jump2Line = function(editor, line) {
 	if(line===undefined) {
 		XioPop.prompt("Jump to line", "Enter the desired line number", "", function(lineNumber) {
@@ -212,7 +212,7 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 }
 CodeMirror.commands.rightTrimLines = function(editor, line) {
 
-}
+};
 
 
 CodeMirror.commands.showAllFunctions = function(editor) {
@@ -223,10 +223,11 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 	div.classList.add("filteredSelectList");
 
 	var filter = document.createElement("input");
+	filter.value = editor.doc.getSelection();
 	filter.type="search";
 	filter.addEventListener("keyup", function(e) {
 		if(e && e.which === 13) {
-			var first = list.querySelector("li");
+			var first = list.querySelector("li:not(.hidden)");
 			if(!first) return;
 
 			console.log("Choose the first", first);
@@ -234,22 +235,27 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 			XioPop.close();
 			CodeMirror.commands.jump2Line(editor, line);
 		} else {
-			var searchString = e.target.value.toLowerCase();
-			console.log("filter functions '"+searchString+"'");
-
-			for(var id in functions) {
-				var func = functions[id];
-				console.log(id, func);
-
-				var li = list.querySelector("li[data-id='"+id+"']");
-				if(func.name.toLowerCase().search(searchString)!=-1) {
-					li.classList.remove('hidden');
-				} else {
-					li.classList.add('hidden');
-				}
-			}
-	}
+			filterFunctions();
+		}
 	});
+	
+	
+	var filterFunctions = function() {
+		var searchString = filter.value.toLowerCase();
+		console.log("filter functions '"+searchString+"'");
+
+		for(var id in functions) {
+			var func = functions[id];
+			console.log(id, func);
+
+			var li = list.querySelector("li[data-id='"+id+"']");
+			if(func.name.toLowerCase().search(searchString)!=-1) {
+				li.classList.remove('hidden');
+			} else {
+				li.classList.add('hidden');
+			}
+		}
+	};
 
 	var list = document.createElement("ul");
 	list.classList.add("selectableList", "functions");
@@ -273,9 +279,9 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 	div.appendChild(filter);
 	div.appendChild(list);
 	XioPop.showElement(div);
+	filterFunctions();
 	filter.focus();
-
-}
+};
 
 
 

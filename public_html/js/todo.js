@@ -225,53 +225,16 @@ var Todo = (function() {
 		var radioStatusSelected = template.querySelector("input[name=status][value="+settings.status+"]");
 		radioStatusSelected.checked="checked";
 			
-		/*
-		form.id = "formTodo";
 		
-		
-		
-		var description = document.createElement("TEXTAREA");
-		description.name = "description";
-		description.value = settings.description || "";
-		
-		var radioFeature = document.createElement("input");
-		radioFeature.type="radio";
-		radioFeature.value="feature";
-		radioFeature.name="type";
-		if(settings.type==="feature") radioFeature.checked="checked";
-
-		var radioBug = document.createElement("input");
-		radioBug.type="radio";
-		radioBug.value="bug";
-		radioBug.name="type";
-		if(settings.type==="bug") radioBug.checked="checked";
-		
-		var saveButton = document.createElement("BUTTON");
-		saveButton.type="submit";
-		saveButton.textContent="Save";
-		
-		if(editMode) {
-			var deleteButton = document.createElement("BUTTON");
-			deleteButton.type="button";
-			deleteButton.textContent="Delete";
-			deleteButton.dataset.todoId = settings.todoId;
-			deleteButton.addEventListener("click", deleteTodo, false);
-		}
-		
-		form.appendChild(title);
-		form.appendChild(hiddenId);
-		form.appendChild(description);
-		form.appendChild(radioFeature);
-		form.appendChild(radioBug);
-		form.appendChild(saveButton);
-		if(editMode) form.appendChild(deleteButton);
-		*/
 		
 		XioPop.showElement(document.importNode(template, true));
 		
-		var form = document.getElementById("formTodo");
-		
+		var form = document.getElementById("formTodo");		
 		form.addEventListener("submit", submitTodo, false);
+		
+		var btnDelete = form.querySelector("button.delete");
+		btnDelete.dataset.todoId = settings.todoId;
+		btnDelete.addEventListener("click", deleteTodo, false);
 		
 		description.focus();
 	},

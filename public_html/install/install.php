@@ -1,8 +1,7 @@
 <?php
 
-define("ROOT", $_SERVER["DOCUMENT_ROOT"]."/");
-require ROOT . "../classes/DatabasePDO.php";
-$configFile = ROOT . "../config.json";
+define("ROOT", $_SERVER["DOCUMENT_ROOT"]."/../");
+$configFile = ROOT . "config.json";
 
 
 

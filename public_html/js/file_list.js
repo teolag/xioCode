@@ -27,16 +27,9 @@ var FileList = (function() {
 		loadProjectFiles();
 	};
 
-	var setActiveFile = function(newActiveFile) {
-		console.debug("FileList: ActiveFile set to " + newActiveFile);
-		activeFile = newActiveFile;
-
-		selectActiveFile();
-	};
-
 
 	var loadProjectFiles = function() {
-		Ajax.getJSON("/scripts/build_file_tree.php", {project_id: projectId},
+		Ajax.getJSON("/scripts/get_project_files.php", {project_id: projectId},
 			function(items) {
 				files = {};
 
@@ -50,10 +43,10 @@ var FileList = (function() {
 						openFolder(li);
 					}
 				}
-				if(activeFile) selectActiveFile();
+				if(activeFile) selectFile(activeFile);
 			}, function(e) {
 				if(e.status===403) {
-					console.log("Access denied. You must login again to liad files");
+					console.log("Access denied. You must login again to load the files");
 					showLogin();
 				}
 				console.error("Error loading file tree", e);
@@ -92,21 +85,13 @@ var FileList = (function() {
 		return htm.join("");
 	}
 
-	var selectActiveFile = function() {
-		if(!activeFile) return;
-		if(!files) {
-			console.log("Can not select", activeFile, "in fileList. Files not loaded");
-			return;
-		}
+	var selectFile = function(uri) {
+		deselectAll();
+		
+		if(uri===UNSAVED_FILENAME) return;
+		console.log("Select: '" + uri + "' in fileList");
 
-		var items = fileList.querySelectorAll("li");
-		for(var i = 0; i<items.length; i++) {
-			items[i].classList.remove("selected");
-		}
-		if(activeFile===UNSAVED_FILENAME) return;
-		console.log("Select: '" + activeFile + "' in fileList");
-
-		var li = fileList.querySelector("li[data-uri='"+activeFile+"']");
+		var li = fileList.querySelector("li[data-uri='"+uri+"']");
 		if(li) {
 			li.classList.add("selected");
 
@@ -118,6 +103,13 @@ var FileList = (function() {
 				}
 				parent = parent.parentElement;
 			}
+		}
+	};
+	
+	var deselectAll = function(uri) {
+		var items = fileList.querySelectorAll("li");
+		for(var i = 0; i<items.length; i++) {
+			items[i].classList.remove("selected");
 		}
 	};
 
@@ -374,13 +366,14 @@ var FileList = (function() {
 		switch(target.dataset.do) {
 
 			case "newFolder":
-			var folderName = prompt("Enter the name of the folder");
-			if(folderName) {
-				if(isFolder) path+=filename + "/";
-				Ajax.get("/scripts/create_folder.php", {'project_id':projectId, 'uri':encodeURI(path + folderName)}, function() {
-					FileList.loadProjectFiles();
-				});
-			}
+			XioPop.prompt("New folder", "Enter the name of the folder", "", function(folderName) {
+				if(folderName) {
+					if(isFolder) path+=filename + "/";
+					Ajax.get("/scripts/create_folder.php", {'project_id':projectId, 'uri':encodeURI(path + folderName)}, function() {
+						FileList.loadProjectFiles();
+					});
+				}
+			});
 			break;
 
 			case "newFile":
@@ -389,7 +382,7 @@ var FileList = (function() {
 			break;
 			
 			case "saveAs":
-			var newName = XioPop.prompt("Save as", "Enter the new name of the file/folder", filename, function(newName) {
+			XioPop.prompt("Save as", "Enter the new name of the file/folder", filename, function(newName) {
 				if(newName) {
 					saveFileAs(newName, false);
 				}
@@ -418,7 +411,7 @@ var FileList = (function() {
 			break;
 
 			case "rename":
-			var newName = XioPop.prompt("Rename file", "Enter the new name of the file/folder", filename, function(newName) {
+			XioPop.prompt("Rename file", "Enter the new name of the file/folder", filename, function(newName) {
 				if(newName) {
 					renameFile(uri, path+newName);
 				}
@@ -481,7 +474,6 @@ var FileList = (function() {
 	return {
 		loadProjectFiles: loadProjectFiles,
 		setProjectId: setProjectId,
-		setActiveFile: setActiveFile,
 		clear: clear,
 		showSpinner: showSpinner,
 		hideSpinner: hideSpinner,
@@ -489,7 +481,9 @@ var FileList = (function() {
 		setFileAsClean: setFileAsClean,
 		setFileAsDirty: setFileAsDirty,
 		hide: hide,
-		show: show
+		show: show,
+		selectFile: selectFile,
+		deselectAll: deselectAll
 	}
 
 })();

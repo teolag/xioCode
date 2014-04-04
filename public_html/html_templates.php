@@ -20,6 +20,6 @@
 		<input type="radio" value="done" name="status" id="rbTodoStatusDone"><label for="rbTodoStatusDone">Done</label><br>
 		
 		<button type="submit">Save</button>
-		<button type="button">Delete</button>
+		<button type="button" class="delete">Delete</button>
 	</form>
 </template>

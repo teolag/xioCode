@@ -34,7 +34,7 @@ function redrawOpenedDocs(projectId) {
 	var html="";
 	var oFiles = xioDocs[projectId];
 	openedList.innerHTML="";
-
+	
 	for (var property in oFiles) {
 		if (oFiles.hasOwnProperty(property)) {
 			var doc = oFiles[property];
@@ -73,23 +73,21 @@ function closeDoc(projectId, uri) {
 	if(oUri && activeFile!==oUri) {
 		openFile(oUri);
 	} else if(oUri===undefined) {
-		console.log("Open empty");
-		openFile();
+		console.log("All docs closed");
+		setHash(projectId);
+		setActiveFile(projectId, null);
 	}
 }
 
 
 
 function getOrCreateDoc(projectId, uri) {
-	console.log("getOrCreateDoc", uri);
 	if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri)) {
 		var doc = xioDocs[projectId][uri];
-		console.log("swap to doc", doc);
 		codeMirror.swapDoc(doc);
 		setActiveFile(projectId, uri);
 		codeMirror.focus();
 		redrawOpenedDocs(projectId);
-		console.log("Doc", doc);
 	} else {
 		loadDoc(projectId, uri);
 	}
@@ -119,6 +117,7 @@ function loadDoc(projectId, uri) {
 function docLoaded(projectId, uri, data) {
 	var mode = getDocType(uri);
 	var doc = CodeMirror.Doc(data, mode);
+	console.log("Doc loaded, treat as", mode);
 	var old = codeMirror.swapDoc(doc);
 	if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
 	xioDocs[projectId][uri] = doc;
@@ -129,9 +128,20 @@ function docLoaded(projectId, uri, data) {
 
 
 function setActiveFile(projectId, uri) {
-	var doc = xioDocs[projectId][uri];
 	activeFile = uri;
 	updateCleanStatus(uri);
+	if(uri===null) {
+		console.debug("hide codeMirror");
+		codeMirror.getWrapperElement().style.display="none";
+		document.getElementById("btnPreviewFile").classList.add("disabled");
+		FileList.deselectAll();
+	} else {
+		console.debug("show codeMirror");
+		codeMirror.getWrapperElement().style.display="block";
+		document.getElementById("btnPreviewFile").classList.remove("disabled");
+		codeMirror.refresh();
+		var doc = xioDocs[projectId][uri];
+	}
 }
 
 
@@ -149,6 +159,7 @@ function getDocType(uri) {
 		case "html": case "htm":	return "text/html"; 				break;
 		case "css": 				return "text/css"; 					break;
 		case "xml": case "svg": 	return "application/xml"; 			break;
+		case "sql": 				return "text/x-mysql";	 			break;
 		default: 					return "text/plain";
 	}
 }

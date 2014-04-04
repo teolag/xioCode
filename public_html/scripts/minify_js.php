@@ -9,6 +9,7 @@ $files[] = "../codemirror/mode/xml/xml.js";
 $files[] = "../codemirror/mode/javascript/javascript.js";
 $files[] = "../codemirror/mode/css/css.js";
 $files[] = "../codemirror/mode/clike/clike.js";
+$files[] = "../codemirror/mode/sql/sql.js";
 $files[] = "../codemirror/mode/php/php.js";
 $files[] = "../codemirror/addon/dialog/dialog.js";
 $files[] = "../codemirror/addon/edit/matchbrackets.js";
