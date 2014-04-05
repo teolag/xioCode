@@ -638,7 +638,7 @@ function findFunctions() {
 	}
 
 	// Find functions in the format:   pelle = function(arg1, arg2) {
-	re = new RegExp("([A-Z0-9_]+)\\s*=\\s*function\\s*\\(([^\\)]*)\\)", "gmi");
+	re = new RegExp("([A-Z0-9_\.]+)\\s*=\\s*function\\s*\\(([^\\)]*)\\)", "gmi");
 	while(hit = re.exec(text)) {
 		console.log("func 2", hit);
 		var pos = doc.posFromIndex(hit.index);

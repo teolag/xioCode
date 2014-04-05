@@ -16,7 +16,7 @@ var Ajax = (function() {
 		};
 		xhr.send();
 	},
-	
+
 	getJSON = function(url, parameters, successCallback, errorCallback) {
 		if(parameters && Object.keys(parameters).length>0) {
 			url = url + "?" + obj2querystring(parameters);

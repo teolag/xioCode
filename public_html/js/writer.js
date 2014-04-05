@@ -33,8 +33,8 @@ function initWriter() {
 			"Cmd-N" 		: "newFile",
 			"Ctrl-S" 		: "shortcutSave",
 			"Cmd-S" 		: "shortcutSave",
-			"Alt-Down" 		: "moveRowDown",
-			"Alt-Up" 		: "moveRowUp",
+			"Alt-Up"		: "swapLineUp",
+  			"Alt-Down"		: "swapLineDown",  
 			"Ctrl-Alt-Down" : "duplicateRowDown",
 			"Cmd-Alt-Down" 	: "duplicateRowDown",
 			"Ctrl-Alt-Up" 	: "duplicateRowUp",
@@ -90,39 +90,9 @@ function initWriter() {
 	});
 };
 
-CodeMirror.commands.moveRowUp = function(editor) {
-	CodeMirror.commands.moveRow(editor, true);
-};
-CodeMirror.commands.moveRowDown = function(editor) {
-	CodeMirror.commands.moveRow(editor, false);
-};
-CodeMirror.commands.moveRow = function(editor, up) {
-	var start = editor.getCursor("start");
-	var end = editor.getCursor("end");
-	var nextRow = editor.getLine(end.line+1);
-	var prevRow = editor.getLine(start.line-1);
-
-	if(up && start.line>0) {
-		editor.replaceRange("", {line:start.line-1, ch:0}, {line:start.line, ch:0});
-		if(end.line===editor.doc.lastLine()) {
-			editor.replaceRange("\n"+prevRow, {line:end.line});
-			editor.setSelection({line:start.line-1, ch:start.ch}, {line:end.line-1, ch:end.ch});
-		} else {
-			editor.replaceRange(prevRow + "\n", {line:end.line, ch:0});
-		}
-	} else if(!up) {
-		if(end.line===editor.doc.lastLine()-1) {
-			editor.replaceRange("", {line:end.line}, {line:end.line+1});
-		} else if(end.line!==editor.doc.lastLine()) {
-			editor.replaceRange("", {line:end.line+1, ch:0}, {line:end.line+2, ch:0});
-		}
-		editor.replaceRange(nextRow+"\n",{line:start.line, ch:0});
-	}
-};
-
 
 CodeMirror.commands.duplicateRowUp = function(editor) {
-	CodeMirror.commands.duplicateRow(editor, true);
+	CodeMirror.commands.duplicateLine(editor);
 };
 CodeMirror.commands.duplicateRowDown = function(editor) {
 	CodeMirror.commands.duplicateRow(editor, false);

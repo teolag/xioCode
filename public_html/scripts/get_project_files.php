@@ -18,11 +18,11 @@ function lookInFolder($path, $relPath="") {
 		$branch=array();
 		$branch['filename']=$i;
 		$branch['path']=$relPath;
-		if($i=="." || $i=="..") {
-			continue;
-		}
 		
 		if(is_dir($path.$i)) {
+			if($i=="." || $i==".." || $i==".git") {
+				continue;
+			}
 			$branch['type'] = FOLDER;
 			$branch['icon'] = "folder";
 			$branch['leafs'] = lookInFolder($path.$i."/", $relPath.$i."/");
