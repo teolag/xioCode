@@ -8,25 +8,29 @@ define("FOLDER", "folder");
 
 function lookInFolder($path, $relPath="") {
 	//global $finfo;
-	$hidden = glob($path.".h*");  //to get all the .h* files for example .htaccess
-	$items = glob($path."*");
-	if(!empty($hidden)) $items = array_merge($items, $hidden);
+		
+	$items = scandir($path);
+	
 	
 	$branches = array();
 	foreach($items as $i) {
-		$parts = pathinfo($i);
+		$parts = pathinfo($path.$i);
 		$branch=array();
-		$branch['filename']=$parts['basename'];
+		$branch['filename']=$i;
 		$branch['path']=$relPath;
-		if(is_dir($i)) {
+		if($i=="." || $i=="..") {
+			continue;
+		}
+		
+		if(is_dir($path.$i)) {
 			$branch['type'] = FOLDER;
 			$branch['icon'] = "folder";
-			$branch['leafs'] = lookInFolder($i."/", $relPath.$parts['basename']."/");
+			$branch['leafs'] = lookInFolder($path.$i."/", $relPath.$i."/");
 		}
 		else {
-			$branch["size"] = filesize($i);
-			//$branch["mime"] = finfo_file($finfo, $i);
-			if($imageInfo = getimagesize($i)) {
+			$branch["size"] = filesize($path.$i);
+			//$branch["mime"] = finfo_file($finfo, $path.$i);
+			if($imageInfo = getimagesize($path.$i)) {
 				$branch["width"] = $imageInfo[0];
 				$branch["height"] = $imageInfo[1];
 			}

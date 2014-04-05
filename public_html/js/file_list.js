@@ -58,10 +58,12 @@ var FileList = (function() {
 		var htm = [];
 		htm.push("<ul>");
 		for(var i=0; i<arr.length; i++) {
+			var title = "";
 			var item = arr[i];
 			var imagePreview="";
 			if(item.type==="jpg" || item.type==="jpeg" || item.type==="gif" || item.type==="png" || item.type==="bmp" || item.type==="tif" || item.type==="tiff") {
 				imagePreview=" imagePreview";
+				title += item.width + " x " + item.height + "\n";
 			}
 			var uri = item.path + item.filename;
 			files[uri] = item;
@@ -73,7 +75,7 @@ var FileList = (function() {
 			}
 
 			var hidden  = (item.filename==='xiocode.properties' || item.filename==='xiocode.todo')? ' hidden' : '';
-			var title = item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
+			title += item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
 			htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + uri + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
 			htm.push("<span class='icon-"+item.icon+"'>"+item.filename+"</span>");
 			if(item.leafs) {
