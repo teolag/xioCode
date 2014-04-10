@@ -29,18 +29,7 @@ var username;
 var h1, toolbar, userMenu, leftColumn, workspaceDivider;
 
 
-document.addEventListener("DOMContentLoaded", startup, false);
-function startup() {
-	init();
-	if(_USER && _USER.username) {
-		window.dispatchEvent(new CustomEvent("userLogin"));
-	} else {
-		showLogin();
-	}
-}
-
-
-function init() {
+document.addEventListener("DOMContentLoaded", function(e) {
 	initWriter();
 	Todo.init();
 
@@ -62,6 +51,13 @@ function init() {
 	window.onhashchange = readHash;
 	window.onbeforeunload = warnBeforeUnload;
 	window.addEventListener("userLogin", loginAccepted, false);
+	
+	
+	document.addEventListener("visibilitychange", function(e) {
+		var date = new Date(e.timeStamp);
+		console.debug(document.hidden ? "borta!" : "tillbaka!", e.timeStamp, date, date.toTimeString().substr(0,8));		
+	}, false);
+	
 
 	h1 = document.querySelector("#header h1");
 	h1.addEventListener("click", function(){setHash()}, false);
@@ -71,7 +67,15 @@ function init() {
 
 	userMenu = document.getElementById("userMenu");
 	userMenu.addEventListener("click", userMenuHandler, false);
-}
+	
+	
+	if(_USER && _USER.username) {
+		window.dispatchEvent(new CustomEvent("userLogin"));
+	} else {
+		showLogin();
+	}
+}, false);
+
 
 
 function warnBeforeUnload(e) {
@@ -175,14 +179,12 @@ function showLogin() {
 
 function checkAccess() {
 	console.log(new Date().toTimeString().substr(0,5), "Access check");
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET","/scripts/gatekeeper_check_access.php");
-	xhr.onload = function(e) {
-		if(xhr.status !== 202) {
+	Ajax.getJSON("/scripts/gatekeeper_check_access.php", {user_id: _USER.user_id}, function(json) {
+		if(json.status !== STATUS_OK) {
+			console.warn(json.message);
 			logout();
 		}
-	};
-	xhr.send();
+	});
 }
 
 
@@ -396,7 +398,7 @@ function saveFile() {
 	console.log("Save file '"+ activeFile+"'...");
 
 	FileList.showSpinner(activeFile);
-	Ajax.postFormDataWithJsonResponse("/scripts/file_handler.php", formData, saveSuccess, errorCallback);
+	Ajax.post2JSON("/scripts/file_handler.php", formData, saveSuccess);
 }
 
 
@@ -423,7 +425,7 @@ function saveFileAs(newFileName, overwrite) {
 	formData.append("action", "saveAs");
 	if(overwrite) formData.append("overwrite", true);
 
-	Ajax.postFormDataWithJsonResponse("/scripts/file_handler.php", formData, saveAsSuccess, errorCallback);	
+	Ajax.post2JSON("/scripts/file_handler.php", formData, saveAsSuccess);	
 }
 
 function saveAsSuccess(json) {
@@ -459,7 +461,7 @@ function renameFile(uri, newUri, overwrite) {
 		'new_uri':encodeURI(newUri)
 	};
 	if(overwrite===true) parameters['overwrite']=true;
-	Ajax.getJSON("/scripts/file_handler.php", parameters, renameCallback, errorCallback);
+	Ajax.getJSON("/scripts/file_handler.php", parameters, renameCallback);
 }
 
 function renameCallback(json) {
@@ -492,7 +494,12 @@ function renameCallback(json) {
 
 
 function errorCallback(e) {
-	console.error("Error callback", e);
+	if(e.status === 401) {
+		console.warn("You have to login again...");
+		// TODO: relogin without loosing data
+	} else {
+		console.error("Error callback", e);
+	}
 }
 
 
@@ -671,7 +678,7 @@ function toHumanReadableDateTime(ts) {
 	if(!ts) return "";
 	var ts = new Date(ts);
 	var now = new Date();
-	var time = ts.toISOString().substr(11,5);
+	var time = ts.toTimeString().substr(0,5);
 	var date = ts.toISOString().substr(0,10);
 	
 	var diff = ts - now;

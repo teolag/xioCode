@@ -19,7 +19,7 @@ function initWriter() {
 		smartIndent: false,
 		styleActiveLine: true,
         indentUnit: 4,
-		theme: 'neat',
+		theme: 'xio',
 		//theme: 'ambiance',
         indentWithTabs: true,
 		//cursorScrollMargin: 75,

@@ -20,13 +20,13 @@ var ProjectConfig = (function() {
 
 	updateLastOpened = function(projectId) {
 		console.log("Update last opened...");
-		Ajax.post("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, null, onSaveError);
+		Ajax.post("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, null);
 	},
 
 	onSubmit = function(e) {
 		e.preventDefault();
 		console.log("Save project configurations...");
-		Ajax.postForm("/scripts/project_config.php?action=save", form, onSaveSuccess, onSaveError);
+		Ajax.post("/scripts/project_config.php?action=save", form, onSaveSuccess);
 	},
 
 	onSaveSuccess = function(xhr) {

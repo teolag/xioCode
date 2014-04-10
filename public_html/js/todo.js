@@ -112,7 +112,7 @@ var Todo = (function() {
 			var formData = new FormData();
 			formData.append("project_id", projectId);
 			formData.append("prio", ids);
-			Ajax.postFormDataWithJsonResponse("/scripts/todo_handler.php", formData, prioritizeCallback);
+			Ajax.post2JSON("/scripts/todo_handler.php", formData, prioritizeCallback);
 			break;
 			
 			case "dragleave":
@@ -244,7 +244,7 @@ var Todo = (function() {
 		var formData = new FormData(e.target);
 		formData.append("project_id", projectId);
 		formData.append("ts", (new Date()).getTime());
-		Ajax.postFormDataWithJsonResponse("/scripts/todo_handler.php", formData, submitCallback);
+		Ajax.post2JSON("/scripts/todo_handler.php", formData, submitCallback);
 		XioPop.close();
 	},
 	
@@ -258,7 +258,7 @@ var Todo = (function() {
 		var formData = new FormData();
 		formData.append("project_id", projectId);
 		formData.append("todo_id", e.target.dataset.todoId);
-		Ajax.postFormDataWithJsonResponse("/scripts/todo_handler.php?action=delete", formData, deleteCallback);
+		Ajax.post2JSON("/scripts/todo_handler.php?action=delete", formData, deleteCallback);
 		XioPop.close();
 	},
 	

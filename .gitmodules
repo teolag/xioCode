@@ -7,3 +7,6 @@
 [submodule "PHPMailer"]
 	path = classes/PHPMailer
 	url = https://github.com/PHPMailer/PHPMailer.git
+[submodule "public_html/AjaXIO"]
+	path = public_html/AjaXIO
+	url = git://github.com/teolag/AjaXIO

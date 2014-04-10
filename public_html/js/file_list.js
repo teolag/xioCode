@@ -405,7 +405,7 @@ var FileList = (function() {
 			}
 			XioPop.confirm(title, question, function(answer) {
 				if(answer) {
-					Ajax.get("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
+					Ajax.getJSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
 						FileList.loadProjectFiles();
 					});
 				}

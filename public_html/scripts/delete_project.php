@@ -4,12 +4,11 @@ Gatekeeper::checkAccess();
 
 $projectId = $_POST['project_id'];
 if(empty($projectId)) die("Project id must be set");
-//$project = $db->getRow("SELECT * FROM projects WHERE project_id=?", array($projectId));
 
+$projectDir = PROJECT_PATH . $projectId;
 
-rrmdir(PROJECT_PATH . $projectId);
-//$sql = "DELETE FROM projects WHERE project_id=?";
-//$db->query($sql, array($projectId));
-
+if(is_dir($projectDir)) {
+	rrmdir($projectDir);
+}
 
 ?>
