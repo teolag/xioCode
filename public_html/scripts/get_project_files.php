@@ -8,17 +8,17 @@ define("FOLDER", "folder");
 
 function lookInFolder($path, $relPath="") {
 	//global $finfo;
-		
+
 	$items = scandir($path);
-	
-	
+
+
 	$branches = array();
 	foreach($items as $i) {
 		$parts = pathinfo($path.$i);
 		$branch=array();
 		$branch['filename']=$i;
 		$branch['path']=$relPath;
-		
+
 		if(is_dir($path.$i)) {
 			if($i=="." || $i==".." || $i==".git") {
 				continue;
@@ -30,10 +30,12 @@ function lookInFolder($path, $relPath="") {
 		else {
 			$branch["size"] = filesize($path.$i);
 			//$branch["mime"] = finfo_file($finfo, $path.$i);
+			/*
 			if($imageInfo = getimagesize($path.$i)) {
 				$branch["width"] = $imageInfo[0];
 				$branch["height"] = $imageInfo[1];
 			}
+			*/
 			if(isset($parts['extension'])) {
 				$branch['type'] = strtolower($parts['extension']);
 				switch($branch['type']) {
@@ -42,12 +44,12 @@ function lookInFolder($path, $relPath="") {
 
 					case "htm": case "html": case "xml": 
 					$branch['icon'] = "file-xml"; break;
-					
+
 					case "css":
 					$branch['icon'] = "file-css"; break;
-					
-					default: $branch['icon'] = "file";					
-				}				
+
+					default: $branch['icon'] = "file";
+				}
 			} else {
 				$branch['type'] = "";
 				$branch['icon'] = "file";

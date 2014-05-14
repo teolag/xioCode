@@ -23,7 +23,13 @@ if(isset($_GET['action'])) {
 		
 		case "updateLastOpened":
 		$config["last_opened"] = time();
-		echo "updated last opened for project id: " . $_REQUEST['project_id'];
+		$response = array(
+			"status" => STATUS_OK,
+			"message" => "last opened updated",
+			"project_id" => $_REQUEST['project_id'],
+			"last_opened" => $config["last_opened"]		
+		);	
+		echo json_encode($response);
 		break;
 		
 		

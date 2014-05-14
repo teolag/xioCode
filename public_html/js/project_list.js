@@ -380,6 +380,16 @@ var ProjectList = (function() {
 	var isLoaded = function() {
 		return projects!==null;
 	};
+	
+	var updateLastOpened = function(projectId) {
+		Ajax.post2JSON("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, function(json) {
+			if(json.status===STATUS_OK) {
+				projects[projectId].last_opened = json.last_opened;
+			} else {
+				console.warn("could not update last_opened");
+			}
+		});
+	};
 
 
 	return {
@@ -387,6 +397,8 @@ var ProjectList = (function() {
 		clear: clear,
 		getProject: getProject,
 		loadProjects: loadProjects,
-		loadListOrder: loadListOrder
+		loadListOrder: loadListOrder,
+		display: display,
+		updateLastOpened: updateLastOpened
 	};
 })();

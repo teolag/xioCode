@@ -299,7 +299,7 @@ function openProject(id) {
 	FileList.clear();
 	FileList.setProjectId(id);
 	redrawOpenedDocs(id);
-	ProjectConfig.updateLastOpened(id);
+	ProjectList.updateLastOpened(id);
 	Todo.loadAll(id);
 
 	activeProject = {'id':id};
@@ -560,6 +560,8 @@ function chooseProject() {
 	activeProject = null;
 	document.title = pageTitle;
 	txtProjectFilter.focus();
+	console.log("display");
+	ProjectList.display();
 }
 
 

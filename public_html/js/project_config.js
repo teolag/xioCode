@@ -18,11 +18,6 @@ var ProjectConfig = (function() {
 		displayTags();
 	},
 
-	updateLastOpened = function(projectId) {
-		console.log("Update last opened...");
-		Ajax.post("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, null);
-	},
-
 	onSubmit = function(e) {
 		e.preventDefault();
 		console.log("Save project configurations...");
@@ -81,7 +76,6 @@ var ProjectConfig = (function() {
 
 
 	return {
-		open: open,
-		updateLastOpened: updateLastOpened
+		open: open
 	};
 })();
