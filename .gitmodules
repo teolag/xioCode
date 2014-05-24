@@ -1,12 +1,16 @@
 [submodule "codemirror"]
 	path = public_html/codemirror
 	url = https://github.com/marijnh/CodeMirror.git
+	ignore = dirty
 [submodule "DatabasePDO"]
 	path = classes/DatabasePDO
 	url = https://github.com/teolag/DatabasePDO.git
+	ignore = dirty
 [submodule "PHPMailer"]
 	path = classes/PHPMailer
 	url = https://github.com/PHPMailer/PHPMailer.git
+	ignore = dirty
 [submodule "public_html/AjaXIO"]
 	path = public_html/AjaXIO
 	url = git://github.com/teolag/AjaXIO
+	ignore = dirty
