@@ -19,6 +19,7 @@ $files[] = "../codemirror/addon/search/searchcursor.js";
 $files[] = "../codemirror/addon/selection/active-line.js";
 $files[] = "../codemirror/keymap/sublime.js";
 $files[] = "../AjaXIO/AjaXIO.js";
+$files[] = "../xioPop/XioPop.js";
 
 
 // Find the last updated file in the js folder

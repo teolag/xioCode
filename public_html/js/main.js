@@ -1,6 +1,5 @@
 "use strict";
 
-
 var DEBUG_MODE_ON=true;
 var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 var KEY_ENTER = 13;
@@ -12,7 +11,6 @@ if (!DEBUG_MODE_ON) {
     console = console || {};
     console.log = function(){};
 }
-
 
 
 var activeProject;
@@ -407,6 +405,11 @@ function saveSuccess(json) {
 		case STATUS_OK:
 		console.log("file saved as ", json.uri);
 		setFileToClean(json.uri);
+		break;
+		
+		case STATUS_FILE_COULD_NOT_UPDATE:
+		XioPop.alert("Error saving file", "Could not write to file. Permission denied<br>" + json.uri + " " + json.owner + " " + json.group + " " + json.permissions);
+		console.log(json);
 		break;
 
 		default:

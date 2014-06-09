@@ -11,6 +11,7 @@ $files[] = "../codemirror/addon/dialog/dialog.css";
 //$files[] = "../codemirror/theme/lesser-dark.css";
 //$files[] = "../codemirror/theme/neat.css";
 
+$files[] = "../xioPop/XioPop.css";
 
 $last_modified = 0;
 foreach($files as $file) {

@@ -13,11 +13,33 @@ $path = PROJECT_PATH . $_REQUEST['project_id'] . "/";
 $uri = urldecode($_REQUEST['uri']);
 
 $exists = is_file($path.$uri);
-$overwrite = $_REQUEST['overwrite']==="true";
+$writeable = is_writeable($path.$uri);
 
+/*
+$processUser = posix_getpwuid(posix_getuid());
+echo "Current user: " . $processUser['name'] . "<br>";
+
+$processGroup = posix_getgrgid(posix_getgid());
+echo "Current primary group: " . $processGroup['name'] . "<br>";
+
+echo "<br>Current groups: ";
+$groups = posix_getgroups();
+foreach($groups as $gid) {
+	echo posix_getgrgid($gid)['name'] . ", ";
+}
+*/
+
+
+$overwrite = $_REQUEST['overwrite']==="true";
 
 $response = array();
 $response['uri'] = $uri;
+if(!$writeable) {
+	$response['permissions'] = getFilePermissions($path.$uri);
+	$response['owner'] = get_current_user();
+	$response['group'] = posix_getgrgid(getmygid())["name"];
+}
+
 switch($_REQUEST['action']) {
 
 	case "saveAs":
@@ -30,10 +52,10 @@ switch($_REQUEST['action']) {
 		if(file_put_contents($path.$uri, $code)===FALSE) {
 			$response['status'] = STATUS_FILE_COULD_NOT_CREATE;
 			$response['message'] = "can not create file";
-			break;
+		} else {
+			$response['status'] = STATUS_OK;
+			$response['message'] = "new file created";
 		}
-		$response['status'] = STATUS_OK;
-		$response['message'] = "new file created";
 	}
 	break;
 
@@ -42,6 +64,12 @@ switch($_REQUEST['action']) {
 	case "save";
 	$code = $_REQUEST['code'];
 	if($exists) {
+		if(!is_writable($path.$uri)) {
+			$response['status'] = STATUS_FILE_COULD_NOT_UPDATE;
+			$response['message'] = "could not write to file";
+			break;
+		}
+	
 		if(file_put_contents($path.$uri, $code)) {
 			$response['status'] = STATUS_OK;
 			$response['message'] = "file saved";
@@ -145,4 +173,62 @@ http_response_code(200);
 $response['timer'] = microtime(true)-$startTime;
 echo json_encode($response);
 
+
+
+
+
+
+
+
+function getFilePermissions($uri) {
+	$perms = fileperms($uri);
+	if (($perms & 0xC000) == 0xC000) {
+		// Socket
+		$info = 's';
+	} elseif (($perms & 0xA000) == 0xA000) {
+		// Symbolic Link
+		$info = 'l';
+	} elseif (($perms & 0x8000) == 0x8000) {
+		// Regular
+		$info = '-';
+	} elseif (($perms & 0x6000) == 0x6000) {
+		// Block special
+		$info = 'b';
+	} elseif (($perms & 0x4000) == 0x4000) {
+		// Directory
+		$info = 'd';
+	} elseif (($perms & 0x2000) == 0x2000) {
+		// Character special
+		$info = 'c';
+	} elseif (($perms & 0x1000) == 0x1000) {
+		// FIFO pipe
+		$info = 'p';
+	} else {
+		// Unknown
+		$info = 'u';
+	}
+
+	// Owner
+	$info .= (($perms & 0x0100) ? 'r' : '-');
+	$info .= (($perms & 0x0080) ? 'w' : '-');
+	$info .= (($perms & 0x0040) ?
+				(($perms & 0x0800) ? 's' : 'x' ) :
+				(($perms & 0x0800) ? 'S' : '-'));
+
+	// Group
+	$info .= (($perms & 0x0020) ? 'r' : '-');
+	$info .= (($perms & 0x0010) ? 'w' : '-');
+	$info .= (($perms & 0x0008) ?
+				(($perms & 0x0400) ? 's' : 'x' ) :
+				(($perms & 0x0400) ? 'S' : '-'));
+
+	// World
+	$info .= (($perms & 0x0004) ? 'r' : '-');
+	$info .= (($perms & 0x0002) ? 'w' : '-');
+	$info .= (($perms & 0x0001) ?
+				(($perms & 0x0200) ? 't' : 'x' ) :
+				(($perms & 0x0200) ? 'T' : '-'));
+
+	return $info;
+}
 ?>

@@ -21,7 +21,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 	<head>
 		<title><?php echo $pageTitle; ?></title>
 		<meta charset="utf-8" />
-		<link rel="stylesheet" href="http://xio.se/projects/xiopop/XioPop.css">
 		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
 		<link rel="shortcut icon" href="/images/favicon.ico" />
 		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
@@ -145,7 +144,6 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 			?>
 		</script>
 		<script src="<?php echo CODEMIRRORPATH; ?>lib/codemirror.js"></script>
-		<script src="http://xio.se/projects/xiopop/XioPop.js"></script>
 		
 		<script src="/scripts/minify_js.php"></script>
 	</body>
