@@ -34,7 +34,7 @@ $overwrite = $_REQUEST['overwrite']==="true";
 
 $response = array();
 $response['uri'] = $uri;
-if(!$writeable) {
+if($exists && !$writeable) {
 	$response['permissions'] = getFilePermissions($path.$uri);
 	$response['owner'] = get_current_user();
 	$response['group'] = posix_getgrgid(getmygid())["name"];
@@ -70,12 +70,12 @@ switch($_REQUEST['action']) {
 			break;
 		}
 	
-		if(file_put_contents($path.$uri, $code)) {
-			$response['status'] = STATUS_OK;
-			$response['message'] = "file saved";
-		} else {
+		if(file_put_contents($path.$uri, $code)===FALSE) {
 			$response['status'] = STATUS_FILE_COULD_NOT_UPDATE;
 			$response['message'] = "could not save to file";
+		} else {
+			$response['status'] = STATUS_OK;
+			$response['message'] = "file saved";
 		}
 	} else {
 		$response['status'] = STATUS_FILE_NOT_EXIST;

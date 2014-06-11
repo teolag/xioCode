@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	
 	document.addEventListener("visibilitychange", function(e) {
 		var date = new Date(e.timeStamp);
-		console.debug(document.hidden ? "borta!" : "tillbaka!", e.timeStamp, date, date.toTimeString().substr(0,8));		
+		console.debug(document.hidden ? "borta!" : "tillbaka!", date.toTimeString().substr(0,8));		
 	}, false);
 	
 
