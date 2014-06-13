@@ -13,9 +13,9 @@ openedList.addEventListener("click", function(e) {
 
 		console.log("Close tab", target);
 		var doc = xioDocs[activeProject.id][target.dataset.uri];
-		if(!doc.isClean()) {
+		if(doc && !doc.isClean()) {
 			XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
-				if(answer) closeDoc(activeProject.id, target.dataset.uri);;
+				if(answer) closeDoc(activeProject.id, target.dataset.uri);
 			});
 		} else {
 			closeDoc(activeProject.id, target.dataset.uri);
@@ -45,7 +45,8 @@ function redrawOpenedDocs(projectId) {
 			li.dataset.uri=property;
 
 			if(active) li.classList.add("selected");
-			if(!doc.isClean()) li.classList.add("changed");
+			if(!doc) li.classList.add("loading");
+			else if(!doc.isClean()) li.classList.add("changed");
 
 			var filename = document.createElement("span");
 			filename.textContent = property.replace(/^.*[\\\/]/, '');
@@ -65,18 +66,33 @@ function redrawOpenedDocs(projectId) {
 }
 
 function closeDoc(projectId, uri) {
-	var oFiles = xioDocs[projectId];
-	delete oFiles[uri];
-	redrawOpenedDocs(projectId);
-	for(var oUri in oFiles);
-	console.log("oUri",oUri);
-	if(oUri && activeFile!==oUri) {
-		openFile(oUri);
-	} else if(oUri===undefined) {
-		console.log("All docs closed");
-		setHash(projectId);
-		setActiveFile(projectId, null);
+	closeDocs(projectId, [uri]);
+}
+
+
+
+function closeDocs(projectId, uris) {
+	var openedUris = Object.keys(xioDocs[projectId]);
+	var lastIndex = openedUris.indexOf(activeFile);
+	var changeActive=false;
+	
+	for(var i=0; i<uris.length; i++) {
+		delete xioDocs[projectId][uris[i]];
+		if(activeFile===uris[i]) changeActive=true;
 	}
+	redrawOpenedDocs(projectId);
+	openedUris = Object.keys(xioDocs[projectId]);
+
+
+	if(openedUris.length===0) {
+		setHash(projectId);
+		setActiveFile(projectId, null);	
+	} else if(changeActive) {
+		if(lastIndex===openedUris.length) lastIndex--;
+		var newUri = openedUris[lastIndex];
+		openFile(newUri);
+	}
+	
 }
 
 
@@ -84,11 +100,15 @@ function closeDoc(projectId, uri) {
 function getOrCreateDoc(projectId, uri) {
 	if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri)) {
 		var doc = xioDocs[projectId][uri];
-		codeMirror.swapDoc(doc);
+		if(doc) codeMirror.swapDoc(doc);
 		setActiveFile(projectId, uri);
 		codeMirror.focus();
 		redrawOpenedDocs(projectId);
 	} else {
+		if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
+		xioDocs[projectId][uri] = null;
+		setActiveFile(projectId, uri);
+		redrawOpenedDocs(projectId);
 		loadDoc(projectId, uri);
 	}
 }
@@ -109,7 +129,7 @@ function loadDoc(projectId, uri) {
 		if(json.status === STATUS_OK) {
 			docLoaded(projectId, uri, json.text);
 		} else {
-			console.error("Error: " + json.status + " " + json.message);
+			console.warn("Error " + json.status + ": " + json.message);
 		}
 	});
 }
@@ -118,11 +138,10 @@ function docLoaded(projectId, uri, data) {
 	var mode = getDocType(uri);
 	var doc = CodeMirror.Doc(data, mode);
 	console.log("Doc loaded, treat as", mode);
-	var old = codeMirror.swapDoc(doc);
-	if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
+	if(activeFile === uri) {
+		var old = codeMirror.swapDoc(doc);
+	}
 	xioDocs[projectId][uri] = doc;
-	codeMirror.focus();
-	setActiveFile(projectId, uri);
 	redrawOpenedDocs(projectId);
 }
 

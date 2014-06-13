@@ -168,6 +168,10 @@ ul.tags li {
 	cursor: default;
 	background-color: #E2CFA7;
 }
+#openedList li.loading span.filename {
+	font-style: italic;	
+	color: #888;
+}
 #openedList li.changed span.filename {
 	text-decoration: underline;
 }

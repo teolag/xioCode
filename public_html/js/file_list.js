@@ -70,7 +70,7 @@ var FileList = (function() {
 
 
 			var changed = "";
-			if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri) && !xioDocs[projectId][uri].isClean()) {
+			if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri) && xioDocs[projectId][uri] && !xioDocs[projectId][uri].isClean()) {
 				changed = " changed ";
 			}
 
@@ -405,8 +405,18 @@ var FileList = (function() {
 			}
 			XioPop.confirm(title, question, function(answer) {
 				if(answer) {
-					Ajax.getJSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function() {
+					Ajax.getJSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function(json) {
 						FileList.loadProjectFiles();
+						
+						var openedUris = Object.keys(xioDocs[activeProject.id]);
+						var docsToClose = [];
+						for(var i=0; i<openedUris.length; i++) {
+							var openUri = openedUris[i];
+							if(openUri===json.uri || openUri.substr(0,json.uri.length+1)===json.uri+"/") {
+								docsToClose.push(openUri);
+							}
+						}
+						closeDocs(activeProject.id, docsToClose);
 					});
 				}
 			});

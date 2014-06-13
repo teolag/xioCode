@@ -583,7 +583,7 @@ function updateCleanStatus(uri) {
 		document.getElementById("btnSave").classList.add("disabled");
 	} else {
 		var tab = openedList.querySelector("li[data-uri='"+uri+"']");
-		if(xioDocs[activeProject.id][uri].isClean()) {
+		if(xioDocs[activeProject.id][uri]===null || xioDocs[activeProject.id][uri].isClean()) {
 			document.getElementById("btnSave").classList.add("disabled");
 			FileList.setFileAsClean(uri);
 			if(tab) tab.classList.remove("changed");
@@ -607,7 +607,7 @@ function startDivideDrag(e) {
 	}
 }
 function divideDrag(e) {
-	var left = e.pageX - leftColumn.offsetLeft*1.5;
+	var left = e.pageX - leftColumn.offsetLeft - 15;
 	if(left<100){
 		left=34;
 		projectArea.classList.add("compact");
