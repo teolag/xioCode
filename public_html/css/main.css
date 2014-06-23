@@ -146,14 +146,14 @@ ul.tags li {
 
 
 
-#openedList {
+.tabBar {
 	padding: 0;
 	margin: 0 0 0 0.3em;
 	display: flex;
 	flex-direction: row;
 	flex-flow: row wrap;
 }
-#openedList li {
+.tabBar>li {
 	display: block;
 	padding: 3px 7px 3px 10px;
 	background-color: #ddd;
@@ -164,23 +164,23 @@ ul.tags li {
 	font-size: 0.8em;
 	white-space: nowrap;
 }
-#openedList li.selected {
+.tabBar>li.selected {
 	cursor: default;
 	background-color: #E2CFA7;
 }
-#openedList li.loading span.filename {
+.tabBar>li.loading span.filename {
 	font-style: italic;	
 	color: #888;
 }
-#openedList li.changed span.filename {
+.tabBar>li.changed span.filename {
 	text-decoration: underline;
 }
-#openedList li span.close {
+.tabBar>li span.close {
 	color: rgba(0,0,0,0.3);
 	margin: 0.3em 0 0 0.5em;
 	display: inline-block;
 }
-#openedList li span.close:hover {
+.tabBar>li span.close:hover {
 	color: rgba(0,0,0,0.8);
 	cursor: pointer;
 }

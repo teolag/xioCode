@@ -1,29 +1,91 @@
+function TabBar(parentElement) {
+	this.tabList = document.createElement("OL");
+	this.tabList.classList.add("tabBar");
+	this.tabList.addEventListener("click", clickHandler, false);
+	parentElement.appendChild(this.tabList);
+	this.tabs = {};
+	
+	function clickHandler(e) {
+		var target=e.target;
+		while(target.nodeName!=="LI") {
+			if(target===openedList) return;
+			target = target.parentElement;
+		}
+		console.log("Click on tab", target, e.target, e);
+
+		if(e.target.classList.contains("close") || e.which===2) {
+
+			console.log("Close tab", target);
+			var doc = xioDocs[activeProject.id][target.dataset.uri];
+			if(doc && !doc.isClean()) {
+				XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
+					if(answer) closeDoc(activeProject.id, target.dataset.uri);
+				});
+			} else {
+				closeDoc(activeProject.id, target.dataset.uri);
+			}
+			return;
+		}
+
+		openFile(target.dataset.uri);
+	}
+}
+
+
+TabBar.prototype.select = function(uri) {
+	for(var tabUri in this.tabs) {
+		console.log(uri, tabUri);
+		if (this.tabs.hasOwnProperty(tabUri)) {
+			var tab = this.tabs[tabUri].tab;
+			if(tabUri===uri) {
+				tab.classList.add("selected");
+			} else {
+				tab.classList.remove("selected");
+			}
+		}
+	}
+};
+
+
+
+TabBar.prototype.add = function(uri) {
+	if(this.tabs.hasOwnProperty(uri)) return;
+	
+	var tab = document.createElement("LI");
+	tab.dataset.uri = uri;
+	this.tabList.appendChild(tab);
+
+	var filename = document.createElement("span");
+	filename.textContent = uri.replace(/^.*[\\\/]/, '');
+	filename.title = uri;
+	filename.classList.add("filename");
+
+	var close = document.createElement("span");
+	close.classList.add("icon-close", "close");
+
+	tab.appendChild(filename);
+	tab.appendChild(close);
+
+	this.tabs[uri] = {
+		"tab" : tab,
+		"pos" : Object.keys(this.tabs).length
+	};
+};
+
+
+
+
+
+
+
+
+
+
 var xioDocs = {};
 var openedList = document.getElementById("openedList");
 
 openedList.addEventListener("click", function(e) {
-	var target=e.target;
-	while(target.nodeName!=="LI") {
-		if(target===openedList) return;
-		target = target.parentElement;
-	}
-	console.log("Click on tab", target, e.target, e);
-
-	if(e.target.classList.contains("close") || e.which===2) {
-
-		console.log("Close tab", target);
-		var doc = xioDocs[activeProject.id][target.dataset.uri];
-		if(doc && !doc.isClean()) {
-			XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
-				if(answer) closeDoc(activeProject.id, target.dataset.uri);
-			});
-		} else {
-			closeDoc(activeProject.id, target.dataset.uri);
-		}
-		return;
-	}
-
-	openFile(target.dataset.uri);
+	
 
 }, false);
 
@@ -97,53 +159,6 @@ function closeDocs(projectId, uris) {
 
 
 
-function getOrCreateDoc(projectId, uri) {
-	if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri)) {
-		var doc = xioDocs[projectId][uri];
-		if(doc) codeEditor.swapDoc(doc);
-		setActiveFile(projectId, uri);
-		codeEditor.focus();
-		redrawOpenedDocs(projectId);
-	} else {
-		if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
-		xioDocs[projectId][uri] = null;
-		setActiveFile(projectId, uri);
-		redrawOpenedDocs(projectId);
-		loadDoc(projectId, uri);
-	}
-}
-
-function loadDoc(projectId, uri) {
-	if(uri===UNSAVED_FILENAME) {
-		docLoaded(projectId, uri, "");
-		return;
-	}
-	
-	var parameters = {
-		action: "load",
-		project_id: projectId,
-		uri: encodeURI(uri)
-	};
-	console.log("Loading '" + uri + "' from disk.");
-	Ajax.getJSON("/scripts/file_handler.php", parameters, function(json) {
-		if(json.status === STATUS_OK) {
-			docLoaded(projectId, uri, json.text);
-		} else {
-			console.warn("Error " + json.status + ": " + json.message);
-		}
-	});
-}
-
-function docLoaded(projectId, uri, data) {
-	var mode = getDocType(uri);
-	var doc = CodeMirror.Doc(data, mode);
-	console.log("Doc loaded, treat as", mode);
-	if(activeFile === uri) {
-		var old = codeEditor.swapDoc(doc);
-	}
-	xioDocs[projectId][uri] = doc;
-	redrawOpenedDocs(projectId);
-}
 
 
 function setActiveFile(projectId, uri) {
@@ -151,14 +166,14 @@ function setActiveFile(projectId, uri) {
 	updateCleanStatus(uri);
 	if(uri===null) {
 		console.debug("hide codeEditor");
-		codeEditor.getWrapperElement().style.display="none";
+		activeCodeEditor.editor.getWrapperElement().style.display="none";
 		document.getElementById("btnPreviewFile").classList.add("disabled");
 		FileList.deselectAll();
 	} else {
 		console.debug("show codeEditor");
-		codeEditor.getWrapperElement().style.display="block";
+		activeCodeEditor.editor.getWrapperElement().style.display="block";
 		document.getElementById("btnPreviewFile").classList.remove("disabled");
-		codeEditor.refresh();
+		activeCodeEditor.editor.refresh();
 		var doc = xioDocs[projectId][uri];
 	}
 }

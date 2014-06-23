@@ -1,3 +1,56 @@
+var codemirrorSnippets = {
+	"html":		"<!doctype html>\n<html>\n\t<head>\n\t\t<title>Page Title</title>\n\t\t<meta charset=\"utf-8\" />\n\t\t<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n\t</head>\n\t<body>\n\t\t\n\t</body>\n</html>",
+	"css":		"<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />",
+	"mobile":	"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\" />",
+	"com":		"/**********************************************************\n\n\n**********************************************************/",
+	"phperror":	"ini_set('display_errors',1);\nini_set('error_reporting', E_ALL ^ E_NOTICE);",
+	"xhr": "xhr = new XMLHttpRequest();",
+	"favicon": "<link rel=\"shortcut icon\" href=\"favicon.ico\" />"
+};
+
+var codemirrorDefaults = {
+	lineNumbers: true,
+	matchBrackets: true,
+	autoCloseTags: true,
+	autoCloseBrackets: true,
+	styleActiveLine: true,
+	indentUnit: 4,
+	indentWithTabs: false,
+	smartIndent: true,
+	theme: 'xio',
+	highlightSelectionMatches: {showToken: /\w/},
+	extraKeys: {
+		"Tab"			: "tabWithAutoComplete",
+		"Shift-Tab"		: "indentLess",
+		"Ctrl-D" 		: "removeLines",
+		"Cmd-D" 		: "removeLines",
+		"Ctrl-N" 		: "newFile",
+		"Cmd-N" 		: "newFile",
+		"Ctrl-S" 		: "shortcutSave",
+		"Cmd-S" 		: "shortcutSave",
+		"Alt-Up"		: "swapLineUp",
+		"Alt-Down"		: "swapLineDown",  
+		"Ctrl-Alt-Down" : "duplicateRowDown",
+		"Cmd-Alt-Down" 	: "duplicateRowDown",
+		"Ctrl-Alt-Up" 	: "duplicateRowUp",
+		"Cmd-Alt-Up" 	: "duplicateRowUp",
+		"Cmd-I" 		: "selectLines",
+		"Ctrl-I" 		: "selectLines",
+		"Cmd-L" 		: "jump2Line",
+		"Ctrl-L" 		: "jump2Line",
+		"Cmd-O" 		: "showAllFunctions",
+		"Ctrl-O" 		: "showAllFunctions",
+		"Ctrl-Q"		: "toggleComment",
+		"Cmd-Q"			: "toggleComment"
+	}
+};
+
+
+
+
+
+
+
 CodeMirror.commands.duplicateRowUp = function(editor) {
 	CodeMirror.commands.duplicateLine(editor);
 };
@@ -43,17 +96,6 @@ CodeMirror.commands.selectLines = function(editor) {
 };
 
 CodeMirror.commands.tabWithAutoComplete = function(editor) {
-	var snippets = {
-		"html":		"<!doctype html>\n<html>\n\t<head>\n\t\t<title>Page Title</title>\n\t\t<meta charset=\"utf-8\" />\n\t\t<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />\n\t</head>\n\t<body>\n\t\t\n\t</body>\n</html>",
-		"css":		"<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" />",
-		"mobile":	"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\" />",
-		"com":		"/**********************************************************\n\n\n**********************************************************/",
-		"phperror":	"ini_set('display_errors',1);\nini_set('error_reporting', E_ALL ^ E_NOTICE);",
-		"xhr": "xhr = new XMLHttpRequest();",
-		"favicon": "<link rel=\"shortcut icon\" href=\"favicon.ico\" />"
-	};
-
-
 	console.log("tabWithAutoComplete");
 	var cur = editor.getCursor();
 
@@ -68,8 +110,8 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 		start = {line:cur.line, ch:0};
 	}
 	text = editor.getRange(start, cur).trim();
-	if(snippets[text]) {
-		editor.replaceRange(snippets[text],start, cur);
+	if(codemirrorSnippets[text]) {
+		editor.replaceRange(codemirrorSnippets[text],start, cur);
 	} else {
 		//TODO: InsertSoftTab to use spaces
 		CodeMirror.commands[editor.getSelection().length ? "indentMore" : "insertTab"](editor);

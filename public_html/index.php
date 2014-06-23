@@ -74,7 +74,6 @@ if(Gatekeeper::hasAccess()) {
 			
 			<div id="xioDoc">
 				<ul id="openedList"></ul>
-				<textarea name="code" id="code"></textarea>
 			</div>
 			
 			<div id="preview">

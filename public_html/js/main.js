@@ -26,8 +26,13 @@ var username;
 var h1, toolbar, userMenu, leftColumn, workspaceDivider;
 
 
+
 document.addEventListener("DOMContentLoaded", function(e) {
-	initWriter();
+
+	console.log("CodeMirror" , CodeMirror.version, "loaded");
+
+	
+	
 	Todo.init();
 	Preview.init()
 
@@ -156,7 +161,7 @@ function logout() {
 	Todo.clear();
 	openedList.innerHTML="";
 	var doc = CodeMirror.Doc("");
-	var old = codeEditor.swapDoc(doc);
+	var old = XioCode.activeCodeEditor.editor.swapDoc(doc);
 	activeProject = null;
 	activeFile = null;
 	oldHash = null;
@@ -296,7 +301,7 @@ function userMenuHandler(e) {
 function fixLayout() {
 	var height = document.getElementById("fileList").offsetHeight;
 	if(height===0) height=projectArea.offsetHeight - openedList.offsetHeight - 20;
-	codeEditor.setSize(null, height-2);
+	XioCode.activeCodeEditor.editor.setSize(null, height-2);
 	
 	Preview.fixLayout();
 }
@@ -311,6 +316,8 @@ function openProject(id) {
 	Todo.loadAll(id);
 
 	activeProject = {'id':id};
+	XioCode.openProject(id);
+	
 	if(ProjectList.getProject(id)) {
 		activeProject = ProjectList.getProject(id);
 		activeProject.id = id;
@@ -340,7 +347,7 @@ function openFile(uri) {
 
 function unloadFile() {
 	openFile(UNSAVED_FILENAME);
-	codeEditor.focus();
+	XioCode.activeCodeEditor.editor.focus();
 }
 
 
@@ -400,7 +407,7 @@ function saveFile() {
 	var formData = new FormData();
 	formData.append("uri", activeFile);
 	formData.append("project_id", activeProject.id);
-	formData.append("code", codeEditor.getValue());
+	formData.append("code", XioCode.activeCodeEditor.editor.getValue());
 	formData.append("action", "save");
 
 	console.log("Save file '"+ activeFile+"'...");
@@ -438,7 +445,7 @@ function saveFileAs(newFileName, overwrite) {
 	var formData = new FormData();
 	formData.append("uri", newFileName);
 	formData.append("project_id", activeProject.id);
-	formData.append("code", codeEditor.getValue());
+	formData.append("code", XioCode.activeCodeEditor.editor.getValue());
 	formData.append("action", "saveAs");
 	if(overwrite) formData.append("overwrite", true);
 
@@ -554,7 +561,7 @@ function readHash() {
 		}
 		if(uri) {
 			if(uri!==activeFile) {
-				getOrCreateDoc(projectId, uri);
+				XioCode.openFile(uri);
 				activeFile = uri;
 				FileList.selectFile(uri);
 			}
@@ -649,9 +656,9 @@ function endDivideDrag(e) {
 function findFunctions() {
 	console.log("Finding functions");
 
-	var text = codeEditor.getValue();
+	var text = XioCode.activeCodeEditor.editor.getValue();
 
-	var doc = codeEditor.getDoc();
+	var doc = XioCode.activeCodeEditor.editor.getDoc();
 	var functions = [];
 	var hit;
 
