@@ -48,3 +48,6 @@
 .cm-searching {
 	background: rgba(255, 212, 121, 0.4);
 }
+.cm-tab {
+	border-right: 1px solid #D0EBF1;
+}

@@ -12,7 +12,6 @@ if (!DEBUG_MODE_ON) {
     console.log = function(){};
 }
 
-
 var activeProject;
 var activeFile;
 var checkAccessInterval;
@@ -30,6 +29,7 @@ var h1, toolbar, userMenu, leftColumn, workspaceDivider;
 document.addEventListener("DOMContentLoaded", function(e) {
 	initWriter();
 	Todo.init();
+	Preview.init()
 
 	pageTitle = document.title;
 	title = document.getElementById("pageTitle");
@@ -44,10 +44,10 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	leftColumn = document.getElementById("leftColumn");
 	workspaceDivider = document.getElementById("workspaceDivider");
 	workspaceDivider.addEventListener("mousedown", startDivideDrag, false);
-
-	window.onresize = fixLayout;
-	window.onhashchange = readHash;
-	window.onbeforeunload = warnBeforeUnload;
+	
+	window.addEventListener("resize", fixLayout, false);
+	window.addEventListener("hashchange", readHash, false);
+	window.addEventListener("beforeunload", warnBeforeUnload);
 	window.addEventListener("userLogin", loginAccepted, false);
 	
 	
@@ -79,7 +79,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
 function warnBeforeUnload(e) {
 	var n = numberOfUnsavedFiles();
 	if(n>0) {
-		return "You have "+n+" unsaved files. Are you sure you want to navigate away from this page";
+		var text = "You have "+n+" unsaved files. Are you sure you want to navigate away from this page";
+		e.returnValue = text;
+		return text;		
 	}
 }
 
@@ -154,7 +156,7 @@ function logout() {
 	Todo.clear();
 	openedList.innerHTML="";
 	var doc = CodeMirror.Doc("");
-	var old = codeMirror.swapDoc(doc);
+	var old = codeEditor.swapDoc(doc);
 	activeProject = null;
 	activeFile = null;
 	oldHash = null;
@@ -208,7 +210,13 @@ function toolbarHandler(e) {
 		case "btnPreviewFile":
 		var path = projectsURL + activeProject.id +"/"+ activeFile;
 		console.log("Preview:", projectsURL + activeProject.id +"/"+ activeFile);
-		window.open(path, 'code_file_preview');
+		
+		if(Preview.isVisible()) {
+			Preview.load(path);
+		} else {
+			window.open(path, 'code_file_preview');
+		}
+		
 		break;
 
 		case "btnPreviewProject":
@@ -288,7 +296,9 @@ function userMenuHandler(e) {
 function fixLayout() {
 	var height = document.getElementById("fileList").offsetHeight;
 	if(height===0) height=projectArea.offsetHeight - openedList.offsetHeight - 20;
-	codeMirror.setSize(null, height-2);
+	codeEditor.setSize(null, height-2);
+	
+	Preview.fixLayout();
 }
 
 
@@ -330,7 +340,7 @@ function openFile(uri) {
 
 function unloadFile() {
 	openFile(UNSAVED_FILENAME);
-	codeMirror.focus();
+	codeEditor.focus();
 }
 
 
@@ -390,7 +400,7 @@ function saveFile() {
 	var formData = new FormData();
 	formData.append("uri", activeFile);
 	formData.append("project_id", activeProject.id);
-	formData.append("code", codeMirror.getValue());
+	formData.append("code", codeEditor.getValue());
 	formData.append("action", "save");
 
 	console.log("Save file '"+ activeFile+"'...");
@@ -403,8 +413,12 @@ function saveFile() {
 function saveSuccess(json) {
 	switch(json.status) {
 		case STATUS_OK:
-		console.log("file saved as ", json.uri);
+		console.log("file saved as ", json.uri, json);
 		setFileToClean(json.uri);
+		if(Preview.doRefreshOnSave) {
+			//Preview.load(projectsURL + activeProject.id + "/" + json.uri);
+			Preview.refresh();
+		}
 		break;
 		
 		case STATUS_FILE_COULD_NOT_UPDATE:
@@ -424,7 +438,7 @@ function saveFileAs(newFileName, overwrite) {
 	var formData = new FormData();
 	formData.append("uri", newFileName);
 	formData.append("project_id", activeProject.id);
-	formData.append("code", codeMirror.getValue());
+	formData.append("code", codeEditor.getValue());
 	formData.append("action", "saveAs");
 	if(overwrite) formData.append("overwrite", true);
 
@@ -635,9 +649,9 @@ function endDivideDrag(e) {
 function findFunctions() {
 	console.log("Finding functions");
 
-	var text = codeMirror.getValue();
+	var text = codeEditor.getValue();
 
-	var doc = codeMirror.getDoc();
+	var doc = codeEditor.getDoc();
 	var functions = [];
 	var hit;
 

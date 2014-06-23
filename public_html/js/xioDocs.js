@@ -100,9 +100,9 @@ function closeDocs(projectId, uris) {
 function getOrCreateDoc(projectId, uri) {
 	if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri)) {
 		var doc = xioDocs[projectId][uri];
-		if(doc) codeMirror.swapDoc(doc);
+		if(doc) codeEditor.swapDoc(doc);
 		setActiveFile(projectId, uri);
-		codeMirror.focus();
+		codeEditor.focus();
 		redrawOpenedDocs(projectId);
 	} else {
 		if(!xioDocs.hasOwnProperty(projectId)) xioDocs[projectId] = {};
@@ -139,7 +139,7 @@ function docLoaded(projectId, uri, data) {
 	var doc = CodeMirror.Doc(data, mode);
 	console.log("Doc loaded, treat as", mode);
 	if(activeFile === uri) {
-		var old = codeMirror.swapDoc(doc);
+		var old = codeEditor.swapDoc(doc);
 	}
 	xioDocs[projectId][uri] = doc;
 	redrawOpenedDocs(projectId);
@@ -150,15 +150,15 @@ function setActiveFile(projectId, uri) {
 	activeFile = uri;
 	updateCleanStatus(uri);
 	if(uri===null) {
-		console.debug("hide codeMirror");
-		codeMirror.getWrapperElement().style.display="none";
+		console.debug("hide codeEditor");
+		codeEditor.getWrapperElement().style.display="none";
 		document.getElementById("btnPreviewFile").classList.add("disabled");
 		FileList.deselectAll();
 	} else {
-		console.debug("show codeMirror");
-		codeMirror.getWrapperElement().style.display="block";
+		console.debug("show codeEditor");
+		codeEditor.getWrapperElement().style.display="block";
 		document.getElementById("btnPreviewFile").classList.remove("disabled");
-		codeMirror.refresh();
+		codeEditor.refresh();
 		var doc = xioDocs[projectId][uri];
 	}
 }

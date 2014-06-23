@@ -1,15 +1,15 @@
 <?php
 session_start();
+define("ROOT", realpath($_SERVER["DOCUMENT_ROOT"]."/..")."/");
 
 //READ CONFIG FILE
-$configFile = $_SERVER["DOCUMENT_ROOT"]."/../config.json";
+$configFile = ROOT."config.json";
 if(!is_file($configFile)) {
 	die("Could not find config file: ". $configFile);
 }
 $config = json_decode(file_get_contents($configFile), 1);
 
 
-define("ROOT", $_SERVER["DOCUMENT_ROOT"]."/");
 define("PROJECT_FOLDER", $config['project_url']);
 define("PROJECT_PATH", $config['project_uri']);
 define("SALT", $config['database']['salt']);
@@ -38,15 +38,15 @@ $db = new DatabasePDO($config['database']['server'], $config['database']['userna
 function __autoload($className) {
 	switch($className) {
 		case "DatabasePDO":
-		$file = ROOT."../classes/DatabasePDO/" . $className.".php";
+		$file = ROOT."classes/DatabasePDO/" . $className.".php";
 		break;
 		
 		case "PHPMailer":
-		$file = ROOT."../classes/PHPMailer/class.phpmailer.php";
+		$file = ROOT."classes/PHPMailer/class.phpmailer.php";
 		break;
 		
 		default:
-		$file = ROOT."../classes/" . $className.".php";
+		$file = ROOT."classes/" . $className.".php";
 	}
 
 	if(is_file($file)) require($file);	

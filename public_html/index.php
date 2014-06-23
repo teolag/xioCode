@@ -1,9 +1,5 @@
 <?php
-
 require "../includes/init.php";
-
-
-define("CODEMIRRORPATH", "/codemirror/");
 
 $pageTitle = "xioCode";
 
@@ -12,8 +8,6 @@ if(Gatekeeper::hasAccess()) {
 	$loginState=" class='authorized'";
 	$jsUser = json_encode(Gatekeeper::getUser($db));
 }
-
-$themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 
 ?>
 <!doctype html>
@@ -82,6 +76,10 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 				<ul id="openedList"></ul>
 				<textarea name="code" id="code"></textarea>
 			</div>
+			
+			<div id="preview">
+				<iframe src="" id="previewFrame" width="100%" height="100%"></iframe>
+			</div>
 		
 			<div id="todoArea">
 				<button type="button" id="btnAddFeature">New feature</button>
@@ -131,20 +129,18 @@ $themes = glob($_SERVER['DOCUMENT_ROOT'].CODEMIRRORPATH."theme/*.css");
 		<?php require $_SERVER['DOCUMENT_ROOT']."/html_templates.php"; ?>
 		
 		<script>
-			var projectsURL = '<?php echo PROJECT_FOLDER; ?>';
-			var _USER = <?php echo $jsUser; ?>;
+			var
+			projectsURL = '<?php echo PROJECT_FOLDER; ?>',
 			<?php
 			$codes = get_defined_constants();
 			foreach($codes as $key => $value) {
 				if(substr($key, 0, 6)==="STATUS") {
-					echo "var " . $key . " = " . $value . ";";
+					echo $key . " = " . $value . ", ";
 				}
 			}
-			
 			?>
+			_USER = <?php echo $jsUser; ?>;
 		</script>
-		<script src="<?php echo CODEMIRRORPATH; ?>lib/codemirror.js"></script>
-		
 		<script src="/scripts/minify_js.php"></script>
 	</body>
 </html>

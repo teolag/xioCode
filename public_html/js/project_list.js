@@ -22,7 +22,6 @@ var ProjectList = (function() {
 		btnNewProject.addEventListener("click", addNewProject, false);
 
 		listTags = document.getElementById("listProjectTags");
-		//listTags.addEventListener("click", addNewProject, false);
 		
 		listProjectOrderBy = document.getElementById("listProjectOrderBy");
 		listProjectOrderBy.addEventListener("change", selectOrderBy, false);
@@ -384,7 +383,9 @@ var ProjectList = (function() {
 	var updateLastOpened = function(projectId) {
 		Ajax.post2JSON("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, function(json) {
 			if(json.status===STATUS_OK) {
-				projects[projectId].last_opened = json.last_opened;
+				if(projects && projects.hasOwnProperty(projectId)) {
+					projects[projectId].last_opened = json.last_opened;
+				}
 			} else {
 				console.warn("could not update last_opened");
 			}

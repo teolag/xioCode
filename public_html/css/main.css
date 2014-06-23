@@ -326,6 +326,20 @@ body.authorized #login {
 	color: #bada55;
 }
 
+/*************************** Live preview *****************************/
+#preview {
+	flex: 1;
+	padding: 0.5em;
+	
+}
+
+#previewFrame {
+	background-color: #fff;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+}
+
+
 
 /*************************** Project Config ***************************/
 #frmProjectConfig {
@@ -357,7 +371,7 @@ body.authorized #login {
 }
 
 
-/*************************** Project Config ***************************/
+/*************************** Selectable list ***************************/
 ul.selectableList {
 	margin:0;
 	padding: 0;
