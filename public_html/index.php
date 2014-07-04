@@ -34,8 +34,6 @@ if(Gatekeeper::hasAccess()) {
 			</div>
 		</div>
 		
-		
-
 		<div id="projectChooser" class="hidden">
 			<div id="projectList"></div>		
 			<div id="projectFilter">
@@ -58,29 +56,23 @@ if(Gatekeeper::hasAccess()) {
 		
 		<div id="projectArea" class="hidden">
 	
-			<div id="leftColumn">
+			<div id="fileBrowser" class="pane">
 				<div id="toolbar" class="toolbar">						
-					<span id="btnNew" title="Create new file" class="icon-small icon-new-file"></span
-					><span id="btnSave" title="Save file" class="icon-small icon-save"></span
-					><span id="btnPreviewFile" title="Preview active file" class="icon-small icon-preview"></span
-					><span id="btnPreviewProject" title="Preview project" class="icon-small icon-play"></span
+					<span id="btnPreviewProject" title="Preview project" class="icon-small icon-play"></span
 					><span id="btnExportZip" title="Export project to zip" class="icon-small icon-archive"></span
 					><span id="btnProjectConfig" title="Project configurations" class="icon-small icon-cog"></span>
 				</div>
 				<div id="fileList"></div>
 			</div>
+						
+			<div class="pane codeEditor" id="paneEditor1"></div>
+			<div class="pane codeEditor" id="paneEditor2"></div>
 			
-			<div id="workspaceDivider"></div>
-			
-			<div id="xioDoc">
-				<ul id="openedList"></ul>
-			</div>
-			
-			<div id="preview">
+			<div id="preview" class="pane">
 				<iframe src="" id="previewFrame" width="100%" height="100%"></iframe>
 			</div>
 		
-			<div id="todoArea">
+			<div id="todoArea" class="pane">
 				<button type="button" id="btnAddFeature">New feature</button>
 				<button type="button" id="btnAddBug">New bug</button>
 				

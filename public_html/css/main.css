@@ -93,37 +93,53 @@ ul.tags li {
 	display: flex;
 	flex-direction: row;
 	flex: 1;
-}
-#projectArea.compact {
+	padding: 0.2em;
 }
 #projectArea.hidden {
 	display: none;
 }
-#leftColumn {
+
+#fileBrowser {
 	width: 220px;
 	display: flex;
 	flex-direction: column;
-	padding: 0.5em 0 0.5em 0.5em;
 }
-#xioDoc {
+
+.pane {
+	padding: 0.2em;
+}
+
+.pane.codeEditor {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	align-self: flex-end;
-	margin-bottom: 0.5em;
+}
+.codeEditor .header {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-end;
+}
+.codeEditor .toolbar {
+	margin: 0;
+	padding: 0;
+}
+.codeEditor .toolbar li {
+	display: inline-block;
+	cursor: pointer;
+}
+.codeEditor .icon {
+	width: 20px;
+	height: 20px;
+	fill: #888;
+	pointer-events: none;
 }
 
-#workspaceDivider {
-	margin-top: 3em;
-	margin-bottom: 0.5em;
-	margin-left: 4px;
-	cursor: col-resize;
-	border-left: 2px dotted #ddd;
-	padding: 2px;
+.codeEditor .toolbar li:hover .icon {
+	fill: #bada55;
 }
-#projectArea.compact #workspaceDivider {
-	margin-top: 0;
-}
+
+
+
 
 
 .icon-small {

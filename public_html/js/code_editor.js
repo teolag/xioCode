@@ -1,93 +1,36 @@
-var XioCode = (function(){
-	
-	var openedFiles = {},
-	activeProjectId = null,
-	activeCodeEditor = new CodeEditor(document.getElementById("xioDoc")),
-	
-	FILE_STATE_LOADING = 20,
-	FILE_STATE_READY = 30,
-	FILE_STATE_SAVING = 40,
-	
-	
-	openFile = function(uri) {
-		if(isFileOpened(uri)) {
-			var file = openedFiles[activeProjectId][uri];
-			file.uri = uri;
-			activeCodeEditor.open(file);
-			this.uri = uri;
-			activeCodeEditor.editor.focus();
-		} else {
-			var file = {
-				"state": FILE_STATE_LOADING,
-				"doc": null,
-				"uri": uri
-			};		
-		
-			if(!openedFiles.hasOwnProperty(activeProjectId)) openedFiles[activeProjectId] = {};
-			openedFiles[activeProjectId][uri] = file;
-			activeCodeEditor.open(file);
-			loadDoc(activeProjectId, uri);
-		}
-	},
-	
-	loadDoc = function(projectId, uri) {
-		if(uri===UNSAVED_FILENAME) {
-			docLoaded(projectId, uri, "");
-			return;
-		}
-
-		var parameters = {
-			action: "load",
-			project_id: projectId,
-			uri: encodeURI(uri)
-		};
-		console.log("Loading '" + uri + "' from disk.");
-		Ajax.getJSON("/scripts/file_handler.php", parameters, function(json) {
-			if(json.status === STATUS_OK) {
-				docLoaded(projectId, uri, json.text);
-			} else {
-				console.warn("Error " + json.status + ": " + json.message);
-			}
-		});
-	},
-
-	docLoaded = function(projectId, uri, data) {
-		var mode = getDocType(uri);
-		var doc = CodeMirror.Doc(data, mode);
-		console.log("Doc loaded, treat as", mode);
-		if(activeFile === uri) {
-			var old = XioCode.activeCodeEditor.editor.swapDoc(doc);
-		}
-		openedFiles[projectId][uri].doc = doc;
-	},
-
-	
-	openProject = function(projectId) {
-		activeProjectId = projectId;
-	},
-	
-	
-	isFileOpened = function(uri) {
-		return openedFiles.hasOwnProperty(activeProjectId) && openedFiles[activeProjectId].hasOwnProperty(uri);
-	};
-	
-	
-	return {
-		isFileOpened: isFileOpened,
-		openFile: openFile,
-		openProject: openProject,
-		activeCodeEditor: activeCodeEditor
-	}
-	
-}());
-
-
-
 function CodeEditor(parentElement) {
 	this.uri = null;
-
+	this.elem = parentElement;
 	
-	this.tabBar = new TabBar(parentElement);	
+	var tpl = document.getElementById("tplCodeEditorHeader").content;	
+	parentElement.appendChild(document.importNode(tpl, true));
+	
+	this.tabList = parentElement.querySelector(".tabBar");
+	this.tabBar = new TabBar(this.tabList, this);
+	
+	
+	this.toolList = parentElement.querySelector(".toolbar");
+	this.toolList.addEventListener("click", toolbarClickHandler, false);
+	
+	var that = this;
+	
+	function toolbarClickHandler(e) {
+		var li=e.target;
+		while(li.parentElement!==that.toolList) {
+			li = li.parentElement;
+		}
+		var action = li.dataset.action;
+		switch(action) {
+			case "save":
+				console.log("Do save");
+			break;
+			
+			default:
+			console.warn("toolbar action not implemented:", action);
+		
+		}
+	}
+		
 	this.editor = new CodeMirror(parentElement, codemirrorDefaults);
 	
 	this.editor.on("dragover", function(cm, e) {
@@ -128,10 +71,19 @@ function CodeEditor(parentElement) {
 }
 
 
+CodeEditor.prototype.clear = function() {
+	var doc = CodeMirror.Doc("");
+	this.editor.swapDoc(doc);
+	this.tabList.innerHTML = "";
+	this.uri = "";
+	
+
+}
+
 CodeEditor.prototype.open = function(file) {
 	if(file.doc) this.editor.swapDoc(file.doc);
 			
-
+	this.uri = file.uri;
 	this.tabBar.add(file.uri);
 	this.tabBar.select(file.uri);
 };

@@ -1,7 +1,6 @@
 "use strict";
 
 var DEBUG_MODE_ON=true;
-var ACCESS_CHECK_INTERVAL=5*60*1000; //Every 5 minutes
 var KEY_ENTER = 13;
 var KEY_UP = 38;
 var KEY_DOWN = 40;
@@ -14,25 +13,24 @@ if (!DEBUG_MODE_ON) {
 
 var activeProject;
 var activeFile;
-var checkAccessInterval;
 var pageTitle;
 var title;
 var hoverTimer;
 var fileToBeLoaded;
 var oldHash;
 
-var loginBox, loginForm, loginButton;
 var username;
-var h1, toolbar, userMenu, leftColumn, workspaceDivider;
+var h1, toolbar, userMenu, fileBrowser;
 
-
+var username;
+		
 
 document.addEventListener("DOMContentLoaded", function(e) {
 
 	console.log("CodeMirror" , CodeMirror.version, "loaded");
 
 	
-	
+	GateKeeper.init(loginCallback, logoutCallback);
 	Todo.init();
 	Preview.init()
 
@@ -40,20 +38,10 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	title = document.getElementById("pageTitle");
 	console.log("Init " + pageTitle);
 
-	username = document.getElementById("username");
-	loginBox = document.getElementById("login");
-	loginForm = document.getElementById("loginForm");
-	loginButton = document.getElementById("btnLogin");
-	loginForm.addEventListener("submit", loginRequest, false);
-
-	leftColumn = document.getElementById("leftColumn");
-	workspaceDivider = document.getElementById("workspaceDivider");
-	workspaceDivider.addEventListener("mousedown", startDivideDrag, false);
-	
 	window.addEventListener("resize", fixLayout, false);
 	window.addEventListener("hashchange", readHash, false);
 	window.addEventListener("beforeunload", warnBeforeUnload);
-	window.addEventListener("userLogin", loginAccepted, false);
+	
 	
 	
 	document.addEventListener("visibilitychange", function(e) {
@@ -70,14 +58,35 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 	userMenu = document.getElementById("userMenu");
 	userMenu.addEventListener("click", userMenuHandler, false);
-	
+	username = document.getElementById("username");
 	
 	if(_USER && _USER.username) {
 		window.dispatchEvent(new CustomEvent("userLogin"));
 	} else {
-		showLogin();
+		GateKeeper.showLogin();
 	}
 }, false);
+
+function loginCallback(user) {
+	document.body.classList.add("authorized");
+	username.textContent = user.username;
+
+	ProjectList.loadProjects();
+	ProjectList.loadListOrder(user.projects_order_by, user.projects_order_dir);
+	readHash();
+}
+
+function logoutCallback() {
+	ProjectList.clear();
+	FileList.clear();
+	Todo.clear();		
+	XioCode.getActiveCodeEditor().clear();
+
+	activeProject = null;
+	activeFile = null;
+	oldHash = null;
+	xioDocs = {};
+}
 
 
 
@@ -102,95 +111,6 @@ function numberOfUnsavedFiles() {
 	return counter;
 }
 
-
-
-function loginRequest(e) {
-	e.preventDefault();
-	if(!loginForm.elements.code_username.value ||
-		!loginForm.elements.code_password.value) {
-		return;
-	}
-
-	loginButton.disabled=true;
-	loginButton.textContent="Authorizing...";
-
-	var xhr = new XMLHttpRequest();
-	xhr.open("post", "/scripts/gatekeeper_login.php", true);
-	xhr.onload = loginCallback;
-	xhr.send(new FormData(loginForm));
-}
-
-function loginCallback(e) {
-	var user = JSON.parse(e.target.responseText);
-	if(e.target.status===200 && user && user.username) {
-		_USER = user;
-		var userLogin = new CustomEvent("userLogin");
-		window.dispatchEvent(userLogin);
-	}
-	else {
-		console.warn("Incorrect login or password");
-		loginBox.className="";
-		setTimeout(function(){
-			loginBox.classList.add("shake");
-		},1);
-	}
-	loginForm.reset();
-	loginButton.disabled=false;
-	loginButton.textContent="Login";
-	loginForm.elements.code_username.focus();
-}
-
-function loginAccepted(e) {
-	console.log("Login accepted", e);
-	console.log(_USER);
-
-	document.body.classList.add("authorized");
-	username.textContent = _USER.username;
-
-	//Access check every minute
-	checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
-
-	ProjectList.loadProjects();
-	ProjectList.loadListOrder(_USER.projects_order_by, _USER.projects_order_dir);
-	readHash();
-}
-
-function logout() {
-	ProjectList.clear();
-	FileList.clear();
-	Todo.clear();
-	openedList.innerHTML="";
-	var doc = CodeMirror.Doc("");
-	var old = XioCode.activeCodeEditor.editor.swapDoc(doc);
-	activeProject = null;
-	activeFile = null;
-	oldHash = null;
-	xioDocs = {};
-	clearInterval(checkAccessInterval);
-
-	var xhr = new XMLHttpRequest();
-	xhr.open("get", "/scripts/gatekeeper_logout.php", true);
-	xhr.send();
-
-	showLogin();
-}
-
-function showLogin() {
-	document.body.classList.remove("authorized");
-	document.title = pageTitle + " - Login";
-	loginForm.elements.code_username.focus();
-}
-
-
-function checkAccess() {
-	console.log(new Date().toTimeString().substr(0,5), "Access check");
-	Ajax.getJSON("/scripts/gatekeeper_check_access.php", {user_id: _USER.user_id}, function(json) {
-		if(json.status !== STATUS_OK) {
-			console.warn(json.message);
-			logout();
-		}
-	});
-}
 
 
 
@@ -258,7 +178,7 @@ function userMenuHandler(e) {
 
 	switch(target.id) {
 		case "btnLogout":
-		logout();
+		GateKeeper.logout();
 		break;
 
 		case "btnExportAllZip":
@@ -296,12 +216,14 @@ function userMenuHandler(e) {
 
 
 
-
-
 function fixLayout() {
-	var height = document.getElementById("fileList").offsetHeight;
-	if(height===0) height=projectArea.offsetHeight - openedList.offsetHeight - 20;
-	XioCode.activeCodeEditor.editor.setSize(null, height-2);
+	for(var i=0; i<XioCode.panes.length; i++) {
+		var pane = XioCode.panes[i];
+		if(pane.type === 10) {
+			var height = pane.codeEditor.elem.offsetHeight - 25;
+			pane.codeEditor.editor.setSize(null, height);
+		}
+	}
 	
 	Preview.fixLayout();
 }
@@ -311,7 +233,6 @@ function fixLayout() {
 function openProject(id) {
 	FileList.clear();
 	FileList.setProjectId(id);
-	redrawOpenedDocs(id);
 	ProjectList.updateLastOpened(id);
 	Todo.loadAll(id);
 
@@ -499,7 +420,6 @@ function renameCallback(json) {
 			if(xioDocs[activeProject.id].hasOwnProperty(json.uri)) {
 				xioDocs[activeProject.id][json.newUri] = xioDocs[activeProject.id][json.uri];
 				delete xioDocs[activeProject.id][json.uri];
-				redrawOpenedDocs(activeProject.id);
 			}
 			break;
 
@@ -566,7 +486,8 @@ function readHash() {
 				FileList.selectFile(uri);
 			}
 		} else {
-			setActiveFile(projectId, null);
+			//setActiveFile(projectId, null);
+			XioCode.newFile();
 		}
 
 	} else {
@@ -615,35 +536,6 @@ function updateCleanStatus(uri) {
 		}
 	}
 }
-
-
-
-
-
-function startDivideDrag(e) {
-	if(e.button===0) {
-		document.addEventListener("mouseup", endDivideDrag, false);
-		document.addEventListener("mousemove", divideDrag, false);
-		e.preventDefault();
-	}
-}
-function divideDrag(e) {
-	var left = e.pageX - leftColumn.offsetLeft - 15;
-	if(left<100){
-		left=34;
-		projectArea.classList.add("compact");
-	} else {
-		projectArea.classList.remove("compact");
-	}
-	fixLayout();
-	leftColumn.style.width = left + "px";
-}
-function endDivideDrag(e) {
-	document.removeEventListener("mouseup", endDivideDrag, false);
-	document.removeEventListener("mousemove", divideDrag, false);
-}
-
-
 
 
 
@@ -729,3 +621,4 @@ var clone = (function(){
 
 
 
+function debounce(a,b,c){var d;return function(){var e=this,f=arguments;clearTimeout(d),d=setTimeout(function(){d=null,c||a.apply(e,f)},b),c&&!d&&a.apply(e,f)}}

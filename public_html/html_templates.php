@@ -1,4 +1,18 @@
 
+<template id="tplCodeEditorHeader">
+	<div class="header">
+		<ul class="toolbar">
+			<li data-action="new"><svg class="icon file"><use xlink:href="/icons.svg#icon-file" /></svg></li>
+			<li data-action="save"><svg class="icon save"><use xlink:href="/icons.svg#icon-save" /></svg></li>
+			<li data-action="preview"><svg class="icon preview"><use xlink:href="/icons.svg#icon-preview" /></svg></li>
+		</ul>
+
+		<ol class="tabBar"></ol>
+		
+	</div>
+</template>
+
+
 <template id="tplTodoEdit">
 	<form id="formTodo">
 		<h3></h3>
