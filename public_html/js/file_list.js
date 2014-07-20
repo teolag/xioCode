@@ -15,6 +15,7 @@ var FileList = (function() {
 		fileList.addEventListener("dragstart", dragFile, false);
 		fileList.addEventListener("contextmenu", clickHandler, false);
 		fileList.addEventListener("click", clickHandler, false);
+		fileList.addEventListener("dblclick", clickHandler, false);
 	};
 
 
@@ -43,7 +44,6 @@ var FileList = (function() {
 						openFolder(li);
 					}
 				}
-				if(activeFile) selectFile(activeFile);
 			}, function(e) {
 				if(e.status===403) {
 					console.log("Access denied. You must login again to load the files");
@@ -134,19 +134,20 @@ var FileList = (function() {
 				var uri = target.dataset.uri;
 				var file = files[uri];
 
-				if(uri === activeFile) {
-					console.log("Already open");
-					e.preventDefault();
-				} else if(file.type==='folder') {
-					toggleFolder(target);
-				} else if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
-					console.log("Download file...");
-					window.location.href = "/scripts/file_handler.php?action=download&project_id="+projectId+"&uri="+uri;
-				} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
-					console.log("Open in new tab");
-					window.open(projectsURL + projectId + "/" + uri);
+				if(e.type==="dblclick") {
+					if(file.type==='folder') {
+						toggleFolder(target);
+					} else if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
+						console.log("Download file...");
+						window.location.href = "/scripts/file_handler.php?action=download&project_id="+projectId+"&uri="+uri;
+					} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
+						console.log("Open in new tab");
+						window.open(projectsURL + projectId + "/" + uri);
+					} else {
+						XioCode.getActiveCodeEditor().openFile(uri);
+					}
 				} else {
-					openFile(uri);
+					selectFile(uri);
 				}
 				e.stopPropagation();
 			}

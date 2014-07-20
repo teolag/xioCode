@@ -127,7 +127,7 @@ switch($_REQUEST['action']) {
 		}
 	} else {
 		$response['status'] = STATUS_FILE_NOT_EXIST;
-		$response['message'] = "file does not exist";
+		$response['message'] = "file '" . $path.$uri ."' does not exist";
 	}
 	break;
 	

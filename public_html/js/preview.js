@@ -32,6 +32,7 @@ var Preview = (function() {
 	},
 	
 	refresh = function() {
+		if(!visible) return;
 		console.log("Refresh preview", frame.src);
 		if(frame.src!=="blank") {
 			frame.src = frame.src;

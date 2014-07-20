@@ -12,7 +12,7 @@ if (!DEBUG_MODE_ON) {
 }
 
 var activeProject;
-var activeFile;
+
 var pageTitle;
 var title;
 var hoverTimer;
@@ -21,9 +21,6 @@ var oldHash;
 
 var username;
 var h1, toolbar, userMenu, fileBrowser;
-
-var username;
-		
 
 document.addEventListener("DOMContentLoaded", function(e) {
 
@@ -260,11 +257,6 @@ function previewProject(id) {
 }
 
 
-function openFile(uri) {
-	if(!uri) uri="";
-	setHash(activeProject.id + "/" + uri);
-}
-
 
 function unloadFile() {
 	openFile(UNSAVED_FILENAME);
@@ -311,91 +303,6 @@ function fileCreationCallback(json) {
 	}
 }
 
-
-function saveFile() {
-	if(activeFile===UNSAVED_FILENAME) {
-		console.log("Save As...  ");
-		XioPop.prompt("Save file as...", "Enter the filename", "", function(answer) {
-			if(answer) {
-				saveFileAs(answer);
-			}
-		});
-		return;
-	} else if(!activeFile || xioDocs[activeProject.id][activeFile].isClean()) {
-		return;
-	}
-
-	var formData = new FormData();
-	formData.append("uri", activeFile);
-	formData.append("project_id", activeProject.id);
-	formData.append("code", XioCode.activeCodeEditor.editor.getValue());
-	formData.append("action", "save");
-
-	console.log("Save file '"+ activeFile+"'...");
-
-	FileList.showSpinner(activeFile);
-	Ajax.post2JSON("/scripts/file_handler.php", formData, saveSuccess);
-}
-
-
-function saveSuccess(json) {
-	switch(json.status) {
-		case STATUS_OK:
-		console.log("file saved as ", json.uri, json);
-		setFileToClean(json.uri);
-		if(Preview.doRefreshOnSave) {
-			//Preview.load(projectsURL + activeProject.id + "/" + json.uri);
-			Preview.refresh();
-		}
-		break;
-		
-		case STATUS_FILE_COULD_NOT_UPDATE:
-		XioPop.alert("Error saving file", "Could not write to file. Permission denied<br>" + json.uri + " " + json.owner + " " + json.group + " " + json.permissions);
-		console.log(json);
-		break;
-
-		default:
-		console.warn("handle callback", json);
-	}
-	FileList.hideSpinner(activeFile);
-}
-
-
-function saveFileAs(newFileName, overwrite) {
-
-	var formData = new FormData();
-	formData.append("uri", newFileName);
-	formData.append("project_id", activeProject.id);
-	formData.append("code", XioCode.activeCodeEditor.editor.getValue());
-	formData.append("action", "saveAs");
-	if(overwrite) formData.append("overwrite", true);
-
-	Ajax.post2JSON("/scripts/file_handler.php", formData, saveAsSuccess);	
-}
-
-function saveAsSuccess(json) {
-	switch(json.status) {
-		case STATUS_OK:
-		console.log("file saved as ", json.uri);
-		FileList.loadProjectFiles();
-		openFile(json.uri);
-		if(activeFile===UNSAVED_FILENAME) {
-			delete xioDocs[activeProject.id][activeFile];
-		}
-		break;
-
-		case STATUS_FILE_COLLISION:
-		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
-			if(answer) {
-				saveFileAs(newFileName, true);
-			}
-		});
-		break;
-
-		default:
-		console.warn("handle callback", json);
-	}
-}
 
 
 function renameFile(uri, newUri, overwrite) {
@@ -479,17 +386,7 @@ function readHash() {
 			console.log("Open project", projectId);
 			openProject(projectId);
 		}
-		if(uri) {
-			if(uri!==activeFile) {
-				XioCode.openFile(uri);
-				activeFile = uri;
-				FileList.selectFile(uri);
-			}
-		} else {
-			//setActiveFile(projectId, null);
-			XioCode.newFile();
-		}
-
+		
 	} else {
 		console.log("  Show projects page");
 		chooseProject();
@@ -509,33 +406,6 @@ function chooseProject() {
 	ProjectList.display();
 }
 
-
-
-
-
-function setFileToClean(uri) {
-	console.log(uri, "is now clean");
-	var doc = xioDocs[activeProject.id][uri];
-	doc.markClean();
-	updateCleanStatus(uri);
-}
-
-function updateCleanStatus(uri) {
-	if(uri===null) {
-		document.getElementById("btnSave").classList.add("disabled");
-	} else {
-		var tab = openedList.querySelector("li[data-uri='"+uri+"']");
-		if(xioDocs[activeProject.id][uri]===null || xioDocs[activeProject.id][uri].isClean()) {
-			document.getElementById("btnSave").classList.add("disabled");
-			FileList.setFileAsClean(uri);
-			if(tab) tab.classList.remove("changed");
-		} else {
-			document.getElementById("btnSave").classList.remove("disabled");
-			FileList.setFileAsDirty(uri);
-			if(tab) tab.classList.add("changed");
-		}
-	}
-}
 
 
 
@@ -613,12 +483,14 @@ function toHumanReadableDateTime(ts) {
 
 
 
-
-var clone = (function(){
-  return function (obj) { Clone.prototype=obj; return new Clone(); };
-  function Clone(){}
-}());
-
+function clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
 
 
 function debounce(a,b,c){var d;return function(){var e=this,f=arguments;clearTimeout(d),d=setTimeout(function(){d=null,c||a.apply(e,f)},b),c&&!d&&a.apply(e,f)}}

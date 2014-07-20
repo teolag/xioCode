@@ -43,7 +43,7 @@
 	background-color: #bada55;
 }
 
-#fileList li.changed{
+#fileList li.changed span {
 	text-decoration:underline;
 }
 

@@ -127,6 +127,12 @@ ul.tags li {
 	display: inline-block;
 	cursor: pointer;
 }
+.codeEditor .toolbar li.disabled {
+	pointer-events: none;
+}
+.codeEditor .toolbar li.disabled .icon {
+	fill: #ddd;
+}
 .codeEditor .icon {
 	width: 20px;
 	height: 20px;

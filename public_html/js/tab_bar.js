@@ -23,7 +23,7 @@ function TabBar(tabList, codeEditor) {
 		if(e.target.classList.contains("close") || e.which===2) {
 
 			console.log("Close tab", li);
-			if(!XioCode.isFileClean(uri)) {
+			if(!that.codeEditor.isFileClean(uri)) {
 				XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
 					if(answer) that.close(uri);
 				});
@@ -33,14 +33,13 @@ function TabBar(tabList, codeEditor) {
 			return;
 		}
 
-		openFile(uri);
+		that.codeEditor.openFile(uri);
 	}
 }
 
 
 TabBar.prototype.select = function(uri) {
 	for(var tabUri in this.tabs) {
-		console.log(uri, tabUri);
 		if (this.tabs.hasOwnProperty(tabUri)) {
 			var tab = this.tabs[tabUri].tab;
 			if(tabUri===uri) {
@@ -54,8 +53,19 @@ TabBar.prototype.select = function(uri) {
 
 
 
+TabBar.prototype.setTabAsDirty = function(uri) {
+	var tab = this.tabs[uri].tab;
+	tab.classList.add("changed");
+}
+
+TabBar.prototype.setTabAsClean = function(uri) {
+	var tab = this.tabs[uri].tab;
+	tab.classList.remove("changed");
+}
+
 
 TabBar.prototype.closeTabs = function(uris) {
+		console.log("TODO!  fix this");
 		for(var i=0; i<uris.length; i++) {
 		
 		}
@@ -63,7 +73,7 @@ TabBar.prototype.closeTabs = function(uris) {
 
 
 TabBar.prototype.close = function(uri) {
-	if(XioCode.closeFile(uri)) {
+	if(this.codeEditor.closeFile(uri)) {
 		var tab = this.tabs[uri].tab;
 		this.tabList.removeChild(tab);
 		
@@ -84,17 +94,23 @@ TabBar.prototype.close = function(uri) {
 		
 		if(openedUris.length===0) {
 			console.log("all tabs closed");
-			setHash(XioCode.getActiveProjectId());
+			this.codeEditor.newFile();		
 		} else if(changeActive) {
 			if(lastIndex===openedUris.length) lastIndex--;
 			var newUri = openedUris[lastIndex];
-			openFile(newUri);
-		}
-		
-		
+			this.codeEditor.openFile(newUri);
+		}		
 	}
 };
 
+TabBar.prototype.rename = function(oldUri, newUri) {
+	this.tabs[newUri] = clone(this.tabs[oldUri]);
+	var tab = this.tabs[newUri].tab;
+	tab.dataset.uri = newUri;
+	var filename = tab.querySelector("span.filename");
+	filename.textContent = newUri.replace(/^.*[\\\/]/, '');
+	filename.title = newUri;	
+};
 
 TabBar.prototype.add = function(uri) {
 	if(this.tabs.hasOwnProperty(uri)) return;
@@ -103,6 +119,7 @@ TabBar.prototype.add = function(uri) {
 	tab.dataset.uri = uri;
 	this.tabList.appendChild(tab);
 
+	console.log("add tab", uri);
 	var filename = document.createElement("span");
 	filename.textContent = uri.replace(/^.*[\\\/]/, '');
 	filename.title = uri;
