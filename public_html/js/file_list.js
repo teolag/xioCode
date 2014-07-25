@@ -135,6 +135,7 @@ var FileList = (function() {
 				var file = files[uri];
 
 				if(e.type==="dblclick") {
+					console.log("dblclick");
 					if(file.type==='folder') {
 						toggleFolder(target);
 					} else if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
@@ -409,6 +410,14 @@ var FileList = (function() {
 					Ajax.getJSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function(json) {
 						FileList.loadProjectFiles();
 						
+						for(var i=0; i<XioCode.getPanes().length; i++) {
+							var pane = XioCode.getPanes()[i];
+							if(pane.type === 10) {
+								pane.codeEditor.tabBar.close(json.uri);
+							}
+						}
+						
+						/*
 						var openedUris = Object.keys(xioDocs[activeProject.id]);
 						var docsToClose = [];
 						for(var i=0; i<openedUris.length; i++) {
@@ -418,6 +427,7 @@ var FileList = (function() {
 							}
 						}
 						closeDocs(activeProject.id, docsToClose);
+						*/
 					});
 				}
 			});

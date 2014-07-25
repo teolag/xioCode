@@ -3,7 +3,7 @@ var Preview = (function() {
 	var
 	container, frame,
 	visible=false,
-	refreshOnSave=true,
+	refreshOnSave=false,
 	
 	init = function() {
 		console.log("init preview");
@@ -44,7 +44,7 @@ var Preview = (function() {
 	},
 	
 	doRefreshOnSave = function() {
-		return refreshOnSave;
+		return visible && refreshOnSave;
 	},
 	
 	fixLayout = function() {

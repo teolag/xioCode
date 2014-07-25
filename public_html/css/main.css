@@ -177,8 +177,8 @@ ul.tags li {
 }
 .tabBar>li {
 	display: block;
-	padding: 3px 7px 3px 10px;
-	background-color: #ddd;
+	padding: 2px 7px 3px 10px;
+	background-color: #d5ddd5;
 	margin-right: 4px;
 	border-radius: 5px 5px 0 0;
 	cursor: pointer;

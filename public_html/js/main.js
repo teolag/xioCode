@@ -214,8 +214,8 @@ function userMenuHandler(e) {
 
 
 function fixLayout() {
-	for(var i=0; i<XioCode.panes.length; i++) {
-		var pane = XioCode.panes[i];
+	for(var i=0; i<XioCode.getPanes().length; i++) {
+		var pane = XioCode.getPanes()[i];
 		if(pane.type === 10) {
 			var height = pane.codeEditor.elem.offsetHeight - 25;
 			pane.codeEditor.editor.setSize(null, height);
@@ -257,13 +257,6 @@ function previewProject(id) {
 }
 
 
-
-function unloadFile() {
-	openFile(UNSAVED_FILENAME);
-	XioCode.activeCodeEditor.editor.focus();
-}
-
-
 function createNewFile(path) {
 	if(!path) path="";
 	XioPop.prompt("Enter the new filename", "", path, function(newFileName) {
@@ -287,7 +280,7 @@ function fileCreationCallback(json) {
 		case STATUS_OK:
 		console.log("file saved as ", json.uri);
 		FileList.loadProjectFiles();
-		openFile(json.uri);
+		XioCode.getActiveCodeEditor().openFile(json.uri);
 		break;
 
 		case STATUS_FILE_COLLISION:
@@ -418,9 +411,9 @@ function chooseProject() {
 function findFunctions() {
 	console.log("Finding functions");
 
-	var text = XioCode.activeCodeEditor.editor.getValue();
+	var text = XioCode.getActiveCodeEditor().editor.getValue();
 
-	var doc = XioCode.activeCodeEditor.editor.getDoc();
+	var doc = XioCode.getActiveCodeEditor().editor.getDoc();
 	var functions = [];
 	var hit;
 
@@ -432,8 +425,8 @@ function findFunctions() {
 		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
 	}
 
-	// Find functions in the format:   pelle = function(arg1, arg2) {
-	re = new RegExp("([A-Z0-9_\.]+)\\s*=\\s*function\\s*\\(([^\\)]*)\\)", "gmi");
+	// Find functions in the format:   pelle = function(arg1, arg2) {   or   pelle: function(arg1, arg2)
+	re = new RegExp("([A-Z0-9_\.]+)\\s*[=:]\\s*function\\s*\\(([^\\)]*)\\)", "gmi");
 	while(hit = re.exec(text)) {
 		console.log("func 2", hit);
 		var pos = doc.posFromIndex(hit.index);
@@ -481,7 +474,9 @@ function toHumanReadableDateTime(ts) {
 	return date + " " + time;
 }
 
-
+function isNumeric(n) {
+	return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 function clone(obj) {
     if (null == obj || "object" != typeof obj) return obj;

@@ -120,7 +120,7 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 
 CodeMirror.commands.shortcutSave = function(editor) {
 	console.log("Ctrl/Cmd+s pressed, saving...");
-	XioCode.getActiveCodeEditor().save();
+	XioCode.getActiveCodeEditor().saveFile();
 };
 
 CodeMirror.commands.newFile = function(editor) {

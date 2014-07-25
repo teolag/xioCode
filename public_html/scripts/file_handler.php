@@ -8,8 +8,8 @@ Gatekeeper::checkAccess();
 if(empty($_REQUEST['project_id'])) die("project_id must be specified");
 if(empty($_REQUEST['uri'])) die("uri must be specified");
 
-
-$path = PROJECT_PATH . $_REQUEST['project_id'] . "/";
+$projectId = $_REQUEST['project_id'];
+$path = PROJECT_PATH . $projectId . "/";
 $uri = urldecode($_REQUEST['uri']);
 
 $exists = is_file($path.$uri);
@@ -30,13 +30,14 @@ foreach($groups as $gid) {
 */
 
 
-//sleep(5);
+sleep(2);
 
 
 $overwrite = $_REQUEST['overwrite']==="true";
 
 $response = array();
 $response['uri'] = $uri;
+$response['projectId'] = $projectId;
 if($exists && !$writeable) {
 	$response['permissions'] = getFilePermissions($path.$uri);
 	$response['owner'] = get_current_user();

@@ -12,25 +12,38 @@ var XioCode = (function(){
 	
 	openedFiles = {},
 	activeProjectId = null,
+	activeCodeEditor = null,
+	workspaceInitiated = false,
+	panes = {},
 	
-	panes = [
-		{
-			name: "CodeEditor1",
-			type:PANE_CODE_EDITOR, 
-			codeEditor: new CodeEditor(document.getElementById("paneEditor1"))
-		},
-		{
-			name: "CodeEditor2",
-			type:PANE_CODE_EDITOR, 
-			codeEditor: new CodeEditor(document.getElementById("paneEditor2"))
-		}
-	],
-
-	activeCodeEditor = panes[0].codeEditor,
+	
+	initWorkspace = function() {
+		if(workspaceInitiated) return;
+	
+		panes = [
+			{
+				name: "CodeEditor1",
+				type:PANE_CODE_EDITOR, 
+				codeEditor: new CodeEditor(document.getElementById("paneEditor1"))
+			},
+			{
+				name: "CodeEditor2",
+				type:PANE_CODE_EDITOR, 
+				codeEditor: new CodeEditor(document.getElementById("paneEditor2"))
+			}
+		];
+		activeCodeEditor = panes[0].codeEditor;
+		workspaceInitiated = true;
+	
+	},
 	
 	
 	getActiveProjectId = function() {
 		return activeProjectId;
+	},
+	
+	getPanes = function() {
+		return panes;
 	},
 	
 	getActiveCodeEditor = function() {
@@ -49,6 +62,7 @@ var XioCode = (function(){
 	openProject = function(projectId) {
 		console.log("set active", projectId);
 		activeProjectId = projectId;
+		initWorkspace();
 	};
 	
 	
@@ -62,7 +76,7 @@ var XioCode = (function(){
 		setActiveCodeEditor: setActiveCodeEditor,
 		
 		openProject: openProject,
-		panes: panes
+		getPanes: getPanes
 	}
 	
 }());
