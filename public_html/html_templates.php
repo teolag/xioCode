@@ -13,6 +13,14 @@
 </template>
 
 
+<template id="tplCodeEditorTab">
+	<li>
+		<span class="filename">main.js</span>
+		<span class="icon-close close"></span>
+	</li>
+</template>
+
+
 <template id="tplTodoEdit">
 	<form id="formTodo">
 		<h3></h3>

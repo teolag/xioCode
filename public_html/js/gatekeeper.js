@@ -3,16 +3,17 @@ var GateKeeper = (function() {
 	var 
 	ACCESS_CHECK_INTERVAL=5*60*1000, //Every 5 minutes
 
+	user,
 	
 	loginBox, frmLogin, btnLogin, txtUsername, txtPassword, username,
-	checkAccessInterval, loginCallback, logoutCallback,
+	checkAccessInterval, onLoginCallback, onLogoutCallback,
 
 	
 	
 	
 	init = function(callbackLogin, callbackLogout) {
-		loginCallback = callbackLogin;
-		logoutCallback = callbackLogout;
+		onLoginCallback = callbackLogin;
+		onLogoutCallback = callbackLogout;
 	
 		loginBox = document.getElementById("login");
 		
@@ -21,10 +22,7 @@ var GateKeeper = (function() {
 		
 		btnLogin = document.getElementById("btnLogin");
 		txtUsername = frmLogin.elements.code_username;
-		txtPassword = frmLogin.elements.code_password;
-		
-		window.addEventListener("userLogin", loginAccepted, false);
-		
+		txtPassword = frmLogin.elements.code_password;		
 	},
 	
 	loginRequest = function(e) {
@@ -36,18 +34,13 @@ var GateKeeper = (function() {
 		btnLogin.disabled=true;
 		btnLogin.textContent="Authorizing...";
 
-		var xhr = new XMLHttpRequest();
-		xhr.open("post", "/scripts/gatekeeper_login.php", true);
-		xhr.onload = loginCallback;
-		xhr.send(new FormData(frmLogin));
+		Ajax.post2JSON("/scripts/gatekeeper.php?action=login", frmLogin, loginCallback);
 	},
 
-	loginCallback = function(e) {
-		var user = JSON.parse(e.target.responseText);
-		if(e.target.status===200 && user && user.username) {
-			_USER = user;
-			var userLogin = new CustomEvent("userLogin");
-			window.dispatchEvent(userLogin);
+	loginCallback = function(response) {
+		if(response.status===STATUS_OK) {
+			user = response.user;
+			loginAccepted();
 		}
 		else {
 			console.warn("Incorrect login or password");
@@ -62,21 +55,20 @@ var GateKeeper = (function() {
 		txtUsername.focus();
 	},
 
-	loginAccepted = function(e) {
-		console.log("Login accepted", e);
-		console.log(_USER);
+	loginAccepted = function() {
+		console.log("Login accepted", user);
 		
 		//Access check every minute
 		checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
 		
-		if(loginCallback) loginCallback(_USER);
+		if(onLoginCallback) onLoginCallback(user);
 	},
 
 	logout = function() {
-		Ajax.post("/scripts/gatekeeper_logout.php");
+		Ajax.post("/scripts/gatekeeper.php?action=logout");
 		clearInterval(checkAccessInterval);
 		
-		if(logoutCallback) logoutCallback();
+		if(onLogoutCallback) onLogoutCallback();
 		
 		showLogin();
 	},
@@ -84,25 +76,34 @@ var GateKeeper = (function() {
 	showLogin = function() {
 		document.body.classList.remove("authorized");
 		document.title = pageTitle + " - Login";
+		frmLogin.reset();
+		btnLogin.disabled=false;
+		btnLogin.textContent="Login";
 		txtUsername.focus();
 	},
 
 
 	checkAccess = function() {
 		console.log(new Date().toTimeString().substr(0,5), "Access check");
-		Ajax.getJSON("/scripts/gatekeeper_check_access.php", {user_id: _USER.user_id}, function(json) {
+		Ajax.getJSON("/scripts/gatekeeper.php", {action: "check", user_id: user.user_id}, function(json) {
 			if(json.status !== STATUS_OK) {
 				console.warn(json.message);
 				logout();
 			}
 		});
-	}
+	},
+	
+	setUser = function(u) {
+		user = u;
+		loginAccepted();
+	};
 	
 	
 	
 	return {
 		init: init,
 		showLogin: showLogin,
-		logout: logout
+		logout: logout,
+		setUser: setUser
 	}	
 }());

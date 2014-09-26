@@ -3,6 +3,7 @@
 	var _ = self.CodeEditor = function(parentElement) {
 		this.elem = parentElement;
 		this.activeFile = null;
+		this.activeProjectId = null;
 
 		var tpl = document.getElementById("tplCodeEditorHeader").content;	
 		parentElement.appendChild(document.importNode(tpl, true));
@@ -22,20 +23,26 @@
 		this.editor.on("change", editorChange.bind(this));	
 		this.editor.on("focus", editorFocus.bind(this));	
 		
-		this.newFile();
 	};
 		
 	_.prototype = {	
 	
 		updateFileStatus: function(file) {
 			var clean = file.doc.isClean() && file.state!==File.STATE_UNSAVED;
+			var loading = file.state === File.STATE_LOADING || file.state === File.STATE_SAVING;
 			
 			if(clean) {
-				this.tabBar.setTabAsClean(file.tab);
+				file.tab.classList.remove("changed");
 				FileList.setFileAsClean(file.uri);
 			} else {
-				this.tabBar.setTabAsDirty(file.tab);
+				file.tab.classList.add("changed");
 				FileList.setFileAsDirty(file.uri);
+			}
+			
+			if(loading) {
+				file.tab.classList.add("loading");
+			} else {
+				file.tab.classList.remove("loading");
 			}
 
 			if(file === this.activeFile) {
@@ -46,39 +53,63 @@
 				}
 			}
 		},
+		
+		
+		setProjectId: function(pId) {
+			if(this.activeProjectId === pId) return;
+			
+			this.activeProjectId = pId;
+			this.clear();
+			
+			/*
+			TODO!!! open file in only one codeEditor!!!
+			*/
+			
+			var projectFiles = File.getProjectFiles(pId);
+			for(var fileId in projectFiles) { 
+				if (projectFiles.hasOwnProperty(fileId)) {
+					var file = projectFiles[fileId];
+					this.tabBar.add(file);
+				}
+			}
+			
+			
+		},
+		
 
 		clear: function() {
 			var doc = CodeMirror.Doc("");
 			this.editor.swapDoc(doc);
-			this.tabList.innerHTML = "";
+			this.tabBar.clear();
 			this.activeFile = null;
 		},
 
 		saveFile: function() {
-			var me = this;
 			var file = this.activeFile;
 			if(file.state===File.STATE_UNSAVED) {
-				me.saveFileAs(file, false);				
+				this.saveFileAs(file, false);				
 			} else {
 				file.save(this.editor.getValue(), this.saveFileCallback.bind(this));
+				this.updateFileStatus(file);
 			}
 		},
 
 		saveFileCallback: function(file) {
 			this.updateFileStatus(file);
 			if(Preview.doRefreshOnSave) {
-				Preview.load(projectsURL + XioCode.getActiveProjectId() + "/" + file.uri);
+				Preview.load(projectsURL + this.activeProjectId + "/" + file.uri);
 				Preview.refresh();
 			}
 		},
 
 		saveFileAs: function(file, overwrite) {
-			console.log("Save As... 1 ");
+			console.log("Save As... ");
 			var me = this;
-			file.projectId = XioCode.getActiveProjectId();
+			file.projectId = this.activeProjectId;
 			XioPop.prompt("Save file as...", "Enter the filename", file.uri, function(newUri) {
 				if(newUri) {					
-					file.saveAs(newUri, me.editor.getValue(), false, me.saveFileAsCallback.bind(me));						
+					file.saveAs(newUri, me.editor.getValue(), false, me.saveFileAsCallback.bind(me));
+					me.updateFileStatus(file);
 				}
 			});
 		},
@@ -94,9 +125,10 @@
 
 				case STATUS_FILE_COLLISION:
 				var me = this;
-				XioPop.confirm("File already exists", "Are you sure you want to overwrite "+file.uri+"?", function(answer) {
+				XioPop.confirm("File already exists", "Are you sure you want to overwrite "+response.uri+"?", function(answer) {
 					if(answer) {
-						me.saveAs(answer, true);
+						file.saveAs(response.uri, me.editor.getValue(), true, me.saveFileAsCallback.bind(me));
+						me.updateFileStatus(file);
 					}
 				});
 				break;
@@ -107,24 +139,23 @@
 		},
 
 		closeFile: function(file) {
-			console.warn("close file, not implemented");
-			file.close();
-			/*
-			if(this.isFileOpened(uri)) {
-				delete this.openedFiles[XioCode.getActiveProjectId()][uri];
-				return true;
+			if(this.activeFile === file) {
+				console.log("close active file", file);
+				this.activeFile = null;
+			} else {
+				console.log("close file", file);
 			}
-			*/
+			file.close();
 		},
 		
 		newFile: function() {
 			var file = new File();
-			file.blank();
+			file.blank(this.activeProjectId);
 			
 			this.editor.swapDoc(file.doc);
 			
 			this.activeFile = file;
-			file.tab = this.tabBar.add(file);
+			this.tabBar.add(file);
 			this.tabBar.select(file);
 			this.updateFileStatus(file);
 			this.editor.focus();
@@ -140,13 +171,13 @@
 		},		
 		
 		openFile: function(uri) {
-			var file = File.getFileByUri(XioCode.getActiveProjectId(), uri);
+			var file = File.getFileByUri(this.activeProjectId, uri);
 			if(file) {
 				this.switchToFile(file);
 			} else {
 				file = new File();
-				file.load(XioCode.getActiveProjectId(), uri, this.openFileCallback.bind(this));
-				file.tab = this.tabBar.add(file);
+				file.load(this.activeProjectId, uri, this.openFileCallback.bind(this));
+				this.tabBar.add(file);
 				this.editor.swapDoc(file.doc);
 			}
 			this.activeFile = file;

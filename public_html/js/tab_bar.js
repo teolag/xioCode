@@ -6,8 +6,6 @@ function TabBar(tabList, codeEditor) {
 	
 	console.log("init tabbar", tabList);
 	
-	this.tabs = {};
-	
 	var me = this;
 	
 	function clickHandler(e) {
@@ -33,9 +31,11 @@ function TabBar(tabList, codeEditor) {
 
 TabBar.prototype.select = function(file) {
 	var tabs = this.tabList.children;
+	
 
 	for(var i=0; i<tabs.length; i++) {
 		var tab = tabs[i];
+		console.log("select tab", file.tab, tab, tab === file.tab);
 		if (tab === file.tab) {
 			tab.classList.add("selected");
 		} else {
@@ -56,10 +56,15 @@ TabBar.prototype.setTabAsClean = function(tab) {
 
 
 TabBar.prototype.closeTabs = function(uris) {
-		console.log("TODO!  fix this");
-		for(var i=0; i<uris.length; i++) {
-		
-		}
+	console.log("TODO!  fix this");
+	for(var i=0; i<uris.length; i++) {
+
+	}
+};
+
+
+TabBar.prototype.clear = function() {
+	this.tabList.innerHTML = "";
 };
 
 
@@ -97,38 +102,31 @@ TabBar.prototype.rename = function(file, newUri) {
 };
 
 TabBar.prototype.add = function(file) {
-	if(this.tabs.hasOwnProperty(file.uri)) return;
 	
-	var tab = document.createElement("LI");
-	tab.dataset.id = file.id;
-	this.tabList.appendChild(tab);
-
-	console.log("add tab", file.uri);
-	var filename = document.createElement("span");
-	filename.textContent = file.filename;
+	var template = document.getElementById('tplCodeEditorTab').content;
+		
+	var li = template.querySelector("li");
+	li.dataset.id = file.id;
+	
+	var filename = template.querySelector(".filename");
 	filename.title = file.uri;
-	filename.classList.add("filename");
-
-	var close = document.createElement("span");
-	close.classList.add("icon-close", "close");
-
-	tab.appendChild(filename);
-	tab.appendChild(close);
+	filename.textContent = file.filename;
 	
-
-	this.tabs[file.uri] = {
-		"tab" : tab,
-		"pos" : Object.keys(this.tabs).length
-	};
+	var tab = document.importNode(template, true);
+	console.log("tab", tab);
 	
+	this.tabList.appendChild(tab);
+	
+	
+	tab = this.tabList.querySelector("li[data-id='"+file.id+"']");
+	console.log("tab", tab);
+	file.tab = tab;
 	this.updateState(file);
-	
-	return tab;
 };
 
 TabBar.prototype.updateState = function(file) {
 	console.log("update tab state", file);
-	var tab = this.tabs[file.uri].tab;
+	var tab = file.tab;
 	
 	tab.classList.remove("loading");
 	tab.classList.remove("saving");

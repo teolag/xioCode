@@ -28,8 +28,9 @@
 	// PUBLIC METHODS
 	_.prototype = {
 	
-		blank: function() {
+		blank: function(projectId) {
 			this.filename = unsavedName + "_" + unsavedNumber++;
+			this.projectId = projectId;
 			this.uri = this.filename;
 			this.state = _.STATE_UNSAVED;
 			this.doc = CodeMirror.Doc("", getDocType());
@@ -48,6 +49,7 @@
 		},
 		
 		save: function(code, callback) {
+			this.state = _.STATE_SAVING;			
 			var formData = new FormData();
 			formData.append("uri", this.uri);
 			formData.append("project_id", this.projectId);
@@ -58,6 +60,7 @@
 		},
 		
 		saveAs: function(newUri, code, overwrite, callback) {
+			this.state = _.STATE_SAVING;
 			var formData = new FormData();
 			formData.append("uri", newUri);
 			formData.append("project_id", this.projectId);
@@ -98,6 +101,32 @@
 				}
 			}
 		}
+	};
+	
+	_.getProjectFiles = function(projectId) {
+		var projectFiles = {};
+		for(var fileId in files) { 
+			if (files.hasOwnProperty(fileId)) {
+				var file = files[fileId];
+				if(file.projectId === projectId) {
+					projectFiles[fileId] = file;
+				}
+			}
+		}
+		return projectFiles;
+	};
+	
+	_.countDirtyFiles = function() {
+		var counter=0;
+		for(var fileId in files) { 
+			if (files.hasOwnProperty(fileId)) {
+				var file = files[fileId];
+				if(!file.doc.isClean()) {
+					counter++;
+				}
+			}
+		}
+		return counter;
 	};
 	
 	// PRIVATE METHODS

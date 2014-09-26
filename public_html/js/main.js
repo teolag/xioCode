@@ -4,7 +4,6 @@ var DEBUG_MODE_ON=true;
 var KEY_ENTER = 13;
 var KEY_UP = 38;
 var KEY_DOWN = 40;
-var UNSAVED_FILENAME = "untitled";
 
 if (!DEBUG_MODE_ON) {
     console = console || {};
@@ -58,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	username = document.getElementById("username");
 	
 	if(_USER && _USER.username) {
-		window.dispatchEvent(new CustomEvent("userLogin"));
+		GateKeeper.setUser(_USER);
 	} else {
 		GateKeeper.showLogin();
 	}
@@ -76,8 +75,14 @@ function loginCallback(user) {
 function logoutCallback() {
 	ProjectList.clear();
 	FileList.clear();
-	Todo.clear();		
-	XioCode.getActiveCodeEditor().clear();
+	Todo.clear();
+	
+	for(var i=0; i<XioCode.getPanes().length; i++) {
+		var pane = XioCode.getPanes()[i];
+		if(pane.type === 10) {
+			pane.codeEditor.clear()
+		}
+	}
 
 	activeProject = null;
 	activeFile = null;
@@ -85,10 +90,9 @@ function logoutCallback() {
 	xioDocs = {};
 }
 
-
-
 function warnBeforeUnload(e) {
-	var n = numberOfUnsavedFiles();
+	var n = File.countDirtyFiles();
+	console.log("dirty check", n);
 	if(n>0) {
 		var text = "You have "+n+" unsaved files. Are you sure you want to navigate away from this page";
 		e.returnValue = text;
@@ -96,17 +100,6 @@ function warnBeforeUnload(e) {
 	}
 }
 
-function numberOfUnsavedFiles() {
-	var counter = 0;
-	if(activeProject) {
-		for(var uri in xioDocs[activeProject.id]) {
-			if(!xioDocs[activeProject.id][uri].isClean()) {
-				counter++;
-			}
-		}
-	}
-	return counter;
-}
 
 
 
@@ -221,7 +214,6 @@ function fixLayout() {
 			pane.codeEditor.editor.setSize(null, height);
 		}
 	}
-	
 	Preview.fixLayout();
 }
 
@@ -236,11 +228,19 @@ function openProject(id) {
 	activeProject = {'id':id};
 	XioCode.openProject(id);
 	
+	//set active project if project is loaded
 	if(ProjectList.getProject(id)) {
 		activeProject = ProjectList.getProject(id);
 		activeProject.id = id;
 		document.title = pageTitle + " - " + activeProject.name;
 		title.textContent = activeProject.name;
+	}
+	
+	for(var i=0; i<XioCode.getPanes().length; i++) {
+		var pane = XioCode.getPanes()[i];
+		if(pane.type === 10) {
+			pane.codeEditor.setProjectId(id);
+		}
 	}
 
 	document.getElementById("projectChooser").classList.add("hidden");
@@ -486,6 +486,3 @@ function clone(obj) {
     }
     return copy;
 }
-
-
-function debounce(a,b,c){var d;return function(){var e=this,f=arguments;clearTimeout(d),d=setTimeout(function(){d=null,c||a.apply(e,f)},b),c&&!d&&a.apply(e,f)}}

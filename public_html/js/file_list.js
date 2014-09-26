@@ -90,9 +90,7 @@ var FileList = (function() {
 	var selectFile = function(uri) {
 		deselectAll();
 		
-		if(uri===UNSAVED_FILENAME) return;
 		console.log("Select: '" + uri + "' in fileList");
-
 		var li = fileList.querySelector("li[data-uri='"+uri+"']");
 		if(li) {
 			li.classList.add("selected");
@@ -413,7 +411,8 @@ var FileList = (function() {
 						for(var i=0; i<XioCode.getPanes().length; i++) {
 							var pane = XioCode.getPanes()[i];
 							if(pane.type === 10) {
-								pane.codeEditor.tabBar.close(json.uri);
+								var file = File.getFileByUri(projectId, json.uri);
+								if(file) file.close();
 							}
 						}
 						

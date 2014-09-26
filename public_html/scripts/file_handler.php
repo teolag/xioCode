@@ -30,7 +30,7 @@ foreach($groups as $gid) {
 */
 
 
-sleep(2);
+//sleep(2);
 
 
 $overwrite = $_REQUEST['overwrite']==="true";
