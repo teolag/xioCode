@@ -23,7 +23,20 @@ if(Gatekeeper::hasAccess()) {
 	<body<?php echo $loginState ?>>
 		<div id="header">
 			<h1><span class="first">xio</span><span class="second">Code</span></h1>
+			
 			<span id="pageTitle"></span>
+			
+			<ul id="projectToolbar" class="toolbar">
+				<li data-action="run"><svg class="icon run"><use xlink:href="/icons.svg#icon-run" /></svg></li>
+				<li data-action="export"><svg class="icon export"><use xlink:href="/icons.svg#icon-export" /></svg></li>
+				<li data-action="config"><svg class="icon config"><use xlink:href="/icons.svg#icon-config" /></svg></li>
+				<!--
+				<span id="btnPreviewProject" title="Preview project" class="icon-small icon-play"></span>
+				<span id="btnExportZip" title="Export project to zip" class="icon-small icon-archive"></span>
+				<span id="btnProjectConfig" title="Project configurations" class="icon-small icon-cog"></span>
+				-->
+			</ul>
+			
 			<div id="userMenu">
 				<div class="icon-user" id="username"></div>
 				<ul>
@@ -48,8 +61,7 @@ if(Gatekeeper::hasAccess()) {
 				</select>
 				<input type="search" placeholder="Filter projects" id="txtProjectFilter" />
 				<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
-				<ul id="listProjectTags" class="tags"></ul>
-				
+				<ul id="listProjectTags" class="tags"></ul>				
 			</div>
 		</div>
 		
@@ -57,16 +69,15 @@ if(Gatekeeper::hasAccess()) {
 		<div id="projectArea" class="hidden">
 	
 			<div id="fileBrowser" class="pane">
-				<div id="toolbar" class="toolbar">						
-					<span id="btnPreviewProject" title="Preview project" class="icon-small icon-play"></span
-					><span id="btnExportZip" title="Export project to zip" class="icon-small icon-archive"></span
-					><span id="btnProjectConfig" title="Project configurations" class="icon-small icon-cog"></span>
-				</div>
+				<ul class="toolbar">						
+					<li data-action="new"><svg class="icon file"><use xlink:href="/icons.svg#icon-file" /></svg></li>
+					<li data-action="reload"><svg class="icon reload"><use xlink:href="/icons.svg#icon-reload" /></svg></li>
+				</ul>
 				<div id="fileList"></div>
 			</div>
 						
 			<div class="pane codeEditor" id="paneEditor1"></div>
-			<div class="pane codeEditor" id="paneEditor2"></div>
+			<!--<div class="pane codeEditor" id="paneEditor2"></div>-->
 			
 			<div id="preview" class="pane">
 				<iframe src="" id="previewFrame" width="100%" height="100%"></iframe>

@@ -42,7 +42,7 @@
 			this.filename = getFilename(uri);
 			this.projectId = projectId;
 			
-			this.doc = CodeMirror.Doc("loading...", getDocType());
+			this.doc = CodeMirror.Doc("", getDocType());
 			
 			var parameters = {action:"load", project_id:projectId,	uri:encodeURI(uri)};
 			Ajax.getJSON("/scripts/file_handler.php", parameters, loadCallback.bind(this, callback));
@@ -71,16 +71,10 @@
 			Ajax.post2JSON("/scripts/file_handler.php", formData, saveAsCallback.bind(this, callback));
 		},
 		
-		close: function(force) {
-			if(this.doc.isClean() || force) {
-				this.tab.parentElement.removeChild(this.tab);
-				delete files[this.id];			
-			} else {
-				var me = this;
-				XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
-					if(answer) me.close(true);
-				});
-			}			
+		close: function() {
+			this.tab.parentElement.removeChild(this.tab);
+			this.doc.markClean();
+			delete files[this.id];
 		}
 	};
 	

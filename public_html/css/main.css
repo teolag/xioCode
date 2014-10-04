@@ -67,6 +67,13 @@ h1 .second {
 
 #header #pageTitle {
 	font-size: 1.2em;
+	text-align: center;
+	flex: 1;
+}
+
+
+#projectToolbar {
+	margin-right: 1em;
 }
 
 
@@ -119,34 +126,35 @@ ul.tags li {
 	flex-direction: row;
 	align-items: flex-end;
 }
-.codeEditor .toolbar {
+
+
+
+
+
+
+.toolbar {
 	margin: 0;
 	padding: 0;
 }
-.codeEditor .toolbar li {
+.toolbar li {
 	display: inline-block;
 	cursor: pointer;
 }
-.codeEditor .toolbar li.disabled {
+.toolbar li.disabled {
 	pointer-events: none;
 }
-.codeEditor .toolbar li.disabled .icon {
+.toolbar li.disabled .icon {
 	fill: #ddd;
 }
-.codeEditor .icon {
+.toolbar li .icon {
 	width: 20px;
 	height: 20px;
 	fill: #888;
 	pointer-events: none;
 }
-
-.codeEditor .toolbar li:hover .icon {
+.toolbar li:hover .icon {
 	fill: #bada55;
 }
-
-
-
-
 
 .icon-small {
 	font-size: 1.3em;

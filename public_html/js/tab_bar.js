@@ -35,7 +35,6 @@ TabBar.prototype.select = function(file) {
 
 	for(var i=0; i<tabs.length; i++) {
 		var tab = tabs[i];
-		console.log("select tab", file.tab, tab, tab === file.tab);
 		if (tab === file.tab) {
 			tab.classList.add("selected");
 		} else {

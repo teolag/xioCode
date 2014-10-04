@@ -25,12 +25,13 @@ var XioCode = (function(){
 				name: "CodeEditor1",
 				type:PANE_CODE_EDITOR, 
 				codeEditor: new CodeEditor(document.getElementById("paneEditor1"))
-			},
+			}
+			/*,
 			{
 				name: "CodeEditor2",
 				type:PANE_CODE_EDITOR, 
 				codeEditor: new CodeEditor(document.getElementById("paneEditor2"))
-			}
+			}*/
 		];
 		activeCodeEditor = panes[0].codeEditor;
 		workspaceInitiated = true;

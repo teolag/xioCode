@@ -28,7 +28,8 @@
 	_.prototype = {	
 	
 		updateFileStatus: function(file) {
-			var clean = file.doc.isClean() && file.state!==File.STATE_UNSAVED;
+			var onDisc = file.state!==File.STATE_UNSAVED;
+			var clean = file.doc.isClean() && onDisc;
 			var loading = file.state === File.STATE_LOADING || file.state === File.STATE_SAVING;
 			
 			if(clean) {
@@ -39,13 +40,19 @@
 				FileList.setFileAsDirty(file.uri);
 			}
 			
-			if(loading) {
-				file.tab.classList.add("loading");
-			} else {
-				file.tab.classList.remove("loading");
-			}
-
 			if(file === this.activeFile) {
+				if(onDisc) {
+					this.btnPreview.classList.remove("disabled");
+				} else {
+					this.btnPreview.classList.add("disabled");
+				}
+
+				if(loading) {
+					file.tab.classList.add("loading");
+				} else {
+					file.tab.classList.remove("loading");
+				}
+
 				if(clean) {
 					this.btnSave.classList.add("disabled");
 				} else {
@@ -96,7 +103,7 @@
 
 		saveFileCallback: function(file) {
 			this.updateFileStatus(file);
-			if(Preview.doRefreshOnSave) {
+			if(Preview.doRefreshOnSave()) {
 				Preview.load(projectsURL + this.activeProjectId + "/" + file.uri);
 				Preview.refresh();
 			}
@@ -138,14 +145,23 @@
 			}
 		},
 
-		closeFile: function(file) {
-			if(this.activeFile === file) {
-				console.log("close active file", file);
-				this.activeFile = null;
+		closeFile: function(file, force) {
+			if(file.doc.isClean() || force) {
+				if(this.activeFile === file) {
+					console.log("close active file", file);
+					this.switchToNext();
+				} else {
+					console.log("close file", file);
+				}
+				file.close();
+				this.updateFileStatus(file);
 			} else {
-				console.log("close file", file);
-			}
-			file.close();
+				var me = this;
+				XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
+					if(answer) me.closeFile(file, true);
+					me.editor.focus();
+				});
+			}		
 		},
 		
 		newFile: function() {
@@ -168,7 +184,33 @@
 			this.tabBar.select(file);
 			this.updateFileStatus(file);
 			this.editor.focus();
-		},		
+		},
+		
+		switchToNext: function() {
+			var tabs = this.tabList.children;
+			console.log("active tab", this.activeFile.tab);
+			if(tabs.length===1) {
+				console.log("last file closed, open new");
+				this.newFile();
+			} else {
+				var switchToId = null;
+				for(var i=0; i<tabs.length; i++) {
+					var tab = tabs[i];
+					var fileId = parseInt(tab.dataset.id);
+					if(fileId===this.activeFile.id) {
+						if(switchToId===null) {
+							console.log("next", tabs[i+1], tabs[i]);
+							switchToId=parseInt(tabs[i+1].dataset.id);
+						}
+						break;
+					} else {
+						switchToId = fileId;
+					}
+				}
+				var file = File.getFileById(switchToId);
+				this.switchToFile(file);
+			}
+		},
 		
 		openFile: function(uri) {
 			var file = File.getFileByUri(this.activeProjectId, uri);
@@ -207,12 +249,19 @@
 		}
 		var action = li.dataset.action;
 		switch(action) {
-			case "new":
-				this.newFile();
-			break;
-
 			case "save":
 				this.saveFile();
+			break;
+			
+			case "preview":
+				var path = projectsURL + activeProject.id +"/"+ this.activeFile.uri;
+				console.log("Preview:", path);
+
+				if(Preview.isVisible()) {
+					Preview.load(path);
+				} else {
+					window.open(path, 'code_file_preview');
+				}
 			break;
 
 			default:

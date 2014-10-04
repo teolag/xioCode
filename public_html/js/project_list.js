@@ -315,6 +315,7 @@ var ProjectList = (function() {
 				sib = rev? sib.previousSibling : sib.nextSibling;
 			}
 		} else {
+			//Select first project
 			sel = projectList.querySelector(".project");
 			deselectAll();
 			sel.classList.add("selected");

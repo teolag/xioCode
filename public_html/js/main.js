@@ -19,7 +19,7 @@ var fileToBeLoaded;
 var oldHash;
 
 var username;
-var h1, toolbar, userMenu, fileBrowser;
+var h1, fileToolbar, projectToolbar, userMenu, fileBrowser;
 
 document.addEventListener("DOMContentLoaded", function(e) {
 
@@ -49,8 +49,11 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	h1 = document.querySelector("#header h1");
 	h1.addEventListener("click", function(){setHash()}, false);
 
-	toolbar = document.getElementById("toolbar");
-	toolbar.addEventListener("click", toolbarHandler, false);
+	projectToolbar = document.querySelector("#projectToolbar");
+	projectToolbar.addEventListener("click", projectToolbarHandler, false);
+
+	fileToolbar = document.querySelector("#fileBrowser .toolbar");
+	fileToolbar.addEventListener("click", fileToolbarHandler, false);
 
 	userMenu = document.getElementById("userMenu");
 	userMenu.addEventListener("click", userMenuHandler, false);
@@ -106,44 +109,24 @@ function warnBeforeUnload(e) {
 
 /***************** TOOLBAR **********************************************************************/
 
-function toolbarHandler(e) {
+function projectToolbarHandler(e) {
 	if(e.button!==0) return false;
 
 	var button = e.target;
 	if(button.classList.contains("disabled")) return;
 
-	switch(button.id) {
+	switch(button.dataset.action) {
 
-		case "btnNew":
-		createNewFile();
-		break;
-
-		case "btnSave":
-		saveFile();
-		break;
-
-		case "btnPreviewFile":
-		var path = projectsURL + activeProject.id +"/"+ activeFile;
-		console.log("Preview:", projectsURL + activeProject.id +"/"+ activeFile);
-		
-		if(Preview.isVisible()) {
-			Preview.load(path);
-		} else {
-			window.open(path, 'code_file_preview');
-		}
-		
-		break;
-
-		case "btnPreviewProject":
+		case "run":
 		previewProject(activeProject.id);
 		break;
 
 
-		case "btnProjectConfig":
+		case "config":
 		ProjectConfig.open(activeProject.id);
 		break;
 
-		case "btnExportZip":
+		case "export":
 			window.location="/scripts/export_zip.php?path=" + activeProject.id + "/";
 		break;
 
@@ -151,6 +134,27 @@ function toolbarHandler(e) {
 		console.warn("Unknown button clicked");
 	}
 
+}
+
+function fileToolbarHandler(e) {
+	if(e.button!==0) return false;
+
+	var button = e.target;
+	if(button.classList.contains("disabled")) return;
+
+	switch(button.dataset.action) {
+
+		case "new":
+		XioCode.getActiveCodeEditor().newFile();
+		break;
+		
+		case "reload":
+		FileList.loadProjectFiles();
+		break;
+
+		default:
+		console.warn("Unknown button clicked");
+	}
 }
 
 

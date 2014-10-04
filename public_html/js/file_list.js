@@ -131,12 +131,12 @@ var FileList = (function() {
 			if(target!==fileList) {
 				var uri = target.dataset.uri;
 				var file = files[uri];
-
-				if(e.type==="dblclick") {
+				
+				if(file.type==='folder') {
+					toggleFolder(target);
+				} else if(e.type==="dblclick") {
 					console.log("dblclick");
-					if(file.type==='folder') {
-						toggleFolder(target);
-					} else if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
+					if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
 						console.log("Download file...");
 						window.location.href = "/scripts/file_handler.php?action=download&project_id="+projectId+"&uri="+uri;
 					} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
