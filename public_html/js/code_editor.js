@@ -1,5 +1,4 @@
 (function() {
-
 	var _ = self.CodeEditor = function(parentElement) {
 		this.elem = parentElement;
 		this.activeFile = null;

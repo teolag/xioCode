@@ -13,9 +13,10 @@ var codemirrorDefaults = {
 	matchBrackets: true,
 	autoCloseTags: true,
 	autoCloseBrackets: true,
+    autoClearEmptyLines: true,
 	styleActiveLine: true,
 	indentUnit: 4,
-	indentWithTabs: false,
+	indentWithTabs: true,
 	smartIndent: true,
 	theme: 'xio',
 	highlightSelectionMatches: {showToken: /\w/},
@@ -145,7 +146,7 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 }
 
 
-CodeMirror.commands.rightTrimLines = function(editor, line) {
+CodeMirror.commands.removeTrailingSpaces = function(editor, line) {
 
 };
 
