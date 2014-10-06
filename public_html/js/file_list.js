@@ -67,12 +67,15 @@ var FileList = (function() {
 			}
 			var uri = item.path + item.filename;
 			files[uri] = item;
+            
 
 
 			var changed = "";
+            /*
 			if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri) && xioDocs[projectId][uri] && !xioDocs[projectId][uri].isClean()) {
 				changed = " changed ";
 			}
+            */
 
 			var hidden  = (item.filename==='xiocode.properties' || item.filename==='xiocode.todo')? ' hidden' : '';
 			title += item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");

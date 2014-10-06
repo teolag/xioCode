@@ -426,16 +426,15 @@ function findFunctions() {
 	while(hit = re.exec(text)) {
 		var pos = doc.posFromIndex(hit.index);
 		var argus = hit[2].replace(" ","").split(",");
-		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
+		functions.push({text:hit[1], name:hit[1], args:argus, index:hit.index, line:pos.line, char:pos.char});
 	}
 
 	// Find functions in the format:   pelle = function(arg1, arg2) {   or   pelle: function(arg1, arg2)
 	re = new RegExp("([A-Z0-9_\.]+)\\s*[=:]\\s*function\\s*\\(([^\\)]*)\\)", "gmi");
 	while(hit = re.exec(text)) {
-		console.log("func 2", hit);
 		var pos = doc.posFromIndex(hit.index);
 		var argus = hit[2].replace(" ","").split(",");
-		functions.push({"name":hit[1], "args":argus, "index":hit.index, "line":pos.line, "char":pos.char});
+        functions.push({text:hit[1], name:hit[1], args:argus, index:hit.index, line:pos.line, char:pos.char});
 	}
 
 	function compare(a,b) {

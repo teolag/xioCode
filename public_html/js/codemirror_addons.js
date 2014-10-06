@@ -42,7 +42,8 @@ var codemirrorDefaults = {
 		"Cmd-O" 		: "showAllFunctions",
 		"Ctrl-O" 		: "showAllFunctions",
 		"Ctrl-Q"		: "toggleComment",
-		"Cmd-Q"			: "toggleComment"
+		"Cmd-Q"			: "toggleComment",
+        "Ctrl-B"		:  "removeTrailingSpaces"
 	}
 };
 
@@ -115,7 +116,7 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 		editor.replaceRange(codemirrorSnippets[text],start, cur);
 	} else {
 		//TODO: InsertSoftTab to use spaces
-		CodeMirror.commands[editor.getSelection().length ? "indentMore" : "insertTab"](editor);
+        editor.execCommand(editor.getSelection().length ? "indentMore" : "insertTab");
 	}
 };
 
@@ -146,8 +147,13 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 }
 
 
-CodeMirror.commands.removeTrailingSpaces = function(editor, line) {
+CodeMirror.commands.removeTrailingSpaces = function(editor) {
+	console.log("editor", editor);
 
+    editor.doc.eachLine(function(line) {
+        line.text = line.text.replace(/\s+$/,"");        
+   	});
+    editor.refresh();    
 };
 
 
@@ -155,66 +161,10 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 	var functions = findFunctions();
 
 	console.log(functions);
-	var div = document.createElement("div");
-	div.classList.add("filteredSelectList");
-
-	var filter = document.createElement("input");
-	filter.value = editor.doc.getSelection();
-	filter.type="search";
-	filter.addEventListener("keyup", function(e) {
-		if(e && e.which === 13) {
-			var first = list.querySelector("li:not(.hidden)");
-			if(!first) return;
-
-			console.log("Choose the first", first);
-			var line = Number(first.getAttribute("data-line"));
-			XioPop.close();
-			CodeMirror.commands.jump2Line(editor, line);
-		} else {
-			filterFunctions();
-		}
-	});
-	
-	
-	var filterFunctions = function() {
-		var searchString = filter.value.toLowerCase();
-		console.log("filter functions '"+searchString+"'");
-
-		for(var id in functions) {
-			var func = functions[id];
-			console.log(id, func);
-
-			var li = list.querySelector("li[data-id='"+id+"']");
-			if(func.name.toLowerCase().search(searchString)!=-1) {
-				li.classList.remove('hidden');
-			} else {
-				li.classList.add('hidden');
-			}
-		}
-	};
-
-	var list = document.createElement("ul");
-	list.classList.add("selectableList", "functions");
-	list.addEventListener("click", function(e) {
-		var target = e.target;
-		if(target.nodeName==="LI") {
-			var line = Number(target.getAttribute("data-line"));
-			XioPop.close();
-			CodeMirror.commands.jump2Line(editor, line);
-		}
-	});
-	for(var i=0; i<functions.length; i++) {
-		var f = functions[i];
-		var item = document.createElement("li");
-		item.textContent = f.name + " (" + f.args.join(", ") + ")";
-		item.setAttribute("data-line", f.line);
-		item.setAttribute("data-id", i);
-		list.appendChild(item);
-	}
-
-	div.appendChild(filter);
-	div.appendChild(list);
-	XioPop.showElement(div);
-	filterFunctions();
-	filter.focus();
+        
+	XioPop.select(functions, function(f) {
+    	console.log("selected function", f)
+        XioPop.close();
+        CodeMirror.commands.jump2Line(editor, f.line);
+    });
 };

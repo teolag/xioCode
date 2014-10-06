@@ -95,6 +95,7 @@
 			if(file.state===File.STATE_UNSAVED) {
 				this.saveFileAs(file, false);				
 			} else {
+                this.editor.execCommand("removeTrailingSpaces");
 				file.save(this.editor.getValue(), this.saveFileCallback.bind(this));
 				this.updateFileStatus(file);
 			}
@@ -113,7 +114,8 @@
 			var me = this;
 			file.projectId = this.activeProjectId;
 			XioPop.prompt("Save file as...", "Enter the filename", file.uri, function(newUri) {
-				if(newUri) {					
+				if(newUri) {
+                    me.editor.execCommand("removeTrailingSpaces");
 					file.saveAs(newUri, me.editor.getValue(), false, me.saveFileAsCallback.bind(me));
 					me.updateFileStatus(file);
 				}
