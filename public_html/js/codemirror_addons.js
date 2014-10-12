@@ -30,7 +30,7 @@ var codemirrorDefaults = {
 		"Ctrl-S" 		: "shortcutSave",
 		"Cmd-S" 		: "shortcutSave",
 		"Alt-Up"		: "swapLineUp",
-		"Alt-Down"		: "swapLineDown",  
+		"Alt-Down"		: "swapLineDown",
 		"Ctrl-Alt-Down" : "duplicateRowDown",
 		"Cmd-Alt-Down" 	: "duplicateRowDown",
 		"Ctrl-Alt-Up" 	: "duplicateRowUp",
@@ -43,7 +43,7 @@ var codemirrorDefaults = {
 		"Ctrl-O" 		: "showAllFunctions",
 		"Ctrl-Q"		: "toggleComment",
 		"Cmd-Q"			: "toggleComment",
-        "Ctrl-B"		:  "removeTrailingSpaces"
+		"Ctrl-B"		: "removeTrailingSpaces"
 	}
 };
 
@@ -70,7 +70,7 @@ CodeMirror.commands.duplicateRow = function(editor, up) {
 			editor.replaceRange("\n"+text, {line:end.line});
 			editor.setSelection(start, end);
 		} else {
-			editor.replaceRange(text + "\n", {line:end.line+1, ch:0});
+			editor.replaceRange(text+"\n", {line:end.line+1, ch:0});
 		}
 	} else {
 		if(start.line===0) {
@@ -151,9 +151,9 @@ CodeMirror.commands.removeTrailingSpaces = function(editor) {
 	console.log("editor", editor);
 
     editor.doc.eachLine(function(line) {
-        line.text = line.text.replace(/\s+$/,"");        
+        line.text = line.text.replace(/\s+$/,"");
    	});
-    editor.refresh();    
+    editor.refresh();
 };
 
 
@@ -161,7 +161,7 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 	var functions = findFunctions();
 
 	console.log(functions);
-        
+
 	XioPop.select(functions, function(f) {
     	console.log("selected function", f)
         XioPop.close();

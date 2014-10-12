@@ -30,19 +30,19 @@ function lookInFolder($path, $relPath="") {
 		else {
 			$branch["size"] = filesize($path.$i);
 			//$branch["mime"] = finfo_file($finfo, $path.$i);
-			/*
+
 			if($imageInfo = getimagesize($path.$i)) {
 				$branch["width"] = $imageInfo[0];
 				$branch["height"] = $imageInfo[1];
 			}
-			*/
+
 			if(isset($parts['extension'])) {
 				$branch['type'] = strtolower($parts['extension']);
 				switch($branch['type']) {
-					case "png": case "jpg": case "jpeg": 
+					case "png": case "jpg": case "jpeg": case "ico": case "svg":
 					$branch['icon'] = "file-image"; break;
 
-					case "htm": case "html": case "xml": 
+					case "htm": case "html": case "xml":
 					$branch['icon'] = "file-xml"; break;
 
 					case "css":
@@ -66,18 +66,18 @@ function folderComperator($a, $b) {
 	$bFolder = (isset($b['type']) && $b['type']==FOLDER);
 	$aName = $a['filename'];
 	$bName = $b['filename'];
-	
-	if($aFolder && !$bFolder){ 
+
+	if($aFolder && !$bFolder){
 		$return=-1;
-		//echo "$aName before $bName because it is a folder\n"; 
+		//echo "$aName before $bName because it is a folder\n";
 	}
-	elseif($bFolder && !$aFolder) { 
+	elseif($bFolder && !$aFolder) {
 		$return=1;
-		//echo "$bName before $aName because it is a folder\n"; 
-	}	
+		//echo "$bName before $aName because it is a folder\n";
+	}
 	else {
 		$return=strnatcasecmp($aName,$bName);
-		//if($return>0) echo "$bName before $aName\n"; 
+		//if($return>0) echo "$bName before $aName\n";
 		//elseif($return<0) echo "$aName before $bName\n";
 		//else echo "$aName is the same as $bName\n";
 	}

@@ -1,30 +1,30 @@
 var GateKeeper = (function() {
-	
-	var 
+
+	var
 	ACCESS_CHECK_INTERVAL=5*60*1000, //Every 5 minutes
 
 	user,
-	
+
 	loginBox, frmLogin, btnLogin, txtUsername, txtPassword, username,
 	checkAccessInterval, onLoginCallback, onLogoutCallback,
 
-	
-	
-	
+
+
+
 	init = function(callbackLogin, callbackLogout) {
 		onLoginCallback = callbackLogin;
 		onLogoutCallback = callbackLogout;
-	
+
 		loginBox = document.getElementById("login");
-		
+
 		frmLogin = document.getElementById("loginForm");
 		frmLogin.addEventListener("submit", loginRequest, false);
-		
+
 		btnLogin = document.getElementById("btnLogin");
 		txtUsername = frmLogin.elements.code_username;
-		txtPassword = frmLogin.elements.code_password;		
+		txtPassword = frmLogin.elements.code_password;
 	},
-	
+
 	loginRequest = function(e) {
 		e.preventDefault();
 		if(!txtUsername.value || !txtPassword.value) {
@@ -56,20 +56,20 @@ var GateKeeper = (function() {
 	},
 
 	loginAccepted = function() {
-		console.log("Login accepted", user);
-		
+		console.log("Welcome", user.username);
+
 		//Access check every minute
 		checkAccessInterval = setInterval(checkAccess, ACCESS_CHECK_INTERVAL);
-		
+
 		if(onLoginCallback) onLoginCallback(user);
 	},
 
 	logout = function() {
 		Ajax.post("/scripts/gatekeeper.php?action=logout");
 		clearInterval(checkAccessInterval);
-		
+
 		if(onLogoutCallback) onLogoutCallback();
-		
+
 		showLogin();
 	},
 
@@ -92,18 +92,18 @@ var GateKeeper = (function() {
 			}
 		});
 	},
-	
+
 	setUser = function(u) {
 		user = u;
 		loginAccepted();
 	};
-	
-	
-	
+
+
+
 	return {
 		init: init,
 		showLogin: showLogin,
 		logout: logout,
 		setUser: setUser
-	}	
+	}
 }());

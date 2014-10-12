@@ -15,10 +15,10 @@ $response = array();
 if(!empty($_POST['prio'])) {
 	$order = explode(",", $_POST['prio']);
 	$todos = json_decode(file_get_contents($todoFile), true);
-		
+
 	foreach($order as $prio => $id) {
 		$todos[$id]['prio'] = $prio;
-		echo "sätt id $id till prio $prio<br />";
+		//echo "sätt id $id till prio $prio<br />";
 	}
 	$response['message'] = "sätter prio";
 	if(file_put_contents($todoFile, json_encode($todos))) {
@@ -41,7 +41,7 @@ if(!empty($_POST['prio'])) {
 		$todos = array();
 		$nextId = 1;
 	}
-	
+
 	$todo = array();
 	if(empty($_POST['todo_id'])) {
 		$response['message'] = "new " . $_POST['type'] . " saved";
@@ -59,8 +59,8 @@ if(!empty($_POST['prio'])) {
 	$todos[$todoId] = $todo;
 	$response['todo_id'] = $todoId;
 	$response['todo'] = $todo;
-	
-		
+
+
 	if(file_put_contents($todoFile, json_encode($todos))) {
 		$response['status'] = STATUS_OK;
 	} else {

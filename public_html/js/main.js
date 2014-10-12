@@ -23,12 +23,13 @@ var h1, fileToolbar, projectToolbar, userMenu, fileBrowser;
 
 document.addEventListener("DOMContentLoaded", function(e) {
 
+	XI.fire("DOMContentLoaded");
+
 	console.log("CodeMirror" , CodeMirror.version, "loaded");
 
-	
+
 	GateKeeper.init(loginCallback, logoutCallback);
-	Todo.init();
-	Preview.init()
+	Preview.init();
 
 	pageTitle = document.title;
 	title = document.getElementById("pageTitle");
@@ -37,14 +38,14 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	window.addEventListener("resize", fixLayout, false);
 	window.addEventListener("hashchange", readHash, false);
 	window.addEventListener("beforeunload", warnBeforeUnload);
-	
-	
-	
+
+
+
 	document.addEventListener("visibilitychange", function(e) {
 		var date = new Date(e.timeStamp);
-		console.debug(document.hidden ? "borta!" : "tillbaka!", date.toTimeString().substr(0,8));		
+		console.debug(document.hidden ? "borta!" : "tillbaka!", date.toTimeString().substr(0,8));
 	}, false);
-	
+
 
 	h1 = document.querySelector("#header h1");
 	h1.addEventListener("click", function(){setHash()}, false);
@@ -58,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	userMenu = document.getElementById("userMenu");
 	userMenu.addEventListener("click", userMenuHandler, false);
 	username = document.getElementById("username");
-	
+
 	if(_USER && _USER.username) {
 		GateKeeper.setUser(_USER);
 	} else {
@@ -70,8 +71,8 @@ function loginCallback(user) {
 	document.body.classList.add("authorized");
 	username.textContent = user.username;
 
+    ProjectList.setOrderBy(user.projects_order_by, user.projects_order_dir);
 	ProjectList.loadProjects();
-	ProjectList.loadListOrder(user.projects_order_by, user.projects_order_dir);
 	readHash();
 }
 
@@ -79,7 +80,7 @@ function logoutCallback() {
 	ProjectList.clear();
 	FileList.clear();
 	Todo.clear();
-	
+
 	for(var i=0; i<XioCode.getPanes().length; i++) {
 		var pane = XioCode.getPanes()[i];
 		if(pane.type === 10) {
@@ -99,7 +100,7 @@ function warnBeforeUnload(e) {
 	if(n>0) {
 		var text = "You have "+n+" unsaved files. Are you sure you want to navigate away from this page";
 		e.returnValue = text;
-		return text;		
+		return text;
 	}
 }
 
@@ -147,7 +148,7 @@ function fileToolbarHandler(e) {
 		case "new":
 		XioCode.getActiveCodeEditor().newFile();
 		break;
-		
+
 		case "reload":
 		FileList.loadProjectFiles();
 		break;
@@ -231,7 +232,7 @@ function openProject(id) {
 
 	activeProject = {'id':id};
 	XioCode.openProject(id);
-	
+
 	//set active project if project is loaded
 	if(ProjectList.getProject(id)) {
 		activeProject = ProjectList.getProject(id);
@@ -239,7 +240,7 @@ function openProject(id) {
 		document.title = pageTitle + " - " + activeProject.name;
 		title.textContent = activeProject.name;
 	}
-	
+
 	for(var i=0; i<XioCode.getPanes().length; i++) {
 		var pane = XioCode.getPanes()[i];
 		if(pane.type === 10) {
@@ -370,22 +371,19 @@ function readHash() {
 	var hash = window.location.hash;
 	if(oldHash===hash) return;
 
-	console.log("Read hash", hash, window.location.hash);
-	var match = hash.match(/^#([^\/]*)\/?(.*)$/);
+	//console.log("Read hash", hash, window.location.hash);
+	var match = hash.match(/^#([^\/]*)$/);
 	if(match) {
 		var projectId = match[1];
-		var uri = match[2];
 
-		console.log("   projectId:", projectId);
-		console.log("   uri:", uri);
 
 		if(!activeProject || (activeProject && projectId!=activeProject.id)) {
-			console.log("Open project", projectId);
+			console.log("Open project \"" + projectId +"\"");
 			openProject(projectId);
 		}
-		
+
 	} else {
-		console.log("  Show projects page");
+		console.log("Show projects page");
 		chooseProject();
 	}
 	oldHash=hash;
@@ -399,8 +397,7 @@ function chooseProject() {
 	activeProject = null;
 	document.title = pageTitle;
 	txtProjectFilter.focus();
-	console.log("display");
-	ProjectList.display();
+	//ProjectList.display();
 }
 
 
@@ -464,11 +461,11 @@ function toHumanReadableDateTime(ts) {
 	var now = new Date();
 	var time = ts.toTimeString().substr(0,5);
 	var date = ts.toISOString().substr(0,10);
-	
+
 	var diff = ts - now;
 	var yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
-	
+
 	if(diff<24*60*60*1000 && now.getDate()===ts.getDate()) {
 		return "Today " + time;
 	} else if(diff<2*24*60*60*1000 && yesterday.getDate()===ts.getDate()) {

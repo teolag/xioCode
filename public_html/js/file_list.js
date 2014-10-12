@@ -36,8 +36,6 @@ var FileList = (function() {
 
 				fileList.innerHTML = printFolder(items, "");
 
-				console.log("File list loaded", items);
-
 				for(var i=0; i<openedFolders.length; i++) {
 					var li = fileList.querySelector("li[data-uri='"+openedFolders[i]+"']");
 					if(li) {
@@ -67,7 +65,7 @@ var FileList = (function() {
 			}
 			var uri = item.path + item.filename;
 			files[uri] = item;
-            
+
 
 
 			var changed = "";
@@ -92,7 +90,7 @@ var FileList = (function() {
 
 	var selectFile = function(uri) {
 		deselectAll();
-		
+
 		console.log("Select: '" + uri + "' in fileList");
 		var li = fileList.querySelector("li[data-uri='"+uri+"']");
 		if(li) {
@@ -108,7 +106,7 @@ var FileList = (function() {
 			}
 		}
 	};
-	
+
 	var deselectAll = function(uri) {
 		var items = fileList.querySelectorAll("li");
 		for(var i = 0; i<items.length; i++) {
@@ -134,7 +132,7 @@ var FileList = (function() {
 			if(target!==fileList) {
 				var uri = target.dataset.uri;
 				var file = files[uri];
-				
+
 				if(file.type==='folder') {
 					toggleFolder(target);
 				} else if(e.type==="dblclick") {
@@ -385,7 +383,7 @@ var FileList = (function() {
 			if(isFolder) path+=filename + "/";
 			createNewFile(path);
 			break;
-			
+
 			case "saveAs":
 			XioPop.prompt("Save as", "Enter the new name of the file/folder", filename, function(newName) {
 				if(newName) {
@@ -410,7 +408,7 @@ var FileList = (function() {
 				if(answer) {
 					Ajax.getJSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function(json) {
 						FileList.loadProjectFiles();
-						
+
 						for(var i=0; i<XioCode.getPanes().length; i++) {
 							var pane = XioCode.getPanes()[i];
 							if(pane.type === 10) {
@@ -418,7 +416,7 @@ var FileList = (function() {
 								if(file) file.close();
 							}
 						}
-						
+
 						/*
 						var openedUris = Object.keys(xioDocs[activeProject.id]);
 						var docsToClose = [];
@@ -442,7 +440,7 @@ var FileList = (function() {
 				}
 			});
 			break;
-			
+
 			case "export":
 			window.location.href = "/scripts/file_handler.php?action=download&project_id="+projectId+"&uri="+uri;
 			break;

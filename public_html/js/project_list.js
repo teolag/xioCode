@@ -4,14 +4,15 @@ var ProjectList = (function() {
 	var projectList, txtProjectFilter, btnNewProject, listProjectOrderBy;
 	var tags, listTags;
 
-	var init = function() {
+	XI.listen("DOMContentLoaded", function(e) {
+		console.log("Init ProjectList");
 		projectList = document.getElementById('projectList');
 		projectList.addEventListener("click", clickHandler, false);
 		projectList.addEventListener("mouseover", hoverSelect, false);
 		projectList.addEventListener("drop", dropHandler, false);
 		projectList.addEventListener("dragover", dropHandler, false);
 		projectList.addEventListener("dragleave", dropHandler, false);
-		
+
 
 		txtProjectFilter = document.getElementById('txtProjectFilter');
 		txtProjectFilter.addEventListener("search", filterProjects);
@@ -22,59 +23,58 @@ var ProjectList = (function() {
 		btnNewProject.addEventListener("click", addNewProject, false);
 
 		listTags = document.getElementById("listProjectTags");
-		
+
 		listProjectOrderBy = document.getElementById("listProjectOrderBy");
 		listProjectOrderBy.addEventListener("change", selectOrderBy, false);
-	};
+
+	});
 
 	var loadProjects = function() {
-		if(!projectList) init();
+		Ajax.getJSON("/scripts/get_projects.php", null, function(json) {
+			projects = json;
+			console.log("%i projects loaded", Object.keys(projects).length);
+			getUniqueTags();
 
-		Ajax.getJSON("/scripts/get_projects.php", null, 
-			function(json) {
-				projects = json;
-				console.log("%i projects found", Object.keys(projects).length, projects);
-		
-				getUniqueTags();
-
-				display();
-
-				if(activeProject) {
-					var pId = activeProject.id
-					activeProject = projects[pId];
-					activeProject.id = pId;
-					document.title = pageTitle + " - " + activeProject.name;
-					title.textContent = activeProject.name;
-				}
-			}
-		);
+			XI.fire('projectsLoaded');
+		});
 	};
-	
-	
+
+	XI.listen(['projectsLoaded', 'DOMContentLoaded', 'orderProjects'], function(){
+		printProjects();
+
+		filterProjects();
+
+		if(activeProject) {
+            var pId = activeProject.id
+            activeProject = projects[pId];
+            activeProject.id = pId;
+            document.title = pageTitle + " - " + activeProject.name;
+            title.textContent = activeProject.name;
+        }
+	}, true);
+
+
+
 	var selectOrderBy = function(e) {
 		var option = e.target.selectedOptions[0];
 		setOrderBy(option.dataset.order, option.dataset.order_dir);
-		
+
 		Ajax.post("/scripts/save_user_settings.php", {"projects_order_by":projectOrder, "projects_order_dir":projectOrderDir}, function(e) {
 			console.log("User settings callback", e);
-		});		
+		});
 	};
-	
-	var loadListOrder = function(column, dir) {
-		var option = listProjectOrderBy.querySelector("option[data-order='"+column+"'][data-order_dir='"+dir+"']");
-		console.log("load order option", option);
-		if(option) {
-			option.selected="true";
-		}
-		setOrderBy(column, dir);	
-	};
-	
+
 	var setOrderBy = function(column, dir) {
+		if(projectOrder===column && projectOrderDir === dir) return;
+
 		projectOrder = column;
 		projectOrderDir = dir;
-		display();
+
+		var option = listProjectOrderBy.querySelector("option[data-order='"+projectOrder+"'][data-order_dir='"+projectOrderDir+"']");
+		if(option) option.selected="true";
+
+		XI.fire("orderProjects");
 	};
-	
 
 	var getUniqueTags = function() {
 		tags = [];
@@ -103,15 +103,14 @@ var ProjectList = (function() {
 	}
 
 
-	var display = function() {
-		if(!projects) return;
-	
+    var printProjects = function() {
+
 		var sel = projectList.querySelector(".selected");
-	
+
 		var projectIds = Object.keys(projects);
 		projectIds = sortProjects(projectIds, projectOrder);
-	
-		var projectsHTML=["<ul>"];
+
+        var projectsHTML=["<ul>"];
 		projectIds.forEach(function(id, i) {
 			var item = projects[id];
 			projectsHTML.push("<li data-project_id='"+id+"' class='project'>");
@@ -125,17 +124,18 @@ var ProjectList = (function() {
 		});
 		projectsHTML.push("</ul>");
 		projectList.innerHTML = projectsHTML.join("");
-		
+
 		if(sel) {
 			var id = sel.dataset.project_id;
 			projectList.querySelector("li[data-project_id="+id+"]").classList.add("selected");
 		}
-		
-		updateTagList();
-		filterProjects();
-	};
 
-	
+		lastSearchString="";
+
+        updateTagList();
+    };
+
+
 	var clickHandler = function(e) {
 		var target = e.target;
 		var action;
@@ -178,7 +178,7 @@ var ProjectList = (function() {
 			break;
 
 			case "rename":
-			XioPop.prompt("Rename project", "Enter a new name for the project", projects[projectId].name, function(newName) {		
+			XioPop.prompt("Rename project", "Enter a new name for the project", projects[projectId].name, function(newName) {
 				if(newName) {
 					var formData = new FormData();
 					formData.append("new_name", newName);
@@ -228,7 +228,7 @@ var ProjectList = (function() {
 		for(var i=0; i<selected.length; i++) {
 			selected[i].classList.remove("selected");
 		}
-	}
+	};
 
 	var keyDown = function(e) {
 		if(e.which === KEY_ENTER) {
@@ -248,6 +248,8 @@ var ProjectList = (function() {
 
 
 	function filterProjects(e) {
+		if(!projects) return;
+
 		var searchString = txtProjectFilter.value.toLowerCase();
 		if(searchString===lastSearchString) return;
 		lastSearchString=searchString;
@@ -271,12 +273,12 @@ var ProjectList = (function() {
 			if(!found) selectNextVisible();
 		}
 	}
-	
+
 	function sortProjects(projectIds) {
 		projectIds.sort(function(id1,id2) {
 			var p1 = projects[id1];
 			var p2 = projects[id2];
-			
+
 			switch(projectOrder) {
 				case "name":
 				var n1 = p1.name.toLowerCase();
@@ -284,12 +286,12 @@ var ProjectList = (function() {
 				if (n1 < n2) return -1;
 				if (n1 > n2) return 1;
 				return 0;
-				
+
 				case "created":
 				var c1 = p1.created || 0;
 				var c2 = p2.created || 0;
 				return c2-c1;
-				
+
 				case "opened":
 				var c1 = p1.last_opened || 0;
 				var c2 = p2.last_opened || 0;
@@ -323,33 +325,33 @@ var ProjectList = (function() {
 		}
 		return false;
 	};
-	
-	
+
+
 	var dropHandler = function(e) {
 		switch(e.type) {
-		
+
 			case "dragover":
 			projectList.classList.add("dropzone");
 			e.preventDefault();
 			break;
-			
+
 			case "dragleave":
 			projectList.classList.remove("dropzone");
 			break;
-			
+
 			case "drop":
 			e.preventDefault();
 			projectList.classList.remove("dropzone");
 			var filesToUpload = e.target.files || e.dataTransfer.files;
 			console.log("upload files:", filesToUpload);
-			
+
 			break;
 		}
-		
+
 	};
 
 	var addNewProject = function() {
-		XioPop.prompt("Enter the projects name", "", "", function(projectName) {
+		XioPop.prompt("Enter the project's name", "", "", function(projectName) {
 			if(projectName) {
 				var xhr = new XMLHttpRequest();
 				xhr.open("get", "/scripts/new_project.php?projectName="+projectName, true);
@@ -377,10 +379,6 @@ var ProjectList = (function() {
 		projectList.innerHTML = "";
 	};
 
-	var isLoaded = function() {
-		return projects!==null;
-	};
-	
 	var updateLastOpened = function(projectId) {
 		Ajax.post2JSON("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, function(json) {
 			if(json.status===STATUS_OK) {
@@ -395,12 +393,10 @@ var ProjectList = (function() {
 
 
 	return {
-		isLoaded: isLoaded,
 		clear: clear,
+		setOrderBy: setOrderBy,
 		getProject: getProject,
 		loadProjects: loadProjects,
-		loadListOrder: loadListOrder,
-		display: display,
 		updateLastOpened: updateLastOpened
 	};
 })();

@@ -199,7 +199,7 @@ ul.tags li {
 	background-color: #E2CFA7;
 }
 .tabBar>li.loading span.filename {
-	font-style: italic;	
+	font-style: italic;
 	color: #888;
 }
 .tabBar>li.changed span.filename {
@@ -355,12 +355,22 @@ body.authorized #login {
 	background-color: #444;
 	color: #bada55;
 }
+#userMenu li .icon {
+	width: 16px;
+	height: 16px;
+	fill: #888;
+	margin-right: 0.5em;
+	vertical-align: text-bottom;
+}
+#userMenu li:hover .icon {
+	fill: #bada55;
+}
 
 /*************************** Live preview *****************************/
 #preview {
 	flex: 1;
 	padding: 0.5em;
-	
+
 }
 
 #previewFrame {
