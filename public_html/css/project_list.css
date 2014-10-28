@@ -1,12 +1,32 @@
-#projectFilter {
-	width: 300px;
-	padding: 0.5em;
+#projectChooser {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
 	background-color: #eee;
+}
+#projectChooser.hidden {
+	display: none;
+}
+
+#projectChooser .button {
+	width:32px;
+	height:32px;
+	border:0 none;
+	cursor:pointer;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	background-position:center center;
+}
+
+
+
+#projectFilter {
+	padding: 0.5em;
 }
 
 #txtProjectFilter {
-	font-weight:bold;
-	color:#444;
+	font-weight: bold;
+	color: #444;
 	margin: 0;
 }
 
@@ -26,10 +46,10 @@
 
 #projectList.dropzone {
 	background-color: rgba(186, 218, 85, 0.5);
-	
+
 }
 
-#projectList ul {
+#projectList>ul {
 	margin: 0;
 	padding: 0;
 	display: flex;
@@ -37,14 +57,15 @@
 }
 
 #projectList .project {
-	cursor: pointer;
-	border: 1px dotted #ddd;
-	margin: 0.5em;
 	width: 150px;
 	height: 100px;
+	margin: 0.3em;
+	padding: 0.8em 1em;
+	cursor: pointer;
+	background-color: white;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 	display: flex;
 	flex-direction: column;
-	padding: 0.5em;
 }
 #projectList .hidden {
 	display: none;
@@ -74,41 +95,24 @@
 
 #projectList .functions {
 	display: none;
+	padding: 0;
 	text-align: right;
-	
+}
+#projectList .functions li {
+	display: inline-block;
 }
 
-#projectList .functions a {
-	color: #aaa;
-	text-decoration: none;
-	padding-left: 0.5em;
-	
+#projectList .functions li .icon {
+	width: 16px;
+	height: 16px;
+	fill: #aaa;
+	pointer-events: none;
+}
+#projectList .functions li:hover .icon {
+	fill: #000;
 }
 #projectList .selected .functions {
 	display: inline;
 }
 
 
-#projectList a:hover {
-	color:#000;
-}
-
-
-#projectChooser {
-	flex: 1;
-	display: flex;
-	flex-direction: row;
-}
-#projectChooser.hidden {
-	display: none;
-}
-
-#projectChooser .button {
-	width:32px;
-	height:32px;
-	border:0 none;
-	cursor:pointer;
-	background-color:transparent;
-	background-repeat:no-repeat;
-	background-position:center center;
-}

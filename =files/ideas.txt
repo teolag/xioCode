@@ -1,16 +1,17 @@
 
+PROJEKTHANTERING
 
+* projects skapas i databasen och läggs in i en "gömd" projekts-mapp placerad enligt config.json
 
+* projektet får ett project_id som också blir mappnamnet? konflikter?
+  vore skönt om projekt var helt fristående och kunde flyttas mellan installationer
 
+* läggs en ny mapp in i mappen hanteras detta av admin
 
+* projektconfig ligger kvar i en xiocode.properties fil
 
-projects
- L--Project
- 	 L--files
-	 |	 |--File
-	 |	 |--File
-	 |	 L--File
-	 |--settings
-	 L--layout
-			
-		
+* projekttodos ligger kvar i en xiocode.todo fil
+
+* projeckt ska kunna vara privata och publika
+  hur ska man undvika massa redirects?
+

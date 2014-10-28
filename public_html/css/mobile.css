@@ -1,0 +1,37 @@
+@media (max-width: 480px) {
+
+	#header h1 span {
+		display: none;
+	}
+	#header h1 .tiny {
+		display: inline;
+		letter-spacing: -7px;
+	}
+
+
+	#projectList>ul {
+		flex-wrap: nowrap;
+		flex-direction: column;
+	}
+
+	#projectList li.project {
+		width: auto;
+		height: auto;
+		margin: 0 0 0.5em 0;
+	}
+
+	#projectList ul.functions {
+		display: inline;
+	}
+
+
+
+	#projectArea .pane {
+		display: none;
+	}
+	#projectArea #todoArea {
+		display: block;
+		width: auto;
+	}
+
+}

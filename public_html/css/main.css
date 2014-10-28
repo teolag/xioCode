@@ -43,10 +43,13 @@ h1 {
 	font-size: 1.3em;
 }
 h1 .first {
-	color: #E79D00;
+	color: #999;
 }
 h1 .second {
-	color: #999;
+	color: #E79D00;
+}
+h1 .tiny {
+	display: none;
 }
 
 #header {
@@ -322,12 +325,22 @@ body.authorized #login {
 	color: #bada55;
 	background-color: #666;
 }
-#userMenu>div {
+#userMenu .button {
 	cursor: default;
 	background-color: #999;
 	padding: 0.2em 0.5em;
 	color: #333;
 }
+#userMenu .button .icon {
+	width: 17px;
+	height: 17px;
+	vertical-align: bottom;
+	fill: #333;
+}
+#userMenu:hover .button .icon {
+	fill: #bada55;
+}
+
 #userMenu>div:before{
 	padding-right: 0.5em;
 }
@@ -427,9 +440,7 @@ ul.selectableList li:hover {
 
 }
 
-
 /**********************************************************************/
-
 
 
 .door {

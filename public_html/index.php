@@ -16,13 +16,16 @@ if(Gatekeeper::hasAccess()) {
 		<title><?php echo $pageTitle; ?></title>
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
-		<link rel="shortcut icon" href="/images/favicon.ico" />
+		<link rel="shortcut icon" href="/favicon.ico" />
 		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 	</head>
 	<body<?php echo $loginState ?>>
 		<div id="header">
-			<h1><span class="first">xio</span><span class="second">Code</span></h1>
+			<h1>
+				<span class="first">xio</span><span class="second">Code</span>
+				<span class="first tiny">X</span><span class="second tiny">C</span>
+			</h1>
 
 			<span id="pageTitle"></span>
 
@@ -33,7 +36,10 @@ if(Gatekeeper::hasAccess()) {
 			</ul>
 
 			<div id="userMenu">
-				<div class="icon-user" id="username"></div>
+				<div class="button">
+					<svg class="icon user"><use xlink:href="/icons.svg#icon-user" /></svg>
+					<span id="username"></span>
+				</div>
 				<ul>
 					<li data-action="exportAll"><svg class="icon export"><use xlink:href="/icons.svg#icon-export" /></svg>Export all</li>
 					<li data-action="changePassword"><svg class="icon key"><use xlink:href="/icons.svg#icon-key" /></svg>Change password</li>
@@ -43,7 +49,6 @@ if(Gatekeeper::hasAccess()) {
 		</div>
 
 		<div id="projectChooser" class="hidden">
-			<div id="projectList"></div>
 			<div id="projectFilter">
 				Order by:
 				<select id="listProjectOrderBy" class="orders">
@@ -58,6 +63,7 @@ if(Gatekeeper::hasAccess()) {
 				<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
 				<ul id="listProjectTags" class="tags"></ul>
 			</div>
+			<div id="projectList"></div>
 		</div>
 
 

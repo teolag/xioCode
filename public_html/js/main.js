@@ -163,6 +163,7 @@ function fileToolbarHandler(e) {
 /***************** USER MENU **********************************************************************/
 
 function userMenuHandler(e) {
+	console.log("click", e);
 	if(e.button!==0) return false;
 
 	var target = e.target;
@@ -171,17 +172,17 @@ function userMenuHandler(e) {
 		target = target.parentElement;
 	}
 
-	switch(target.id) {
-		case "btnLogout":
+	switch(target.dataset.action) {
+		case "logout":
 		GateKeeper.logout();
 		break;
 
-		case "btnExportAllZip":
+		case "exportAllZip":
 		var d = new Date();
 		window.location="/scripts/export_zip.php?path=" + "&filename=Projects_"+d.toISOString().substring(0,10)+'.zip';
 		break;
 
-		case "btnChangePassword":
+		case "changePassword":
 		XioPop.prompt("Change password", "Enter your new password", "", function(newPass) {
 			if(newPass) {
 				var formData = new FormData();

@@ -110,20 +110,24 @@ var ProjectList = (function() {
 		var projectIds = Object.keys(projects);
 		projectIds = sortProjects(projectIds, projectOrder);
 
-        var projectsHTML=["<ul>"];
+
+        var ul = document.createElement("ul");
 		projectIds.forEach(function(id, i) {
 			var item = projects[id];
-			projectsHTML.push("<li data-project_id='"+id+"' class='project'>");
-			projectsHTML.push("<div class='name'>"+item.name+"</div>");
-			projectsHTML.push("<div class='description'>"+ (item.description||"") +"</div>");
-			projectsHTML.push("<div class='functions'>");
-			projectsHTML.push("<a href='#' data-action='config' class='icon icon-cog'></a>");
-			projectsHTML.push("<a href='#' data-action='preview' class='icon icon-preview'></a>");
-			projectsHTML.push("</div>");
-			projectsHTML.push("</li>");
+
+			var tpl = document.getElementById("tplProjectListItem").content;
+			var li = tpl.querySelector("li");
+			li.dataset.project_id = id;
+			var name = tpl.querySelector(".name");
+			name.textContent = item.name;
+			var description = tpl.querySelector(".description");
+			description.textContent = item.description||"";
+			var project = document.importNode(tpl, true);
+			ul.appendChild(project);
 		});
-		projectsHTML.push("</ul>");
-		projectList.innerHTML = projectsHTML.join("");
+		projectList.innerHTML="";
+		projectList.appendChild(ul);
+
 
 		if(sel) {
 			var id = sel.dataset.project_id;
@@ -140,7 +144,7 @@ var ProjectList = (function() {
 		var target = e.target;
 		var action;
 
-		if(target.nodeName==="A") {
+		if(target.nodeName==="LI") {
 			action = target.dataset.action;
 			console.log("Do", action);
 			e.preventDefault();
@@ -203,7 +207,7 @@ var ProjectList = (function() {
 			ProjectConfig.open(projectId);
 			break;
 
-			case "preview":
+			case "run":
 			previewProject(projectId);
 			break;
 
@@ -307,14 +311,14 @@ var ProjectList = (function() {
 	var selectNextVisible = function(rev){
 		var sel = projectList.querySelector(".selected");
 		if(sel) {
-			var sib = rev? sel.previousSibling : sel.nextSibling;
+			var sib = rev? sel.previousElementSibling : sel.nextElementSibling;
 			while(sib !== null) {
 				if(!sib.classList.contains("hidden")) {
 					deselectAll();
 					sib.classList.add("selected");
 					return true;
 				}
-				sib = rev? sib.previousSibling : sib.nextSibling;
+				sib = rev? sib.previousElementSibling : sib.nextElementSibling;
 			}
 		} else {
 			//Select first project
