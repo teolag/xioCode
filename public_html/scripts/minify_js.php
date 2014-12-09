@@ -5,6 +5,7 @@ $files = array();
 
 
 $files[] = "../codemirror/lib/codemirror.js";
+$files[] = "../codemirror/mode/meta.js";
 $files[] = "../codemirror/mode/xml/xml.js";
 $files[] = "../codemirror/mode/javascript/javascript.js";
 $files[] = "../codemirror/mode/css/css.js";
@@ -52,14 +53,14 @@ if(file_exists($minifile)) {
 	$js=file_get_contents($minifile);
 }
 else {
-	//File updated, save new version	
-	
-	
+	//File updated, save new version
+
+
 	$js = "";
 	foreach($files as $file) {
 		$js .= file_get_contents($file) . "\n\n";
 	}
-	
+
 	$before = strlen($js);
 	//$js = JShrink\Minifier::minify($js);
 	$after = strlen($js);
@@ -67,10 +68,10 @@ else {
 
 	//Add compression rate
 	$js = "/* " . date("Y-m-d H:i:s", $last_modified) . " | Removed ".($before-$after)." bytes | Compressed " . $precent . "% */\n" . $js;
-	
+
 	//Delete old versions
 	foreach (glob("js.mini*.js") as $oldfile) unlink($oldfile);
-	
+
 	//Save new file
 	file_put_contents($minifile, $js);
 }

@@ -4,7 +4,7 @@
 		this.activeFile = null;
 		this.activeProjectId = null;
 
-		var tpl = document.getElementById("tplCodeEditorHeader").content;	
+		var tpl = document.getElementById("tplCodeEditorHeader").content;
 		parentElement.appendChild(document.importNode(tpl, true));
 
 		this.tabList = parentElement.querySelector(".tabBar");
@@ -19,18 +19,17 @@
 		this.editor = new CodeMirror(parentElement, clone(codemirrorDefaults));
 		this.editor.on("dragover", editorDragOver.bind(this));
 		this.editor.on("drop", editorDrop.bind(this));
-		this.editor.on("change", editorChange.bind(this));	
-		this.editor.on("focus", editorFocus.bind(this));	
-		
+		this.editor.on("change", editorChange.bind(this));
+		this.editor.on("focus", editorFocus.bind(this));
 	};
-		
-	_.prototype = {	
-	
+
+	_.prototype = {
+
 		updateFileStatus: function(file) {
 			var onDisc = file.state!==File.STATE_UNSAVED;
 			var clean = file.doc.isClean() && onDisc;
 			var loading = file.state === File.STATE_LOADING || file.state === File.STATE_SAVING;
-			
+
 			if(clean) {
 				file.tab.classList.remove("changed");
 				FileList.setFileAsClean(file.uri);
@@ -38,7 +37,7 @@
 				file.tab.classList.add("changed");
 				FileList.setFileAsDirty(file.uri);
 			}
-			
+
 			if(file === this.activeFile) {
 				if(onDisc) {
 					this.btnPreview.classList.remove("disabled");
@@ -59,29 +58,31 @@
 				}
 			}
 		},
-		
-		
+
+
 		setProjectId: function(pId) {
 			if(this.activeProjectId === pId) return;
-			
 			this.activeProjectId = pId;
-			this.clear();
-			
+
 			/*
 			TODO!!! open file in only one codeEditor!!!
 			*/
-			
+
 			var projectFiles = File.getProjectFiles(pId);
-			for(var fileId in projectFiles) { 
-				if (projectFiles.hasOwnProperty(fileId)) {
-					var file = projectFiles[fileId];
-					this.tabBar.add(file);
+			if(Object.keys(projectFiles).length>0) {
+				for(var fileId in projectFiles) {
+					if (projectFiles.hasOwnProperty(fileId)) {
+						var file = projectFiles[fileId];
+						this.tabBar.add(file);
+					}
 				}
+			} else {
+				this.newFile();
 			}
-			
-			
+
+
 		},
-		
+
 
 		clear: function() {
 			var doc = CodeMirror.Doc("");
@@ -93,7 +94,7 @@
 		saveFile: function() {
 			var file = this.activeFile;
 			if(file.state===File.STATE_UNSAVED) {
-				this.saveFileAs(file, false);				
+				this.saveFileAs(file, false);
 			} else {
                 this.editor.execCommand("removeTrailingSpaces");
 				file.save(this.editor.getValue(), this.saveFileCallback.bind(this));
@@ -115,7 +116,7 @@
 			file.projectId = this.activeProjectId;
 			XioPop.prompt("Save file as...", "Enter the filename", file.uri, function(newUri) {
 				if(newUri) {
-                    me.editor.execCommand("removeTrailingSpaces");
+					me.editor.execCommand("removeTrailingSpaces");
 					file.saveAs(newUri, me.editor.getValue(), false, me.saveFileAsCallback.bind(me));
 					me.updateFileStatus(file);
 				}
@@ -129,6 +130,8 @@
 				FileList.loadProjectFiles();
 				this.updateFileStatus(file);
 				this.tabBar.rename(file);
+				this.calculateFileMode(file.uri);
+
 				break;
 
 				case STATUS_FILE_COLLISION:
@@ -143,6 +146,13 @@
 
 				default:
 				console.warn("handle callback", response);
+			}
+		},
+
+		calculateFileMode: function(uri) {
+			if(uri) {
+				var mime = getMimeByUri(response.uri);
+				this.editor.setOption("mode", mime);
 			}
 		},
 
@@ -162,23 +172,23 @@
 					if(answer) me.closeFile(file, true);
 					me.editor.focus();
 				});
-			}		
+			}
 		},
-		
+
 		newFile: function() {
 			var file = new File();
 			file.blank(this.activeProjectId);
-			
+
 			this.editor.swapDoc(file.doc);
-			
+
 			this.activeFile = file;
 			this.tabBar.add(file);
 			this.tabBar.select(file);
 			this.updateFileStatus(file);
 			this.editor.focus();
 		},
-		
-		
+
+
 		switchToFile: function(file) {
 			this.editor.swapDoc(file.doc);
 			this.activeFile = file;
@@ -186,7 +196,7 @@
 			this.updateFileStatus(file);
 			this.editor.focus();
 		},
-		
+
 		switchToNext: function() {
 			var tabs = this.tabList.children;
 			console.log("active tab", this.activeFile.tab);
@@ -212,7 +222,7 @@
 				this.switchToFile(file);
 			}
 		},
-		
+
 		openFile: function(uri) {
 			var file = File.getFileByUri(this.activeProjectId, uri);
 			if(file) {
@@ -228,7 +238,7 @@
 			this.updateFileStatus(file);
 			this.editor.focus();
 		},
-		
+
 
 		openFileCallback: function(file) {
 			if(this.activeFile === file) {
@@ -239,9 +249,9 @@
 			this.updateFileStatus(file);
 		}
 	};
-	
-	
-	
+
+
+
 	function toolbarClickHandler(e) {
 		var li=e.target;
 		if(li===this.toolList) return;
@@ -253,7 +263,7 @@
 			case "save":
 				this.saveFile();
 			break;
-			
+
 			case "preview":
 				var path = projectsURL + activeProject.id +"/"+ this.activeFile.uri;
 				console.log("Preview:", path);
@@ -269,7 +279,7 @@
 			console.warn("toolbar action not implemented:", action);
 		}
 	}
-	
+
 	function editorDragOver(cm, e) {
 		cm.setCursor(cm.coordsChar({left:e.x, top:e.y}));
 		cm.focus();

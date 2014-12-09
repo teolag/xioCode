@@ -12,6 +12,7 @@ body {
 	flex-direction: column;
 	color: #666;
 	background-color: #fff;
+	overflow: hidden;
 }
 
 body, textarea, input, button, select {

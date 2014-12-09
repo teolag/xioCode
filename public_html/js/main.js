@@ -403,7 +403,11 @@ function chooseProject() {
 
 
 
-
+function getMimeByUri(uri) {
+	var extension = /\.([^.]+)$/.exec(uri);
+	var info = CodeMirror.findModeByExtension(extension[1]);
+	return info? info.mime : "";
+}
 
 
 

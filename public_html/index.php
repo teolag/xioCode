@@ -50,7 +50,8 @@ if(Gatekeeper::hasAccess()) {
 
 		<div id="projectChooser" class="hidden">
 			<div id="projectFilter">
-				Order by:
+				<input type="search" placeholder="Filter projects" id="txtProjectFilter" />
+				<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
 				<select id="listProjectOrderBy" class="orders">
 					<option data-order="name" data-order_dir="asc">Name A-Z</option>
 					<option data-order="name" data-order_dir="desc">Name Z-A</option>
@@ -59,8 +60,6 @@ if(Gatekeeper::hasAccess()) {
 					<option data-order="opened" data-order_dir="asc">Last opened</option>
 					<option data-order="opened" data-order_dir="desc">Last opened reversed</option>
 				</select>
-				<input type="search" placeholder="Filter projects" id="txtProjectFilter" />
-				<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
 				<ul id="listProjectTags" class="tags"></ul>
 			</div>
 			<div id="projectList"></div>

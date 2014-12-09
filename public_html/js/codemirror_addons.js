@@ -148,9 +148,7 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 
 
 CodeMirror.commands.removeTrailingSpaces = function(editor) {
-	console.log("editor", editor);
-
-    editor.doc.eachLine(function(line) {
+	editor.doc.eachLine(function(line) {
         line.text = line.text.replace(/\s+$/,"");
    	});
     editor.refresh();

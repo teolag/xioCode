@@ -50,4 +50,5 @@
 }
 .cm-tab {
 	border-right: 1px solid #D0EBF1;
+	margin-left: -1px;
 }
