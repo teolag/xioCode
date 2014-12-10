@@ -63,13 +63,15 @@
 		setProjectId: function(pId) {
 			if(this.activeProjectId === pId) return;
 			this.activeProjectId = pId;
+			this.clear();
 
 			/*
 			TODO!!! open file in only one codeEditor!!!
 			*/
 
 			var projectFiles = File.getProjectFiles(pId);
-			if(Object.keys(projectFiles).length>0) {
+			var fileCount = Object.keys(projectFiles).length;
+			if(fileCount>0) {
 				for(var fileId in projectFiles) {
 					if (projectFiles.hasOwnProperty(fileId)) {
 						var file = projectFiles[fileId];
@@ -79,8 +81,6 @@
 			} else {
 				this.newFile();
 			}
-
-
 		},
 
 
@@ -93,7 +93,7 @@
 
 		saveFile: function() {
 			var file = this.activeFile;
-			if(file.state===File.STATE_UNSAVED) {
+			if(file.state===File.STATE_UNSAVED || file.state===File.STATE_EMPTY) {
 				this.saveFileAs(file, false);
 			} else {
                 this.editor.execCommand("removeTrailingSpaces");

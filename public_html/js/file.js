@@ -2,7 +2,7 @@
 	// PRIVATE VARIABLES
 	var idNumber = 0;
 	var files = {};
-	var unsavedName = "unsaved";
+	var unsavedName = "untitled";
 	var unsavedNumber = 1;
 
 	// CONSTRUCTOR
@@ -29,10 +29,9 @@
 	_.prototype = {
 
 		blank: function(projectId) {
-			this.filename = unsavedName + "_" + unsavedNumber++;
+			this.filename = unsavedName;// + "_" + unsavedNumber++;
 			this.projectId = projectId;
 			this.uri = this.filename;
-			this.state = _.STATE_UNSAVED;
 			this.doc = CodeMirror.Doc("", "");
 		},
 
@@ -41,7 +40,6 @@
 			this.uri = uri;
 			this.filename = getFilename(uri);
 			this.projectId = projectId;
-
 			this.doc = CodeMirror.Doc("", "");
 
 			var parameters = {action:"load", project_id:projectId,	uri:encodeURI(uri)};
@@ -165,8 +163,4 @@
 		if(callback) callback(this);
 	}
 
-
-
 }())
-
-var gg;
