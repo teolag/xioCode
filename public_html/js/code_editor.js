@@ -72,12 +72,15 @@
 			var projectFiles = File.getProjectFiles(pId);
 			var fileCount = Object.keys(projectFiles).length;
 			if(fileCount>0) {
+				var switchTo = null;
 				for(var fileId in projectFiles) {
 					if (projectFiles.hasOwnProperty(fileId)) {
 						var file = projectFiles[fileId];
 						this.tabBar.add(file);
+						if(!switchTo) switchTo = file;
 					}
 				}
+				if(switchTo) this.switchToFile(file);
 			} else {
 				this.newFile();
 			}

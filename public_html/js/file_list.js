@@ -66,8 +66,6 @@ var FileList = (function() {
 			var uri = item.path + item.filename;
 			files[uri] = item;
 
-
-
 			var changed = "";
             /*
 			if(xioDocs.hasOwnProperty(projectId) && xioDocs[projectId].hasOwnProperty(uri) && xioDocs[projectId][uri] && !xioDocs[projectId][uri].isClean()) {
@@ -136,14 +134,14 @@ var FileList = (function() {
 				if(file.type==='folder') {
 					toggleFolder(target);
 				} else if(e.type==="dblclick") {
-					console.log("dblclick");
 					if(['zip','tar','rar','psd','xsl','doc','xslx','docx'].indexOf(file.type)!=-1) {
 						console.log("Download file...");
 						window.location.href = "/scripts/file_handler.php?action=download&project_id="+projectId+"&uri="+uri;
 					} else if(['jpg','png','pdf','gif','bmp'].indexOf(file.type)!=-1) {
-						console.log("Open in new tab");
+						console.log("Open preview in new tab");
 						window.open(projectsURL + projectId + "/" + uri);
 					} else {
+						console.log("Open file", uri);
 						XioCode.getActiveCodeEditor().openFile(uri);
 					}
 				} else {

@@ -226,6 +226,8 @@ function fixLayout() {
 
 
 function openProject(id) {
+	console.log("Open project", id);
+
 	FileList.clear();
 	FileList.setProjectId(id);
 	ProjectList.updateLastOpened(id);
@@ -316,31 +318,30 @@ function renameFile(uri, newUri, overwrite) {
 }
 
 function renameCallback(json) {
-		switch(json.status) {
-			case STATUS_OK:
-			console.log(json.uri, "renamed to", json.newUri);
-			FileList.loadProjectFiles();
-			if(activeFile===json.uri) {
-				openFile(json.newUri);
-			}
-			if(xioDocs[activeProject.id].hasOwnProperty(json.uri)) {
-				xioDocs[activeProject.id][json.newUri] = xioDocs[activeProject.id][json.uri];
-				delete xioDocs[activeProject.id][json.uri];
-			}
-			break;
+	switch(json.status) {
+		case STATUS_OK:
 
-			case STATUS_FILE_COLLISION:
-			XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.newUri+"?", function(answer) {
-				if(answer) {
-					renameFile(json.uri, json.newUri, true);
-				}
-			});
-			break;
+		console.log("File '%s' renamed to '%s'", json.uri, json.newUri);
+		FileList.loadProjectFiles();
 
-			default:
-			console.warn("handle callback", json);
+		var openedFile = File.getFileByUri(activeProject.id, json.uri);
+		if(openedFile) {
+			openedFile.rename(json.newUri);
 		}
+		break;
+
+		case STATUS_FILE_COLLISION:
+		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.newUri+"?", function(answer) {
+			if(answer) {
+				renameFile(json.uri, json.newUri, true);
+			}
+		});
+		break;
+
+		default:
+		console.warn("handle callback", json);
 	}
+}
 
 
 function errorCallback(e) {
@@ -377,9 +378,7 @@ function readHash() {
 	if(match) {
 		var projectId = match[1];
 
-
 		if(!activeProject || (activeProject && projectId!=activeProject.id)) {
-			console.log("Open project \"" + projectId +"\"");
 			openProject(projectId);
 		}
 
@@ -398,13 +397,13 @@ function chooseProject() {
 	activeProject = null;
 	document.title = pageTitle;
 	txtProjectFilter.focus();
-	//ProjectList.display();
 }
 
 
 
 function getMimeByUri(uri) {
 	var extension = /\.([^.]+)$/.exec(uri);
+	if(!extension) return "";
 	var info = CodeMirror.findModeByExtension(extension[1]);
 	return info? info.mime : "";
 }

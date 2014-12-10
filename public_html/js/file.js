@@ -13,6 +13,7 @@
 		this.doc = null;
 		this.state = _.STATE_EMPTY;
 		this.filename = null;
+		this.tab = null; //Set by tabBar...
 		files[this.id] = this;
 	}
 
@@ -73,6 +74,12 @@
 			this.tab.parentElement.removeChild(this.tab);
 			this.doc.markClean();
 			delete files[this.id];
+		},
+
+		rename: function(newUri) {
+			this.uri = newUri;
+			this.filename = getFilename(newUri);
+			XioCode.getActiveCodeEditor().tabBar.rename(this);
 		}
 	};
 
@@ -150,8 +157,6 @@
 	};
 
 	var loadCallback = function(callback, response) {
-		console.log("loadCallback", response);
-
 		if(response.status !== STATUS_OK) {
 			console.warn("Error " + response.status + ": " + response.message);
 			return;
