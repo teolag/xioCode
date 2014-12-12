@@ -6,14 +6,15 @@
 	var unsavedNumber = 1;
 
 	// CONSTRUCTOR
-	var _ = self.File = function() {
+	var _ = self.File = function(codeEditor) {
 		this.id = idNumber++;
 		this.uri = null;
 		this.projectId = null;
 		this.doc = null;
 		this.state = _.STATE_EMPTY;
 		this.filename = null;
-		this.tab = null; //Set by tabBar...
+		this.codeEditor = codeEditor;
+		this.tab = null;
 		files[this.id] = this;
 	}
 
@@ -31,8 +32,8 @@
 
 		blank: function(projectId) {
 			this.filename = unsavedName;// + "_" + unsavedNumber++;
-			this.projectId = projectId;
 			this.uri = this.filename;
+			this.projectId = projectId;
 			this.doc = CodeMirror.Doc("", "");
 		},
 
@@ -70,16 +71,30 @@
 			Ajax.post2JSON("/scripts/file_handler.php", formData, saveAsCallback.bind(this, callback));
 		},
 
-		close: function() {
-			this.tab.parentElement.removeChild(this.tab);
-			this.doc.markClean();
-			delete files[this.id];
+		close: function(force) {
+			if(this.doc.isClean() || force) {
+				this.codeEditor.closeFile(this);
+				if(force) {
+					this.doc.markClean();
+					this.codeEditor.updateFileStatus(this);
+				}
+				delete files[this.id];
+			} else {
+				var me = this;
+				XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
+					if(answer) me.close(true);
+				});
+			}
 		},
 
 		rename: function(newUri) {
 			this.uri = newUri;
 			this.filename = getFilename(newUri);
-			XioCode.getActiveCodeEditor().tabBar.rename(this);
+			this.tab.updateFromFile();
+		},
+
+		setTab: function(tab) {
+			this.tab = tab;
 		}
 	};
 

@@ -31,24 +31,18 @@
 			var loading = file.state === File.STATE_LOADING || file.state === File.STATE_SAVING;
 
 			if(clean) {
-				file.tab.classList.remove("changed");
 				FileList.setFileAsClean(file.uri);
 			} else {
-				file.tab.classList.add("changed");
 				FileList.setFileAsDirty(file.uri);
 			}
+
+			file.tab.updateState();
 
 			if(file === this.activeFile) {
 				if(onDisc) {
 					this.btnPreview.classList.remove("disabled");
 				} else {
 					this.btnPreview.classList.add("disabled");
-				}
-
-				if(loading) {
-					file.tab.classList.add("loading");
-				} else {
-					file.tab.classList.remove("loading");
 				}
 
 				if(clean) {
@@ -159,43 +153,18 @@
 			}
 		},
 
-		closeFile: function(file, force) {
-			if(file.doc.isClean() || force) {
-				if(this.activeFile === file) {
-					console.log("close active file", file);
-					this.switchToNext();
-				} else {
-					console.log("close file", file);
-				}
-				file.close();
-				this.updateFileStatus(file);
-			} else {
-				var me = this;
-				XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
-					if(answer) me.closeFile(file, true);
-					me.editor.focus();
-				});
-			}
-		},
-
 		newFile: function() {
-			var file = new File();
+			var file = new File(this);
 			file.blank(this.activeProjectId);
-
-			this.editor.swapDoc(file.doc);
-
-			this.activeFile = file;
 			this.tabBar.add(file);
-			this.tabBar.select(file);
-			this.updateFileStatus(file);
-			this.editor.focus();
+			this.switchToFile(file);
 		},
 
 
 		switchToFile: function(file) {
 			this.editor.swapDoc(file.doc);
 			this.activeFile = file;
-			this.tabBar.select(file);
+			this.tabBar.select(file.tab);
 			this.updateFileStatus(file);
 			this.editor.focus();
 		},
@@ -228,18 +197,13 @@
 
 		openFile: function(uri) {
 			var file = File.getFileByUri(this.activeProjectId, uri);
-			if(file) {
-				this.switchToFile(file);
-			} else {
-				file = new File();
+			if(!file) {
+				file = new File(this);
 				file.load(this.activeProjectId, uri, this.openFileCallback.bind(this));
-				this.tabBar.add(file);
-				this.editor.swapDoc(file.doc);
 			}
-			this.activeFile = file;
-			this.tabBar.select(file);
-			this.updateFileStatus(file);
-			this.editor.focus();
+
+			this.tabBar.add(file);
+			this.switchToFile(file);
 		},
 
 
@@ -247,9 +211,19 @@
 			if(this.activeFile === file) {
 				var old = this.editor.swapDoc(file.doc);
 			}
-
-			this.tabBar.updateState(file);
 			this.updateFileStatus(file);
+		},
+
+
+		closeFile: function(file) {
+			if(this.activeFile === file) {
+				console.log("close active file", file);
+				this.switchToNext();
+			} else {
+				console.log("close file", file);
+			}
+			this.tabBar.remove(file.tab);
+			this.editor.focus();
 		}
 	};
 
