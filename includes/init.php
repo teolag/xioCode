@@ -38,27 +38,27 @@ $db = new DatabasePDO($config['database']['server'], $config['database']['userna
 function __autoload($className) {
 	switch($className) {
 		case "DatabasePDO":
-		$file = ROOT."classes/DatabasePDO/" . $className.".php";
+		$file = "/var/www/DatabasePDO/DatabasePDO.php";
 		break;
-		
+
 		case "PHPMailer":
-		$file = ROOT."classes/PHPMailer/class.phpmailer.php";
+		$file = "/var/www/PHPMailer/class.phpmailer.php";
 		break;
-		
+
 		default:
 		$file = ROOT."classes/" . $className.".php";
 	}
 
-	if(is_file($file)) require($file);	
+	if(is_file($file)) require($file);
 	else die("Class not found: " . $file);
 }
 
 
-function fixURI($name, $allLower=true) {  
+function fixURI($name, $allLower=true) {
 	$replace = array('&'=>' and ', '@'=>' at ', '/'=>' slash ');
-	
+
 	$name = str_replace(array_keys($replace), $replace, $name);
-	$name = preg_replace('/\s+/', '_', trim($name)); 
+	$name = preg_replace('/\s+/', '_', trim($name));
 	setlocale(LC_ALL, 'sv_SE.UTF-8');
 	$name = iconv('UTF-8', 'ASCII//TRANSLIT', $name);
 	$name = preg_replace("|[^0-9a-z-_]*|i", "", $name);
@@ -66,7 +66,7 @@ function fixURI($name, $allLower=true) {
 	return $name;
 }
 
-function rrmdir($dir) { 
+function rrmdir($dir) {
 	if(is_dir($dir)) {
 		$objects = scandir($dir);
 		foreach ($objects as $object) {
@@ -81,11 +81,11 @@ function rrmdir($dir) {
 					}
 				}
 			}
-		} 
+		}
 		reset($objects);
 		rmdir($dir);
 		return true;
 	}
-} 
+}
 
 ?>

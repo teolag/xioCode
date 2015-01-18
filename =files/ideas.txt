@@ -12,6 +12,6 @@ PROJEKTHANTERING
 
 * projekttodos ligger kvar i en xiocode.todo fil
 
-* projeckt ska kunna vara privata och publika
+* projekt ska kunna vara privata och publika
   hur ska man undvika massa redirects?
 
