@@ -322,7 +322,7 @@ var FileList = (function() {
 			if(newUri === fileDragged) {
 				console.log("drop to same place, abort");
 			} else {
-				Ajax.getJSON("/scripts/file_handler.php", {'action':'rename', 'project_id': projectId, 'uri': encodeURI(fileDragged), 'new_uri': encodeURI(newUri)},
+				Ajax.post2JSON("/scripts/file_handler.php", {'action':'rename', 'project_id': projectId, 'uri': fileDragged, 'new_uri': newUri},
 					function(e) {
 						FileList.loadProjectFiles();
 					}
@@ -404,7 +404,7 @@ var FileList = (function() {
 			}
 			XioPop.confirm(title, question, function(answer) {
 				if(answer) {
-					Ajax.getJSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':encodeURI(uri)}, function(json) {
+					Ajax.post2JSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':uri}, function(json) {
 						FileList.loadProjectFiles();
 
 						for(var i=0; i<XioCode.getPanes().length; i++) {

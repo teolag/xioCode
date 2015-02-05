@@ -277,7 +277,7 @@ function createNewFile(path) {
 				createNewFile();
 			});
 		} else {
-			Ajax.getJSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:escape(newFileName)}, fileCreationCallback);
+			Ajax.post2JSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:newFileName}, fileCreationCallback);
 		}
 	});
 }
@@ -294,7 +294,7 @@ function fileCreationCallback(json) {
 		case STATUS_FILE_COLLISION:
 		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
 			if(answer) {
-				Ajax.getJSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:escape(newFileName), overwrite:true}, fileCreationCallback);
+				Ajax.post2JSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:newFileName, overwrite:true}, fileCreationCallback);
 			}
 		});
 		break;
@@ -310,11 +310,11 @@ function renameFile(uri, newUri, overwrite) {
 	var parameters = {
 		'action':'rename',
 		'project_id':activeProject.id,
-		'uri':encodeURI(uri),
-		'new_uri':encodeURI(newUri)
+		'uri':uri,
+		'new_uri':newUri
 	};
 	if(overwrite===true) parameters['overwrite']=true;
-	Ajax.getJSON("/scripts/file_handler.php", parameters, renameCallback);
+	Ajax.post2JSON("/scripts/file_handler.php", parameters, renameCallback);
 }
 
 function renameCallback(json) {

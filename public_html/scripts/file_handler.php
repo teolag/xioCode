@@ -10,6 +10,7 @@ if(empty($_REQUEST['uri'])) die("uri must be specified");
 
 $projectId = $_REQUEST['project_id'];
 $path = PROJECT_PATH . $projectId . "/";
+
 $uri = urldecode($_REQUEST['uri']);
 
 $exists = is_file($path.$uri);
@@ -63,8 +64,8 @@ switch($_REQUEST['action']) {
 	}
 	break;
 
-	
-	
+
+
 	case "save";
 	$code = $_REQUEST['code'];
 	if($exists) {
@@ -73,7 +74,7 @@ switch($_REQUEST['action']) {
 			$response['message'] = "could not write to file";
 			break;
 		}
-	
+
 		if(file_put_contents($path.$uri, $code)===FALSE) {
 			$response['status'] = STATUS_FILE_COULD_NOT_UPDATE;
 			$response['message'] = "could not save to file";
@@ -86,12 +87,12 @@ switch($_REQUEST['action']) {
 		$response['message'] = "file does not exist";
 	}
 	break;
-	
-	
-	
-	
+
+
+
+
 	case "rename";
-	$newUri = urldecode($_GET['new_uri']);
+	$newUri = urldecode($_REQUEST['new_uri']);
 	$response['newUri'] = $newUri;
 	if(empty($newUri)) die("new_uri must be set");
 	if(!$overwrite && is_file($path.$newUri)) {
@@ -105,8 +106,8 @@ switch($_REQUEST['action']) {
 		$response['message'] = "could not rename file";
 	}
 	break;
-	
-	
+
+
 	case "load":
 	if($exists) {
 		$finfo = finfo_open(FILEINFO_MIME);
@@ -131,21 +132,21 @@ switch($_REQUEST['action']) {
 		$response['message'] = "file '" . $path.$uri ."' does not exist";
 	}
 	break;
-	
+
 	case "load_raw":
 	readfile($path.$uri);
 	exit();
 	break;
-	
+
 	case "download":
 	$filename = basename($uri);
 	header("Content-disposition: attachment; filename=".$filename);
 	readfile($path.$uri);
 	exit();
 	break;
-	
-		
-	case "delete";	
+
+
+	case "delete";
 	if(is_dir($path.$uri)) {
 		if(rrmdir($path.$uri)) {
 			$response['status'] = STATUS_OK;
@@ -167,8 +168,8 @@ switch($_REQUEST['action']) {
 		$response['message'] = "file or folder does not exist";
 	}
 	break;
-	
-	
+
+
 	default:
 	die("unknown action: " . $_REQUEST['action']);
 }
