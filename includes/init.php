@@ -38,11 +38,11 @@ $db = new DatabasePDO($config['database']['server'], $config['database']['userna
 function __autoload($className) {
 	switch($className) {
 		case "DatabasePDO":
-		$file = "/var/www/DatabasePDO/DatabasePDO.php";
+		$file = "/git/DatabasePDO/DatabasePDO.php";
 		break;
 
 		case "PHPMailer":
-		$file = "/var/www/PHPMailer/class.phpmailer.php";
+		$file = "/git/PHPMailer/class.phpmailer.php";
 		break;
 
 		default:

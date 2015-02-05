@@ -76,7 +76,10 @@
 				}
 				if(switchTo) this.switchToFile(file);
 			} else {
-				this.newFile();
+				console.log("Project has no files opened, HIDE!")
+				this.btnSave.classList.add("disabled");
+				this.btnPreview.classList.add("disabled");
+				this.editor.setOption("readOnly", true);
 			}
 		},
 
@@ -90,6 +93,7 @@
 
 		saveFile: function() {
 			var file = this.activeFile;
+			if(!file) return;
 			if(file.state===File.STATE_UNSAVED || file.state===File.STATE_EMPTY) {
 				this.saveFileAs(file, false);
 			} else {
@@ -172,37 +176,34 @@
 		switchToNext: function() {
 			var tabs = this.tabList.children;
 			console.log("active tab", this.activeFile.tab);
-			if(tabs.length===1) {
-				console.log("last file closed, open new");
-				this.newFile();
-			} else {
-				var switchToId = null;
-				for(var i=0; i<tabs.length; i++) {
-					var tab = tabs[i];
-					var fileId = parseInt(tab.dataset.id);
-					if(fileId===this.activeFile.id) {
-						if(switchToId===null) {
-							console.log("next", tabs[i+1], tabs[i]);
-							switchToId=parseInt(tabs[i+1].dataset.id);
-						}
-						break;
-					} else {
-						switchToId = fileId;
+			var switchToId = null;
+			for(var i=0; i<tabs.length; i++) {
+				var tab = tabs[i];
+				var fileId = parseInt(tab.dataset.id);
+				if(fileId===this.activeFile.id) {
+					if(switchToId===null) {
+						console.log("next", tabs[i+1], tabs[i]);
+						switchToId=parseInt(tabs[i+1].dataset.id);
 					}
+					break;
+				} else {
+					switchToId = fileId;
 				}
-				var file = File.getFileById(switchToId);
-				this.switchToFile(file);
 			}
+			var file = File.getFileById(switchToId);
+			this.switchToFile(file);
 		},
 
 		openFile: function(uri) {
 			var file = File.getFileByUri(this.activeProjectId, uri);
-			if(!file) {
+			if(file) {
+				this.editor.setOption("readOnly", false);
+			} else {
 				file = new File(this);
 				file.load(this.activeProjectId, uri, this.openFileCallback.bind(this));
+				this.tabBar.add(file);
 			}
 
-			this.tabBar.add(file);
 			this.switchToFile(file);
 		},
 
@@ -210,19 +211,30 @@
 		openFileCallback: function(file) {
 			if(this.activeFile === file) {
 				var old = this.editor.swapDoc(file.doc);
+				this.editor.setOption("readOnly", false);
 			}
 			this.updateFileStatus(file);
 		},
 
 
 		closeFile: function(file) {
+			this.tabBar.remove(file.tab);
+
 			if(this.activeFile === file) {
 				console.log("close active file", file);
-				this.switchToNext();
+
+				if(this.tabList.children.length===0) {
+					console.log("last file closed, HIDE!!!");
+					this.btnSave.classList.add("disabled");
+					this.btnPreview.classList.add("disabled");
+					this.clear();
+					this.editor.setOption("readOnly", true);
+				} else {
+					this.switchToNext();
+				}
 			} else {
 				console.log("close file", file);
 			}
-			this.tabBar.remove(file.tab);
 			this.editor.focus();
 		}
 	};

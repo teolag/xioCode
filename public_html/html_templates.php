@@ -19,7 +19,6 @@
 		</ul>
 
 		<ol class="tabBar"></ol>
-
 	</div>
 </template>
 
