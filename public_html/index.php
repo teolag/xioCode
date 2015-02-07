@@ -17,7 +17,7 @@ if(Gatekeeper::hasAccess()) {
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
 		<link rel="shortcut icon" href="/favicon.ico" />
-		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Roboto|Inconsolata' rel='stylesheet' type='text/css'>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 	</head>
 	<body<?php echo $loginState ?>>
@@ -84,8 +84,14 @@ if(Gatekeeper::hasAccess()) {
 			</div>
 
 			<div id="todoArea" class="pane">
-				<button type="button" id="btnAddFeature">New feature</button>
-				<button type="button" id="btnAddBug">New bug</button>
+				<div class="button" id="btnAddFeature">
+					<svg class="icon feature"><use xlink:href="/icons.svg#icon-feature" /></svg>
+					Add feature
+				</div>
+				<div class="button" id="btnAddBug">
+					<svg class="icon bug"><use xlink:href="/icons.svg#icon-bug" /></svg>
+					Add bug
+				</div>
 
 				<ol id="listTodos"></ol>
 				<ul id="listTodosDone"></ul>

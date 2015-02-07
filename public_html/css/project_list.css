@@ -86,7 +86,7 @@
 }
 
 #projectList .description {
-	color: #aaa;
+	color: #888;
 	font-size: 0.8em;
 	flex: 1;
 	overflow: hidden;
@@ -105,11 +105,11 @@
 #projectList .functions li .icon {
 	width: 16px;
 	height: 16px;
-	fill: #aaa;
+	fill: rgba(0,0,0,0.2);
 	pointer-events: none;
 }
 #projectList .functions li:hover .icon {
-	fill: #000;
+	fill: rgba(0,0,0,0.6);
 }
 #projectList .selected .functions {
 	display: inline;

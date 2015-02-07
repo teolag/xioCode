@@ -21,6 +21,7 @@ var oldHash;
 var username;
 var h1, fileToolbar, projectToolbar, userMenu, fileBrowser;
 
+
 document.addEventListener("DOMContentLoaded", function(e) {
 
 	XI.fire("DOMContentLoaded");
@@ -38,8 +39,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	window.addEventListener("resize", fixLayout, false);
 	window.addEventListener("hashchange", readHash, false);
 	window.addEventListener("beforeunload", warnBeforeUnload);
-
-
 
 	document.addEventListener("visibilitychange", function(e) {
 		var date = new Date(e.timeStamp);
@@ -67,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	}
 }, false);
 
+
 function loginCallback(user) {
 	document.body.classList.add("authorized");
 	username.textContent = user.username;
@@ -75,6 +75,7 @@ function loginCallback(user) {
 	ProjectList.loadProjects();
 	readHash();
 }
+
 
 function logoutCallback() {
 	ProjectList.clear();
@@ -94,6 +95,7 @@ function logoutCallback() {
 	xioDocs = {};
 }
 
+
 function warnBeforeUnload(e) {
 	var n = File.countDirtyFiles();
 	console.log("dirty check", n);
@@ -106,22 +108,19 @@ function warnBeforeUnload(e) {
 
 
 
-
-
 /***************** TOOLBAR **********************************************************************/
 
 function projectToolbarHandler(e) {
-	if(e.button!==0) return false;
+	if(e.button!==0) return;
+	if(projectToolbar.classList.contains("disabled")) return;
+	if(!activeProject) return;
 
 	var button = e.target;
-	if(button.classList.contains("disabled")) return;
-
 	switch(button.dataset.action) {
 
 		case "run":
 		previewProject(activeProject.id);
 		break;
-
 
 		case "config":
 		ProjectConfig.open(activeProject.id);
@@ -136,6 +135,7 @@ function projectToolbarHandler(e) {
 	}
 
 }
+
 
 function fileToolbarHandler(e) {
 	if(e.button!==0) return false;
@@ -206,12 +206,6 @@ function userMenuHandler(e) {
 }
 
 
-
-
-
-
-
-
 function fixLayout() {
 	for(var i=0; i<XioCode.getPanes().length; i++) {
 		var pane = XioCode.getPanes()[i];
@@ -222,7 +216,6 @@ function fixLayout() {
 	}
 	Preview.fixLayout();
 }
-
 
 
 function openProject(id) {
@@ -251,10 +244,13 @@ function openProject(id) {
 		}
 	}
 
+	projectToolbar.classList.remove("disabled");
+
 	document.getElementById("projectChooser").classList.add("hidden");
 	document.getElementById("projectArea").classList.remove("hidden");
 	fixLayout();
 }
+
 
 function previewProject(id) {
 	var url = ProjectList.getProject(id).run_url;
@@ -281,6 +277,7 @@ function createNewFile(path) {
 		}
 	});
 }
+
 function fileCreationCallback(json) {
 	if(!json) return false;
 
@@ -303,7 +300,6 @@ function fileCreationCallback(json) {
 		console.warn("handle callback", json);
 	}
 }
-
 
 
 function renameFile(uri, newUri, overwrite) {
@@ -354,10 +350,6 @@ function errorCallback(e) {
 }
 
 
-
-
-
-
 function setHash(newHash) {
 	if(!newHash) {
 		history.pushState({foo: "bar"}, "kokooo", "/");
@@ -368,6 +360,7 @@ function setHash(newHash) {
 		oldHash = newHash;
 	}
 }
+
 
 function readHash() {
 	var hash = window.location.hash;
@@ -389,7 +382,9 @@ function readHash() {
 	oldHash=hash;
 }
 
+
 function chooseProject() {
+	projectToolbar.classList.add("disabled");
 	document.getElementById("projectChooser").classList.remove("hidden");
 	document.getElementById("projectArea").classList.add("hidden");
 
@@ -400,17 +395,12 @@ function chooseProject() {
 }
 
 
-
 function getMimeByUri(uri) {
 	var extension = /\.([^.]+)$/.exec(uri);
 	if(!extension) return "";
 	var info = CodeMirror.findModeByExtension(extension[1]);
 	return info? info.mime : "";
 }
-
-
-
-
 
 
 function findFunctions() {
@@ -459,6 +449,7 @@ function toHumanReadableFileSize(bytes, si) {
     return val.toFixed(1) + " " + pre + "B";
 }
 
+
 function toHumanReadableDateTime(ts) {
 	if(!ts) return "";
 	var ts = new Date(ts);
@@ -478,9 +469,11 @@ function toHumanReadableDateTime(ts) {
 	return date + " " + time;
 }
 
+
 function isNumeric(n) {
 	return !isNaN(parseFloat(n)) && isFinite(n);
 }
+
 
 function clone(obj) {
     if (null == obj || "object" != typeof obj) return obj;

@@ -177,6 +177,8 @@ var ProjectList = (function() {
 						}
 					};
 					xhr.send(formData);
+				} else {
+					console.debug("Delete aborted");
 				}
 			});
 			break;

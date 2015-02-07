@@ -3,6 +3,7 @@
 		<div class="name"></div>
 		<div class="description"></div>
 		<ul class="functions">
+			<li data-action="delete"><svg class="icon delete"><use xlink:href="/icons.svg#icon-delete" /></svg></li>
 			<li data-action="config"><svg class="icon config"><use xlink:href="/icons.svg#icon-config" /></svg></li>
 			<li data-action="run"><svg class="icon run"><use xlink:href="/icons.svg#icon-run" /></svg></li>
 		</ul>
@@ -25,8 +26,8 @@
 
 <template id="tplCodeEditorTab">
 	<li>
-		<span class="filename">main.js</span>
-		<span class="icon-close close"></span>
+		<div class="filename">main.js</div>
+		<svg class="icon-close close"><use xlink:href="/icons.svg#icon-close" /></svg>
 	</li>
 </template>
 

@@ -3,9 +3,38 @@
 	overflow: auto;
 }
 
+#todoArea .button {
+	display: block;
+	background-color: #eee;
+	border: 0;
+	padding: 0.5em;
+	border-radius: 0.5em;
+	margin-bottom: 0.3em;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+	cursor: pointer;
+}
+#todoArea .button:hover {
+	background-color: #666;
+	color: #ddd;
+}
+
+#todoArea .button svg {
+	width: 17px;
+	height: 17px;
+	vertical-align: text-top;
+	fill: rgba(0,0,0,0.6);
+}
+#todoArea .button:hover svg {
+	fill: #bada55;
+}
+
 #listTodos, #listTodosDone{
-	margin: 0;
+	margin: 1em 0 0 0;
 	padding: 0;
+}
+
+#listTodos li, #listTodosDone li {
+	cursor: pointer;
 }
 
 #listTodos li {
@@ -21,10 +50,10 @@
 }
 
 #listTodos li.feature {
-	background-color: #E2ECBF;
+	background-color: rgba(186, 218, 85, 0.2);
 }
 #listTodos li.bug {
-	background-color: #F8E3CF;
+	background-color: rgba(231, 157, 0, 0.2);
 }
 
 #listTodos.reordered li.feature {

@@ -16,7 +16,7 @@ body {
 }
 
 body, textarea, input, button, select {
-	font-family: arial, sans-serif;
+	font-family: 'Roboto', sans-serif;
 	font-size: 15px;
 }
 
@@ -79,6 +79,10 @@ h1 .tiny {
 #projectToolbar {
 	margin-right: 1em;
 }
+#projectToolbar.disabled .icon {
+	fill: rgba(255,255,255,0.2);
+	cursor: default;
+}
 
 
 
@@ -128,7 +132,6 @@ ul.tags li {
 .codeEditor .header {
 	display: flex;
 	flex-direction: row;
-	align-items: flex-end;
 }
 
 
@@ -144,8 +147,10 @@ ul.tags li {
 	display: inline-block;
 	cursor: pointer;
 }
-.toolbar li.disabled {
+.toolbar li.disabled,
+.toolbar.disabled li {
 	pointer-events: none;
+	cursor: default;
 }
 .toolbar li.disabled .icon {
 	fill: #ddd;
@@ -190,8 +195,8 @@ ul.tags li {
 }
 .tabBar>li {
 	display: flex;
-	align-items: baseline;
-	padding: 2px 7px 3px 10px;
+	align-items: center;
+	padding: 0.1em 0.8em 0 0.8em;
 	background-color: #d5ddd5;
 	margin-right: 4px;
 	border-radius: 5px 5px 0 0;
@@ -204,26 +209,28 @@ ul.tags li {
 	cursor: default;
 	background-color: #E2CFA7;
 }
-.tabBar>li span.filename {
+.tabBar>li .filename {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
 	flex: 1;
 }
-.tabBar>li.loading span.filename {
+.tabBar>li.loading .filename {
 	font-style: italic;
 	color: #888;
 }
-.tabBar>li.changed span.filename {
+.tabBar>li.changed .filename {
 	text-decoration: underline;
 }
-.tabBar>li span.close {
-	color: rgba(0,0,0,0.3);
-	margin: 0.3em 0 0 0.5em;
-	display: inline-block;
+.tabBar>li .close {
+	fill: rgba(0,0,0,0.3);
+	width: 10px;
+	height: 10px;
+	margin-left: 0.8em;
+	display: block;
 }
-.tabBar>li span.close:hover {
-	color: rgba(0,0,0,0.8);
+.tabBar>li .close:hover {
+	fill: rgba(0,0,0,0.8);
 	cursor: pointer;
 }
 
@@ -246,6 +253,8 @@ ul.tags li {
 	}
 }
 
+
+/*
 .toolbar {
 	padding: 0;
 	margin: 0;
@@ -267,10 +276,11 @@ ul.tags li {
 	color: #444;
 	border-color: #888;
 }
-.toolbar span.disabled:hover {
+.toolbar.disabled:hover {
 	background-color: #ECECEC;
 	border-color: #ccc;
 }
+*/
 
 
 .hidden {
@@ -340,10 +350,13 @@ body.authorized #login {
 	padding: 0.2em 0.5em;
 	color: #333;
 }
+#userMenu .button span {
+	vertical-align: middle;
+}
 #userMenu .button .icon {
-	width: 17px;
-	height: 17px;
-	vertical-align: bottom;
+	width: 14px;
+	height: 14px;
+	vertical-align: middle;
 	fill: #333;
 }
 #userMenu:hover .button .icon {
@@ -361,6 +374,7 @@ body.authorized #login {
 	margin: 0;
 	padding: 0;
 	background-color: #333;
+	font-size: 0.8em;
 	position: absolute;
 	z-index: 8;
 	right: 0;

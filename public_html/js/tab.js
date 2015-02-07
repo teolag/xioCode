@@ -75,7 +75,8 @@
 		},
 
 		clickHandler: function(e) {
-			if(e.target.classList.contains("close") || e.which===2) {
+			console.log("tabClick", e);
+			if(e.target.nodeName==="svg" || e.target.nodeName==="use" || e.which===2) {
 				this.file.close();
 				return;
 			}
