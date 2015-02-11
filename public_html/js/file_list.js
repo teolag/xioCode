@@ -56,8 +56,8 @@ var FileList = (function() {
 		var htm = [];
 		htm.push("<ul>");
 		for(var i=0; i<arr.length; i++) {
-			var title = "";
 			var item = arr[i];
+			var title = item.filename + "\n";
 			var imagePreview="";
 			if(item.type==="jpg" || item.type==="jpeg" || item.type==="gif" || item.type==="png" || item.type==="bmp" || item.type==="tif" || item.type==="tiff") {
 				imagePreview=" imagePreview";
@@ -76,7 +76,13 @@ var FileList = (function() {
 			var hidden  = (item.filename==='xiocode.properties' || item.filename==='xiocode.todo')? ' hidden' : '';
 			title += item.size? toHumanReadableFileSize(item.size,true) : (item.leafs? item.leafs.length + " items": "empty");
 			htm.push("<li draggable='true' class='"+imagePreview + changed + hidden+"' data-uri='" + uri + "' data-type='"+item.type+"' data-mime='"+item.mime+"' title='"+title+"'>");
-			htm.push("<span class='icon-"+item.icon+"'>"+item.filename+"</span>");
+			htm.push("<div class='file'>");
+			htm.push("<svg class='icon " + item.icon + "'><use xlink:href='/icons.svg#icon-" + item.icon + "' /></svg>");
+			if(item.leafs) {
+				htm.push("<svg class='icon " + item.icon + " open'><use xlink:href='/icons.svg#icon-" + item.icon + "-open' /></svg>");
+			}
+			htm.push("<div class='filename'>" + item.filename + "</div></div>");
+			//htm.push("<span class='icon-"+item.icon+"'>"+item.filename+"</span>");
 			if(item.leafs) {
 				htm.push(printFolder(item.leafs, item.path));
 			}
@@ -165,8 +171,8 @@ var FileList = (function() {
 
 
 	function toggleFolder(li) {
-		var folderIcon = li.querySelector("span");
-		if(folderIcon.classList.contains("icon-folder-open")) {
+		var folderIcon = li.querySelector("svg");
+		if(li.classList.contains("open")) {
 			closeFolder(li);
 		} else {
 			openFolder(li);
@@ -178,11 +184,9 @@ var FileList = (function() {
 		if (index === -1) {
 			openedFolders.push(uri);
 		}
+		li.classList.add("open");
 
-		var folderIcon = li.querySelector("span");
 		var folderList = li.querySelector("ul");
-		folderIcon.classList.add("icon-folder-open");
-		folderIcon.classList.remove("icon-folder");
 		folderList.style.display="block";
 	}
 	function closeFolder(li) {
@@ -191,11 +195,9 @@ var FileList = (function() {
 		if (index > -1) {
 			openedFolders.splice(index, 1);
 		}
+		li.classList.remove("open");
 
-		var folderIcon = li.querySelector("span");
 		var folderList = li.querySelector("ul");
-		folderIcon.classList.remove("icon-folder-open");
-		folderIcon.classList.add("icon-folder");
 		folderList.style.display="none";
 	}
 

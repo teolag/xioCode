@@ -56,7 +56,7 @@ if(Gatekeeper::hasAccess()) {
 		<div id="projectChooser" class="hidden">
 			<div id="projectFilter">
 				<input type="search" placeholder="Filter projects" id="txtProjectFilter" />
-				<span id="btnNewProject" class="icon-plus icon-small" title="Create a new project"></span>
+				<svg id="btnNewProject" class="icon add" title="Create a new project"><use xlink:href="/icons.svg#icon-add" /></svg>
 				<select id="listProjectOrderBy" class="orders">
 					<option data-order="name" data-order_dir="asc">Name A-Z</option>
 					<option data-order="name" data-order_dir="desc">Name Z-A</option>

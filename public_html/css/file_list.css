@@ -3,10 +3,8 @@
 	border:1px solid #ccc;
 	margin: 0;
 	overflow: auto;
-	font-size: 0.7em;
-	padding: 0.5em;
+	padding: 0.3em;
 	flex: 1;
-	color: #555;
 }
 #projectArea.compact #fileList {
 	display: none;
@@ -15,6 +13,7 @@
 #fileList ul{
 	list-style:none;
 	padding: 0;
+	margin-bottom: 0.3em;
 }
 #fileList>ul{
 	margin: 0;
@@ -25,38 +24,43 @@
 	margin-left: 1.3em;
 }
 
-#fileList li{
+#fileList li {
 	cursor: pointer;
 	white-space: nowrap;
-	display: block;
 }
 #fileList li.hidden {
 	display: none;
 }
 
 
-#fileList li.selected{
+#fileList li.selected .file {
 	background-color: #d2d2d2;
 }
 
-#fileList li.rightClicked {
+#fileList li.rightClicked .file {
 	background-color: #bada55;
 }
 
-#fileList li.changed span {
+#fileList li.changed .filename {
 	text-decoration:underline;
 }
 
-#fileList li>span {
-	display:inline-block;
-	padding: 0.4em 0.2em 0.2em 0.2em
+#fileList li .file {
+	display: flex;
+	align-items: center;
+	padding: 2px;
+	margin-top: 1px;
 }
-#fileList li>span:before {
-	font-size: 1.4em;
-	width: 1.4em;
-	display: inline-block;
-	vertical-align: middle;
-	padding-bottom: 0.2em;
+
+#fileList li svg {
+	flex: 0 0 20px;
+	height: 20px;
+	margin-right: 0.2em;
+	fill: #777;
+}
+#fileList li .filename {
+	font-size: 0.8em;
+	flex: 1 0 auto;
 }
 
 
@@ -118,3 +122,17 @@
 	font-size: 1em;
 }
 
+
+#fileList li.open>div>svg {
+	display: none;
+}
+#fileList li.open>div>svg.open {
+	display: block;
+}
+#fileList li>div>svg.open {
+	display: none;
+}
+
+#fileList li svg.file-phpp {
+	fill: #669;
+}

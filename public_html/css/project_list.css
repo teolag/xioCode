@@ -31,8 +31,13 @@
 }
 
 #btnNewProject {
-	vertical-align: text-top;
-	line-height: 16px;
+	width: 24px;
+	height: 24px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+#btnNewProject:hover {
+	fill: #bada55;
 }
 
 

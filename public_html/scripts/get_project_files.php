@@ -36,23 +36,25 @@ function lookInFolder($path, $relPath="") {
 				$branch["height"] = $imageInfo[1];
 			}
 
+			$branch['icon'] = "file-txt";
 			if(isset($parts['extension'])) {
 				$branch['type'] = strtolower($parts['extension']);
 				switch($branch['type']) {
 					case "png": case "jpg": case "jpeg": case "ico": case "svg":
 					$branch['icon'] = "file-image"; break;
 
-					case "htm": case "html": case "xml":
+					case "php":
+					$branch['icon'] = "file-php"; break;
+
+					case "xml":
 					$branch['icon'] = "file-xml"; break;
+
+					case "htm": case "html":
+					$branch['icon'] = "file-html"; break;
 
 					case "css":
 					$branch['icon'] = "file-css"; break;
-
-					default: $branch['icon'] = "file";
 				}
-			} else {
-				$branch['type'] = "";
-				$branch['icon'] = "file";
 			}
 		}
 		$branches[] = $branch;
