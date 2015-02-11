@@ -11,8 +11,6 @@ $files[] = "../codemirror/addon/dialog/dialog.css";
 //$files[] = "../codemirror/theme/lesser-dark.css";
 //$files[] = "../codemirror/theme/neat.css";
 
-$files[] = "../xioPop/XioPop.css";
-
 $last_modified = 0;
 foreach($files as $file) {
 	if($last_modified < filemtime($file)) $last_modified=filemtime($file);
@@ -45,10 +43,10 @@ else {
 
 	//Add compression rate
 	$css = "/* " . date("Y-m-d H:i:s", $last_modified) . " | Removed ".($before-$after)." bytes | Compressed " . $precent . "% */\n" . $css;
-	
+
 	//Delete old versions
 	foreach (glob("style.mini*.css") as $oldfile) unlink($oldfile);
-	
+
 	//Save new file
 	file_put_contents($minifile, $css);
 }
@@ -60,10 +58,10 @@ echo $css;
 
 
 //Find and removes unused bytes
-function cssMinify($css) { 
+function cssMinify($css) {
 	$css = preg_replace('|[\n\r\t]*|', "", $css); 		//Remove tabs and line breaks
 	$css = preg_replace('|\/\*.*?(\*\/)|', "", $css);	//Remove comments
-	$css = preg_replace('|;\s|', ";", $css);			//Remove space between styles 
+	$css = preg_replace('|;\s|', ";", $css);			//Remove space between styles
 	$css = preg_replace('|:\s|', ":", $css);			//Remove space between key and attribute
 	$css = preg_replace('|\s*\{\s*|', "{", $css);		//Remove space around {
 	$css = preg_replace('|\s*\}\s*|', "}", $css);		//Remove space around }
@@ -75,9 +73,9 @@ function cssMinify($css) {
 }
 
 // Converts colors like #aabbcc to #abc
-function shortenColors($m) {	
+function shortenColors($m) {
 	$hex = $m[1];
-	if($hex[0]==$hex[1] && $hex[0]==$hex[1] && $hex[0]==$hex[1]) $hex = $hex[0].$hex[2].$hex[4];	
+	if($hex[0]==$hex[1] && $hex[0]==$hex[1] && $hex[0]==$hex[1]) $hex = $hex[0].$hex[2].$hex[4];
 	return "#".$hex.$m[2];
 }
 

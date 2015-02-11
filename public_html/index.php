@@ -19,6 +19,11 @@ if(Gatekeeper::hasAccess()) {
 		<link rel="shortcut icon" href="/favicon.ico" />
 		<link href='http://fonts.googleapis.com/css?family=Roboto|Inconsolata' rel='stylesheet' type='text/css'>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+		<link rel="stylesheet" href="http://cdn.xio.se/xioPop/dev/XioPop.css" type="text/css" />
+		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js"></script>
+		<script src="http://cdn.xio.se/AjaXIO/dev/AjaXIO.js"></script>
+
 	</head>
 	<body<?php echo $loginState ?>>
 		<div id="header">

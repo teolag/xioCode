@@ -23,8 +23,6 @@ $files[] = "../codemirror/addon/selection/active-line.js";
 $files[] = "../codemirror/addon/comment/comment.js";
 $files[] = "../codemirror/addon/comment/continuecomment.js";
 $files[] = "../codemirror/keymap/sublime.js";
-$files[] = "../AjaXIO/AjaXIO.js";
-$files[] = "../xioPop/XioPop.js";
 
 
 // Find the last updated file in the js folder

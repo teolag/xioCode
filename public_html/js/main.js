@@ -11,7 +11,6 @@ if (!DEBUG_MODE_ON) {
 }
 
 var activeProject;
-
 var pageTitle;
 var title;
 var hoverTimer;

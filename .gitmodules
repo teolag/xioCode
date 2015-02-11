@@ -2,11 +2,3 @@
 	path = public_html/codemirror
 	url = https://github.com/marijnh/CodeMirror.git
 	ignore = dirty
-[submodule "public_html/AjaXIO"]
-	path = public_html/AjaXIO
-	url = git://github.com/teolag/AjaXIO
-	ignore = dirty
-[submodule "public_html/xioPop"]
-	path = public_html/xioPop
-	url = git@github.com:teolag/xioPop.git
-	ignore = dirty
