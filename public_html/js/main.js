@@ -18,7 +18,7 @@ var fileToBeLoaded;
 var oldHash;
 
 var username;
-var h1, fileToolbar, projectToolbar, userMenu, fileBrowser;
+var h1, fileToolbar, projectToolbar, userMenu;
 
 
 document.addEventListener("DOMContentLoaded", function(e) {
@@ -58,12 +58,46 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	userMenu.addEventListener("click", userMenuHandler, false);
 	username = document.getElementById("username");
 
+	var dividers = document.querySelectorAll(".divider");
+	for(var i=0; i<dividers.length; i++) {
+		dividers[i].addEventListener("mousedown", startDivide, false);
+	}
+
+
 	if(_USER && _USER.username) {
 		GateKeeper.setUser(_USER);
 	} else {
 		GateKeeper.showLogin();
 	}
 }, false);
+
+
+
+function startDivide(e) {
+	console.log("divider down");
+	e.preventDefault();
+
+	var subjectId = e.target.dataset.subject;
+	var subject = document.getElementById(subjectId);
+	if(!subject) return;
+
+	document.addEventListener("mousemove", mouseMove);
+	document.addEventListener("mouseup", mouseUp);
+	var pos = e.target.dataset.subject_pos;
+
+	function mouseMove(e) {
+		var dx = (pos==="right")? -e.movementX : e.movementX;
+		subject.style.width = (subject.offsetWidth+dx) + "px";
+		console.log("move", subject, e);
+	}
+
+	function mouseUp() {
+		document.removeEventListener("mousemove", mouseMove);
+		document.removeEventListener("mouseup", mouseUp);
+	}
+
+}
+
 
 
 function loginCallback(user) {

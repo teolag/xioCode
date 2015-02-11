@@ -81,6 +81,8 @@ if(Gatekeeper::hasAccess()) {
 				<div id="fileList"></div>
 			</div>
 
+			<div class="divider" data-subject="fileBrowser"></div>
+
 			<div class="pane codeEditor" id="paneEditor1"></div>
 			<!--<div class="pane codeEditor" id="paneEditor2"></div>-->
 
@@ -88,6 +90,7 @@ if(Gatekeeper::hasAccess()) {
 				<iframe src="" id="previewFrame" width="100%" height="100%"></iframe>
 			</div>
 
+			<div class="divider" data-subject="todoArea" data-subject_pos="right"></div>
 			<div id="todoArea" class="pane">
 				<div class="button" id="btnAddFeature">
 					<svg class="icon feature"><use xlink:href="/icons.svg#icon-feature" /></svg>

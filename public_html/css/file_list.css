@@ -64,12 +64,6 @@
 }
 
 
-#fileList li>span:before {
-	color: #999;
-}
-#fileList li.selected>span:before {
-	color: #555;
-}
 
 #fileList.dropTo, #fileList li.dropTo {
 	background-color: rgba(186, 218, 85, 0.5);
@@ -91,19 +85,19 @@
 	display: none;
 }
 
-#fileListRightClickMenu ul{
+#fileListRightClickMenu ul {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 }
 
-#fileListRightClickMenu li{
+#fileListRightClickMenu li {
 	border-bottom: 1px solid #eee;
 	padding: 0.2em 0.5em;
 	cursor: pointer;
 }
 
-#fileListRightClickMenu li:hover{
+#fileListRightClickMenu li:hover {
 	background-color: #bada55;
 }
 
