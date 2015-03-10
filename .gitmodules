@@ -1,4 +1,4 @@
 [submodule "codemirror"]
 	path = public_html/codemirror
 	url = https://github.com/marijnh/CodeMirror.git
-	ignore = dirty
+	ignore = all
