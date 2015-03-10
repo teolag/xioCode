@@ -77,7 +77,8 @@ h1 .tiny {
 
 
 #projectToolbar {
-	margin-right: 1em;
+	margin-right: 0.5em;
+	display: flex;
 }
 #projectToolbar.disabled .icon {
 	fill: rgba(255,255,255,0.2);
@@ -107,16 +108,10 @@ ul.tags li {
 	display: flex;
 	flex-direction: row;
 	flex: 1;
-	padding: 0.5em;
+	padding: 0.2em 0.5em 0.5em;
 }
 #projectArea.hidden {
 	display: none;
-}
-
-#fileBrowser {
-	width: 220px;
-	display: flex;
-	flex-direction: column;
 }
 
 .pane {
@@ -143,10 +138,11 @@ ul.tags li {
 .toolbar {
 	margin: 0;
 	padding: 0;
+	display: flex;
 }
 .toolbar li {
-	display: inline-block;
 	cursor: pointer;
+	margin: 0.1em;
 }
 .toolbar li.disabled,
 .toolbar.disabled li {
@@ -160,6 +156,7 @@ ul.tags li {
 	width: 20px;
 	height: 20px;
 	fill: #888;
+	display: block;
 	pointer-events: none;
 }
 .toolbar li:hover .icon {
@@ -304,6 +301,7 @@ body.authorized #login {
 	background-color: #999;
 	padding: 0.2em 0.5em;
 	color: #333;
+	border-radius: 0.3em;
 }
 #userMenu .button span {
 	vertical-align: middle;

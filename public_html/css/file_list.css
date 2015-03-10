@@ -1,3 +1,9 @@
+#fileBrowser {
+	width: 220px;
+	display: flex;
+	flex-direction: column;
+}
+
 #fileList {
 	background-color: #eee;
 	border:1px solid #ccc;

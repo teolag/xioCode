@@ -1,4 +1,5 @@
 var FileList = (function() {
+	"use strict";
 
 	var projectId;
 	var files;

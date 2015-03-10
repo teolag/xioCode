@@ -88,6 +88,7 @@ var GateKeeper = (function() {
 		Ajax.getJSON("/scripts/gatekeeper.php", {action: "check", user_id: user.user_id}, function(json) {
 			if(json.status !== STATUS_OK) {
 				console.warn(json.message);
+				console.debug("Force logout");
 				logout();
 			}
 		});

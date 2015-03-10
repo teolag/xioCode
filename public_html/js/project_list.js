@@ -26,7 +26,6 @@ var ProjectList = (function() {
 
 		listProjectOrderBy = document.getElementById("listProjectOrderBy");
 		listProjectOrderBy.addEventListener("change", selectOrderBy, false);
-
 	});
 
 	var loadProjects = function() {
@@ -308,7 +307,7 @@ var ProjectList = (function() {
 			projectIds.reverse();
 		}
 		return projectIds;
-	};
+	}
 
 	var selectNextVisible = function(rev){
 		var sel = projectList.querySelector(".selected");
@@ -332,7 +331,6 @@ var ProjectList = (function() {
 		return false;
 	};
 
-
 	var dropHandler = function(e) {
 		switch(e.type) {
 
@@ -348,9 +346,8 @@ var ProjectList = (function() {
 			case "drop":
 			e.preventDefault();
 			projectList.classList.remove("dropzone");
-			var filesToUpload = e.target.files || e.dataTransfer.files;
-			console.log("upload files:", filesToUpload);
-
+			var items = e.dataTransfer.items;
+			handleDroppedItems(items);
 			break;
 		}
 
@@ -371,7 +368,6 @@ var ProjectList = (function() {
 			}
 		});
 	};
-
 
 	var getProject = function(id) {
 		if(projects && projects.hasOwnProperty(id)) {
@@ -396,6 +392,78 @@ var ProjectList = (function() {
 			}
 		});
 	};
+
+	var handleDroppedItems = function(items) {
+		console.log("dropped items:", items);
+
+		var rootEntries = [];
+		for(var i=0; i<items.length; i++) {
+			var item = items[i];
+			console.log("root item"+i, item.kind);
+
+			switch(item.kind) {
+				case "file":
+				var entry = item.webkitGetAsEntry();
+				if(entry) rootEntries.push(entry);
+				break;
+
+				default:
+				console.warn("Drop does not handle items of type:", item.kind);
+				console.debug(item);
+			}
+		}
+
+		if(rootEntries.length>0) {
+			console.log("Vad vill du göra med dessa", rootEntries.length, "root items");
+
+
+			var options = [
+				{id:"OneProject", text:"Create one project including these items"},
+				{id:"SplitProjects", text:"Split up into " + rootEntries.length + " separate projects"}
+			];
+			XioPop.choose("Drop action", rootEntries.length+" items was dropped, what do you want to do with them?", options, chooseCallback);
+
+			function chooseCallback(answer) {
+				console.log("Answer:", answer);
+			}
+
+		}
+
+		function handleEntry(entry) {
+			if(entry.isDirectory) {
+				console.log("DIR FOUND:", entry.fullPath);
+				handleDirectory(entry);
+			} else {
+				handleFile(entry);
+			}
+		}
+
+		function handleDirectory(dir) {
+			var directoryReader = dir.createReader();
+			var readEntries = function() {
+				directoryReader.readEntries (function(results) {
+					if (!results.length) {
+						console.log("done", dir.fullPath);
+					} else {
+						for(var i=0; i<results.length; i++) {
+							handleEntry(results[i]);
+						}
+						readEntries();
+					}
+				}, errorHandler);
+			};
+			var errorHandler = function(e) {
+				console.log("error:", e);
+			}
+			readEntries();
+		}
+
+		function handleFile(file) {
+			console.log("FILE:", file.fullPath);
+		}
+	}
+
+
 
 
 	return {
