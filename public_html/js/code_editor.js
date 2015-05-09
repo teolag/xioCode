@@ -132,7 +132,7 @@
 				console.log("file saved as ", file.uri);
 				FileList.loadProjectFiles();
 				this.updateFileStatus(file);
-				this.tabBar.rename(file);
+				file.tab.updateFromFile();
 				this.calculateFileMode(file.uri);
 
 				break;
@@ -154,7 +154,7 @@
 
 		calculateFileMode: function(uri) {
 			if(uri) {
-				var mime = getMimeByUri(response.uri);
+				var mime = getMimeByUri(uri);
 				this.editor.setOption("mode", mime);
 			}
 		},
@@ -164,6 +164,7 @@
 			file.blank(this.activeProjectId);
 			this.tabBar.add(file);
 			this.switchToFile(file);
+			this.editor.setOption("readOnly", false);
 		},
 
 
