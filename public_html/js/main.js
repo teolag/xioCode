@@ -432,7 +432,12 @@ function getMimeByUri(uri) {
 	var extension = /\.([^.]+)$/.exec(uri);
 	if(!extension) return "";
 	var info = CodeMirror.findModeByExtension(extension[1]);
-	return info? info.mime : "";
+	if(!info) {
+		switch(extension[1]) {
+			case "svg": return "xml";
+		}
+	}
+	return info? info.mode : "";
 }
 
 

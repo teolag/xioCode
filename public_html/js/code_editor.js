@@ -215,6 +215,7 @@
 			if(this.activeFile === file) {
 				var old = this.editor.swapDoc(file.doc);
 				this.editor.setOption("readOnly", false);
+				console.log("File opened with mode ", file.doc.modeOption);
 			}
 			this.updateFileStatus(file);
 		},
