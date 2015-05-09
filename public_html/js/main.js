@@ -372,6 +372,17 @@ function renameCallback(json) {
 	}
 }
 
+function previewFile(uri) {
+	var path = projectsURL + activeProject.id +"/"+ uri;
+	console.log("Preview:", path);
+
+	if(Preview.isVisible()) {
+		Preview.load(path);
+	} else {
+		window.open(path, 'code_file_preview');
+	}
+}
+
 
 function errorCallback(e) {
 	if(e.status === 401) {

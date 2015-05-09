@@ -258,14 +258,7 @@
 			break;
 
 			case "preview":
-				var path = projectsURL + activeProject.id +"/"+ this.activeFile.uri;
-				console.log("Preview:", path);
-
-				if(Preview.isVisible()) {
-					Preview.load(path);
-				} else {
-					window.open(path, 'code_file_preview');
-				}
+				previewFile(this.activeFile.uri);
 			break;
 
 			default:

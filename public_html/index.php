@@ -131,6 +131,7 @@ if(Gatekeeper::hasAccess()) {
 
 		<div id="fileListRightClickMenu" class="hidden">
 			<ul>
+				<li data-do="preview">Preview</li>
 				<li data-do="refresh">Refresh</li>
 				<li data-do="newFolder">New folder...</li>
 				<li data-do="newFile">New file...</li>

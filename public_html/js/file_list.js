@@ -450,6 +450,10 @@ var FileList = (function() {
 			XioPop.alert("upload file...", "not implemented yet ");
 			break;
 
+			case "preview":
+			previewFile(uri);
+			break;
+
 		}
 		hideFileListRightClickMenu();
 	};
