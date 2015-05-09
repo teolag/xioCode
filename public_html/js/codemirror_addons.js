@@ -4,7 +4,7 @@ var codemirrorSnippets = {
 	"mobile":	"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\" />",
 	"com":		"/**********************************************************\n\n\n**********************************************************/",
 	"phperror":	"ini_set('display_errors',1);\nini_set('error_reporting', E_ALL ^ E_NOTICE);",
-	"xhr": "xhr = new XMLHttpRequest();",
+	"xhr": 		"xhr = new XMLHttpRequest();",
 	"favicon": "<link rel=\"shortcut icon\" href=\"favicon.ico\" />"
 };
 
