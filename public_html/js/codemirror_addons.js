@@ -54,7 +54,7 @@ var codemirrorDefaults = {
 
 
 CodeMirror.commands.duplicateRowUp = function(editor) {
-	CodeMirror.commands.duplicateLine(editor);
+	CodeMirror.commands.duplicateRow(editor, true);
 };
 
 CodeMirror.commands.duplicateRowDown = function(editor) {
