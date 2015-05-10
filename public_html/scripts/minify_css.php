@@ -10,6 +10,7 @@ $files[] = "../codemirror/addon/dialog/dialog.css";
 //$files[] = "../codemirror/theme/ambiance.css";
 //$files[] = "../codemirror/theme/lesser-dark.css";
 //$files[] = "../codemirror/theme/neat.css";
+$files[] = "/git/ColorPicker/ColorPicker.css";
 
 $last_modified = 0;
 foreach($files as $file) {

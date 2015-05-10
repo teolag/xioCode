@@ -17,6 +17,7 @@ var codemirrorDefaults = {
 	styleActiveLine: true,
 	indentUnit: 4,
 	indentWithTabs: true,
+	colorpicker: true,
 	smartIndent: true,
 	theme: 'xio',
 	highlightSelectionMatches: {showToken: /\w/},
