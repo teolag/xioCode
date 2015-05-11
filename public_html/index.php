@@ -19,6 +19,10 @@ if(Gatekeeper::hasAccess()) {
 		<link rel="shortcut icon" href="/favicon.ico" />
 		<link href='http://fonts.googleapis.com/css?family=Roboto|Inconsolata' rel='stylesheet' type='text/css'>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<link rel="manifest" href="/manifest.json">
+		<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96">
+		<meta name="theme-color" content="#3d392f">
 
 		<link rel="stylesheet" href="http://cdn.xio.se/xioPop/dev/XioPop.css" type="text/css" />
 		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js"></script>
