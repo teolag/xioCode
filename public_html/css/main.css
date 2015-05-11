@@ -42,6 +42,13 @@ button:hover {
 
 h1 {
 	font-size: 1.3em;
+	display: flex;
+	align-items: center;
+}
+h1 svg {
+	margin-right: 0.5em;
+	width: 20px;
+	height: 20px;
 }
 h1 .first {
 	color: #999;
@@ -49,9 +56,7 @@ h1 .first {
 h1 .second {
 	color: #E79D00;
 }
-h1 .tiny {
-	display: none;
-}
+
 
 #header {
 	background-color: #444;
@@ -66,7 +71,7 @@ h1 .tiny {
 #header h1 {
 	cursor: pointer;
 	margin: 0;
-	padding: 0 0.5em
+	padding: 0 0.5em;
 }
 
 #header #pageTitle {
@@ -263,6 +268,7 @@ body.authorized #login {
 
 #login h1 {
 	margin-bottom: 0;
+	justify-content: center;
 }
 
 #login .version {

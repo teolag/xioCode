@@ -32,8 +32,8 @@ if(Gatekeeper::hasAccess()) {
 	<body<?php echo $loginState ?>>
 		<div id="header">
 			<h1>
+				<svg class="icon logo"><use xlink:href="/icons.svg#icon-logo" /></svg>
 				<span class="first">xio</span><span class="second">Code</span>
-				<span class="first tiny">X</span><span class="second tiny">C</span>
 			</h1>
 
 			<span id="pageTitle"></span>
@@ -116,7 +116,11 @@ if(Gatekeeper::hasAccess()) {
 		<div class="door right <?php echo $doorState; ?>"></div>
 
 		<div id="login">
-			<h1><span class="first">xio</span><span class="second">Code</span></h1>
+			<h1>
+				<svg class="icon logo"><use xlink:href="/icons.svg#icon-logo" /></svg>
+				<span class="first">xio</span>
+				<span class="second">Code</span>
+			</h1>
 			<?php if(Git::isGit()) : ?>
 			<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", Git::getLastCommitDate()); ?></div>
 			<?php endif; ?>
