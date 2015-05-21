@@ -8,6 +8,8 @@ var GateKeeper = (function() {
 	loginBox, frmLogin, btnLogin, txtUsername, txtPassword, username,
 	checkAccessInterval, onLoginCallback, onLogoutCallback,
 
+	btnGoogleLogin,
+
 
 
 
@@ -23,6 +25,9 @@ var GateKeeper = (function() {
 		btnLogin = document.getElementById("btnLogin");
 		txtUsername = frmLogin.elements.code_username;
 		txtPassword = frmLogin.elements.code_password;
+
+		btnGoogleLogin = document.getElementById("btnGoogleLogin");
+		btnGoogleLogin.addEventListener("click", loginUsingGoogle, false);
 	},
 
 	loginRequest = function(e) {
@@ -97,6 +102,18 @@ var GateKeeper = (function() {
 	setUser = function(u) {
 		user = u;
 		loginAccepted();
+	},
+
+
+	loginUsingGoogle = function(e) {
+		var url = e.target.dataset.url,
+			title = "Google login",
+			w = 500,
+			h = 600,
+			left = (screen.width/2)-(w/2),
+  			top = (screen.height/2)-(h/2),
+			options = 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left;
+  		window.open(url, title, options);
 	};
 
 

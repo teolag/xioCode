@@ -21,8 +21,8 @@ switch($_GET['action']) {
 		$response['message'] = "Invalid username or password";
 	}
 	break;
-	
-	
+
+
 	case "check":
 	$expectedUserId = intval($_GET['user_id']);
 	$actualUserId = Gatekeeper::getUserId();
@@ -44,17 +44,18 @@ switch($_GET['action']) {
 		}
 	}
 	break;
-	
+
 	/*
 	case "current":
 	Gatekeeper::checkAccess();
 	$response['user'] = Gatekeeper::getUser($db);
 	break;
 	*/
-	
+
 	case "logout":
 	session_start();
 	unset($_SESSION['user_id']);
+	unset($_SESSION['googleToken']);
 	$response['status'] = STATUS_OK;
 	$response['message'] = "logged out successfully";
 	break;
