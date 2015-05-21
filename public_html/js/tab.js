@@ -60,15 +60,16 @@
 				classes.add("changed");
 			}
 
+			console.log("file state", this.file.state);
 			switch(this.file.state) {
-				case this.elem.FILE_STATE_LOADING:
-				classes.add("loading");
+				case File.STATE_LOADING:
+				this.elem.classList.add("loading");
 				break;
 
-				case this.elem.FILE_STATE_READY:
+				case File.STATE_READY:
 				break;
 
-				case this.elem.FILE_STATE_SAVING:
+				case File.STATE_SAVING:
 				classes.add("saving");
 				break;
 			}

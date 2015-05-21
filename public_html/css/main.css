@@ -20,11 +20,11 @@ body, textarea, input, button, select {
 	font-size: 15px;
 }
 
-input, textarea {
+input, textarea, select {
 	border: 1px solid #bbb;
 	padding: 0.5em;
 }
-input:focus, textarea:focus {
+input:focus, textarea:focus, select:focus {
 	outline: 0;
 	border-color: #E79D00;
 }
@@ -205,6 +205,12 @@ ul.tags li {
 	font-style: italic;
 	color: #888;
 }
+.tabBar>li.saving .close,
+.tabBar>li.loading .close {
+	-webkit-animation: anim-rotate 4s linear infinite;
+    -moz-animation: anim-rotate 4s linear infinite;
+    animation: anim-rotate 4s linear infinite;
+}
 .tabBar>li.changed .filename {
 	text-decoration: underline;
 }
@@ -295,6 +301,7 @@ body.authorized #login {
 	display: block;
 	margin:10px auto;
 }
+
 
 
 /*************************** User Menu ***************************/
