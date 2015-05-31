@@ -22,6 +22,7 @@
 
 #projectFilter {
 	padding: 0.5em;
+	flex: 0 0 auto;
 }
 
 #txtProjectFilter {
