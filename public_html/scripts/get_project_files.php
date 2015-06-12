@@ -20,7 +20,7 @@ function lookInFolder($path, $relPath="") {
 		$branch['path']=$relPath;
 
 		if(is_dir($path.$i)) {
-			if($i=="." || $i==".." || $i==".git" || $i==".sass-cache" || $i=="node_modules") {
+			if($i=="." || $i=="..") {
 				continue;
 			}
 			$branch['type'] = FOLDER;
