@@ -25,7 +25,12 @@ function lookInFolder($path, $relPath="") {
 			}
 			$branch['type'] = FOLDER;
 			$branch['icon'] = "folder";
-			$branch['leafs'] = lookInFolder($path.$i."/", $relPath.$i."/");
+			
+			if($i==".git" || $i==".sass-cache" || $i=="node_modules") {
+				$branch['disabled'] = true;
+			} else {
+				$branch['leafs'] = lookInFolder($path.$i."/", $relPath.$i."/");
+			}
 		}
 		else {
 			$branch["size"] = filesize($path.$i);
