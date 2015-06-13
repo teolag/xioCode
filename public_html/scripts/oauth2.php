@@ -100,17 +100,11 @@ if(isset($_GET['code'])) {
 
 	$user = json_decode($result);
 
-
-
-
-
-
-
-
 	$data = array(
 		"status" => 100,
 		"message" => "authorized google access",
-		"expires" => $expires
+		"expires" => $expires,
+		"user" => $user
 	);
 	?>
 		<script>
@@ -128,33 +122,4 @@ if(isset($_GET['code'])) {
 }
 
 
-/*
-session_start();
-
-
-$token = $_SESSION['googleToken'];
-
-
-if(isset($token)) {
-	//GET USER INFO
-	$url = "https://www.googleapis.com/oauth2/v3/userinfo";
-	$curl = curl_init();
-	$headers = array(
-		"Authorization: Bearer " . $token,
-		"GData-Version: 3.0",
-	);
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-	curl_setopt($curl, CURLOPT_POST, false);
-	$result = curl_exec($curl);
-	curl_close($curl);
-
-	$user = json_decode($result);
-	var_dump($user);
-
-
-	//header("Location: index.php");
-}
-*/
 ?>
