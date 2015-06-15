@@ -1,52 +1,4 @@
 <?php
-
-
-/*
-
-Öppnar xioCode
-
-	AJAX: Är jag inloggad på xioCode? Gatekeeper::getUser()
-		Ja: returnera användaren
-		Nej: returnera status access_denied
-
-	Logga in med användarnamn & lösenord
-		Giltigt?
-			Ja: Finns IPt?
-				Ja: logga in och returnera den användaren
-				Nej: skicka mail till användaren
-			Nej: returnera access denied
-
-	Logga in med google/twitter
-		Öppnar popup
-		redirectas tillbaka med en kod
-		gör om koden till en token
-		hämta userinfo från google
-		Finns någon användare med googleId:t?
-			Ja: Loggar den in från ett giltigt IP?
-				Ja: Logga in och returnera den användaren
-				Nej: Skicka mail till användaren
-			Nej: Skicka mail till mig att någon vill logga in och bifoga uppgifterna
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $startTime = microtime(true);
 
 require "../../includes/init.php";
@@ -84,7 +36,7 @@ if(isset($_GET['code'])) {
 
 
 
-	//GET USER INFO
+	//GET GOOGLE USER INFO
 	$url = "https://www.googleapis.com/oauth2/v3/userinfo";
 	$curl = curl_init();
 	$headers = array(
@@ -98,7 +50,13 @@ if(isset($_GET['code'])) {
 	$result = curl_exec($curl);
 	curl_close($curl);
 
-	$user = json_decode($result);
+	$googleUser = json_decode($result);
+
+	// GET USER INFO FROM DB
+	$user = $db->getRow("SELECT user_id, username, email FROM users WHERE google_id=?", array($googleUser->sub));
+
+
+	$userId = Gatekeeper::login($user['user_id'], $db);
 
 	$data = array(
 		"status" => 100,
@@ -108,7 +66,7 @@ if(isset($_GET['code'])) {
 	);
 	?>
 		<script>
-			opener.OAuth2.authorized(<?php echo json_encode($data); ?>);
+			opener.GateKeeper.googleLoginCallback(<?php echo json_encode($data); ?>);
 			window.close();
 		</script>
 	<?php
@@ -116,9 +74,6 @@ if(isset($_GET['code'])) {
 	$response = array();
 	$_SESSION['googleToken'] = $token;
 	$_SESSION['googleTokenExpire'] = $expires;
-
-
-
 }
 
 

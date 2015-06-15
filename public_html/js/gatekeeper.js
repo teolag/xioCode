@@ -116,12 +116,16 @@ var GateKeeper = (function() {
   		window.open(url, title, options);
 	};
 
+	googleLoginCallback = function(data) {
+		setUser(data.user);
+	};
 
 
 	return {
 		init: init,
 		showLogin: showLogin,
 		logout: logout,
-		setUser: setUser
+		setUser: setUser,
+		googleLoginCallback: googleLoginCallback
 	}
 }());
