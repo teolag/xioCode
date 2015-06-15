@@ -9,9 +9,10 @@ $response = array();
 switch($_GET['action']) {
 
 	case "login":
-	$user_id = Gatekeeper::login($_POST['code_username'], $_POST['code_password'], $db);
-	if($user_id>0) {
-		$db->insert("INSERT INTO logins (user_id, ip, agent) VALUES (?,?,?)", array($user_id, ip2long($_SERVER['REMOTE_ADDR']), $_SERVER['HTTP_USER_AGENT']));
+	$userId = Gatekeeper::checkCredentials($_POST['code_username'], $_POST['code_password'], $db);
+
+	if($userId>0) {
+		$db->insert("INSERT INTO logins (user_id, ip, agent) VALUES (?,?,?)", array($userId, ip2long($_SERVER['REMOTE_ADDR']), $_SERVER['HTTP_USER_AGENT']));
 		$response['user'] = Gatekeeper::getUser($db);
 		$response['status'] = STATUS_OK;
 		$response['message'] = "Welcome " . $response['user']['username'];
@@ -21,8 +22,8 @@ switch($_GET['action']) {
 		$response['message'] = "Invalid username or password";
 	}
 	break;
-	
-	
+
+
 	case "check":
 	$expectedUserId = intval($_GET['user_id']);
 	$actualUserId = Gatekeeper::getUserId();
@@ -44,17 +45,11 @@ switch($_GET['action']) {
 		}
 	}
 	break;
-	
-	/*
-	case "current":
-	Gatekeeper::checkAccess();
-	$response['user'] = Gatekeeper::getUser($db);
-	break;
-	*/
-	
+
 	case "logout":
 	session_start();
 	unset($_SESSION['user_id']);
+	unset($_SESSION['googleToken']);
 	$response['status'] = STATUS_OK;
 	$response['message'] = "logged out successfully";
 	break;

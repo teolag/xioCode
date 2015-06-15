@@ -9,25 +9,37 @@ if(Gatekeeper::hasAccess()) {
 	$jsUser = json_encode(Gatekeeper::getUser($db));
 }
 
+
+session_start();
+$token = $_SESSION['token'];
+$scope = "profile%20email";
+
+$googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&redirect_uri=%s&response_type=code&client_id=%s", $scope, $config['oauth2']['redirectUri'], $config['oauth2']['clientId']);
+
+
+
+
+
 ?>
 <!doctype html>
 <html>
 	<head>
 		<title><?php echo $pageTitle; ?></title>
 		<meta charset="utf-8" />
-		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
-		<link rel="shortcut icon" href="/favicon.ico" />
-		<link href='http://fonts.googleapis.com/css?family=Roboto|Inconsolata' rel='stylesheet' type='text/css'>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<meta name="theme-color" content="#3d392f">
+
+		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto|Inconsolata'  type='text/css'>
+		<link rel="stylesheet" href="http://cdn.xio.se/xioPop/dev/XioPop.css" type="text/css" />
+
+		<link rel="shortcut icon" href="/favicon.ico" />
 		<link rel="manifest" href="/manifest.json">
 		<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
 		<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96">
-		<meta name="theme-color" content="#3d392f">
 
-		<link rel="stylesheet" href="http://cdn.xio.se/xioPop/dev/XioPop.css" type="text/css" />
 		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js"></script>
 		<script src="http://cdn.xio.se/AjaXIO/dev/AjaXIO.js"></script>
-
 	</head>
 	<body<?php echo $loginState ?>>
 		<div id="header">
@@ -130,6 +142,8 @@ if(Gatekeeper::hasAccess()) {
 				<input type="password" name="code_password" id="inputPassword" placeholder="Password" /><br />
 				<button id="btnLogin" type="submit">Login</button>
 			</form>
+
+			<button id="btnGoogleLogin" data-url="<?php echo $googleLoginURL; ?>">Login with Google</button>
 		</div>
 
 		<div id="imagePreview" class="hidden">
