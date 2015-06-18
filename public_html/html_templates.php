@@ -34,13 +34,13 @@
 
 <template id="tplTodoEdit">
 	<form id="formTodo">
-		<h3></h3>
+		<h3>Todo title</h3>
 		<input type="hidden" name="todo_id" value="">
 
 		<textarea name="description"></textarea><br>
 
-		<p>Created: <time id="todoTimeCreated"></time></p>
-		<p>Edited: <time id="todoTimeEdited"></time></p>
+		<p>Created: <time id="todoTimeCreated">2010-01-01 12:00:00</time></p>
+		<p>Edited: <time id="todoTimeEdited">2010-01-01 12:00:00</time></p>
 
 
 		<input type="radio" value="feature" name="type" id="rbTodoTypeFeature"><label for="rbTodoTypeFeature">Feature</label><br>

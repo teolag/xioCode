@@ -14,7 +14,7 @@ session_start();
 $token = $_SESSION['token'];
 $scope = "profile%20email";
 
-$googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&redirect_uri=%s&response_type=code&client_id=%s", $scope, $config['oauth2']['redirectUri'], $config['oauth2']['clientId']);
+$googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&amp;redirect_uri=%s&amp;response_type=code&amp;client_id=%s", $scope, $config['oauth2']['redirectUri'], $config['oauth2']['clientId']);
 
 
 
@@ -30,7 +30,7 @@ $googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&re
 		<meta name="theme-color" content="#3d392f">
 
 		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
-		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto|Inconsolata'  type='text/css'>
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto%7CInconsolata'  type='text/css'>
 		<link rel="stylesheet" href="http://cdn.xio.se/xioPop/dev/XioPop.css" type="text/css" />
 
 		<link rel="shortcut icon" href="/favicon.ico" />
@@ -72,7 +72,7 @@ $googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&re
 		<div id="projectChooser" class="hidden">
 			<div id="projectFilter">
 				<input type="search" placeholder="Filter projects" id="txtProjectFilter" />
-				<svg id="btnNewProject" class="icon add" title="Create a new project"><use xlink:href="/icons.svg#icon-add" /></svg>
+				<svg id="btnNewProject" class="icon add"><use xlink:href="/icons.svg#icon-add" /></svg>
 				<select id="listProjectOrderBy" class="orders">
 					<option data-order="name" data-order_dir="asc">Name A-Z</option>
 					<option data-order="name" data-order_dir="desc">Name Z-A</option>
@@ -103,7 +103,7 @@ $googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&re
 			<!--<div class="pane codeEditor" id="paneEditor2"></div>-->
 
 			<div id="preview" class="pane">
-				<iframe src="" id="previewFrame" width="100%" height="100%"></iframe>
+				<iframe src="about:blank" id="previewFrame"></iframe>
 			</div>
 
 			<div class="divider" data-subject="todoArea" data-subject_pos="right"></div>
