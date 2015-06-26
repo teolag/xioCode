@@ -370,14 +370,14 @@ var FileList = (function() {
 		switch(target.dataset.do) {
 
 			case "newFolder":
-			XioPop.prompt("New folder", "Enter the name of the folder", "", function(folderName) {
+			XioPop.prompt({title:"New folder", text:"Enter the name of the folder", onSubmit:function(folderName) {
 				if(folderName) {
 					if(isFolder) path+=filename + "/";
 					Ajax.get("/scripts/create_folder.php", {'project_id':projectId, 'uri':encodeURI(path + folderName)}, function() {
 						FileList.loadProjectFiles();
 					});
 				}
-			});
+			}});
 			break;
 
 			case "newFile":
@@ -386,11 +386,11 @@ var FileList = (function() {
 			break;
 
 			case "saveAs":
-			XioPop.prompt("Save as", "Enter the new name of the file/folder", filename, function(newName) {
+			XioPop.prompt({title:"Save as", text:"Enter the new name of the file/folder", value:filename, onSubmit:function(newName) {
 				if(newName) {
 					saveFileAs(newName, false);
 				}
-			});
+			}});
 			break;
 
 			case "refresh":
@@ -405,7 +405,7 @@ var FileList = (function() {
 				var title = "Delete file";
 				var question = "Are you sure you want to delete the file: '"+uri+"'?";
 			}
-			XioPop.confirm(title, question, function(answer) {
+			XioPop.confirm({title:title, text:question, onSubmit:function(answer) {
 				if(answer) {
 					Ajax.post2JSON("/scripts/file_handler.php",  {'action':'delete', 'project_id':activeProject.id, 'uri':uri}, function(json) {
 						FileList.loadProjectFiles();
@@ -431,15 +431,15 @@ var FileList = (function() {
 						*/
 					});
 				}
-			});
+			}});
 			break;
 
 			case "rename":
-			XioPop.prompt("Rename file", "Enter the new name of the file/folder", filename, function(newName) {
+			XioPop.prompt({title:"Rename file", text:"Enter the new name of the file/folder", value:filename, onSubmit:function(newName) {
 				if(newName) {
 					renameFile(uri, path+newName);
 				}
-			});
+			}});
 			break;
 
 			case "export":
@@ -447,7 +447,7 @@ var FileList = (function() {
 			break;
 
 			case "upload":
-			XioPop.alert("upload file...", "not implemented yet ");
+			XioPop.alert({title:"upload file...", text:"not implemented yet "});
 			break;
 
 			case "preview":

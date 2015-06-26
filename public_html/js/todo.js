@@ -2,7 +2,7 @@ var Todo = (function() {
 
 	var btnAddFeature, btnAddBug,
 	list, listDone, dragElem, dragUp, dragY,
-	projectId, todos,
+	projectId, todos, pop,
 
 	init = function() {
 		btnAddFeature = document.getElementById("btnAddFeature");
@@ -196,7 +196,7 @@ var Todo = (function() {
 
 
 
-		XioPop.showElement(document.importNode(template, true));
+		pop = XioPop.showElement({element:document.importNode(template, true)});
 
 		var form = document.getElementById("formTodo");
 		form.addEventListener("submit", submitTodo, false);
@@ -214,7 +214,7 @@ var Todo = (function() {
 		formData.append("project_id", projectId);
 		formData.append("ts", (new Date()).getTime());
 		Ajax.post2JSON("/scripts/todo_handler.php", formData, submitCallback);
-		XioPop.close();
+		closePop();
 	},
 
 	submitCallback = function(json) {
@@ -228,7 +228,7 @@ var Todo = (function() {
 		formData.append("project_id", projectId);
 		formData.append("todo_id", e.target.dataset.todoId);
 		Ajax.post2JSON("/scripts/todo_handler.php?action=delete", formData, deleteCallback);
-		XioPop.close();
+		closePop();
 	},
 
 	deleteCallback = function(json) {
@@ -241,8 +241,14 @@ var Todo = (function() {
 		list.innerHTML="";
 		listDone.innerHTML="";
 		todos = {};
-	};
+	},
 
+	closePop = function() {
+		if(pop) {
+			pop.close();
+			pop=null;
+		}
+	};
 
 	XI.listen("DOMContentLoaded", init);
 	XI.listen(["DOMContentLoaded","todosLoaded"], updateList, true);

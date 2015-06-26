@@ -1,8 +1,8 @@
 var ProjectConfig = (function() {
-	var form, btnCancel, confTags, listTags,
+	var form, btnCancel, confTags, listTags, pop,
 
 	open = function(projectId) {
-		XioPop.load("/scripts/project_config.php?project_id="+projectId, display);
+		pop = XioPop.load({url:"/scripts/project_config.php?project_id="+projectId, onLoad:display});
 	},
 
 	display = function(e) {
@@ -70,7 +70,7 @@ var ProjectConfig = (function() {
 	},
 
 	close = function(e) {
-		XioPop.close();
+		pop.close();
 	};
 
 

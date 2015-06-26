@@ -216,7 +216,7 @@ function userMenuHandler(e) {
 		break;
 
 		case "changePassword":
-		XioPop.prompt("Change password", "Enter your new password", "", function(newPass) {
+		XioPop.prompt({title:"Change password", text:"Enter your new password", onSubmit:function(newPass) {
 			if(newPass) {
 				var formData = new FormData();
 				formData.append("newPass", newPass);
@@ -226,14 +226,13 @@ function userMenuHandler(e) {
 					var xhr = e.target;
 					if(xhr.status===200) {
 						console.log("Sparat");
-						XioPop.close();
 					} else {
 						console.err("Error changing password", xhr);
 					}
 				};
 				xhr.send(formData);
 			}
-		});
+		}});
 		break;
 	}
 }
@@ -296,19 +295,19 @@ function previewProject(id) {
 
 function createNewFile(path) {
 	if(!path) path="";
-	XioPop.prompt("Enter the new filename", "", path, function(newFileName) {
+	XioPop.prompt({title:"Enter the new filename", value:path, onSubmit:function(newFileName) {
 		if(newFileName===false) {
 			console.debug("abort file creation");
 			return;
 		} else if(newFileName.trim()==="") {
 			console.debug("not a valid filename");
-			XioPop.alert("Invalid filename", "You must enter a valid filename, try again", function() {
+			XioPop.alert({title:"Invalid filename", text:"You must enter a valid filename, try again", onClose:function() {
 				createNewFile();
-			});
+			}});
 		} else {
 			Ajax.post2JSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:newFileName}, fileCreationCallback);
 		}
-	});
+	}});
 }
 
 function fileCreationCallback(json) {
@@ -322,11 +321,11 @@ function fileCreationCallback(json) {
 		break;
 
 		case STATUS_FILE_COLLISION:
-		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.uri+"?", function(answer) {
+		XioPop.confirm({title:"File already exists", text:"Are you sure you want to overwrite "+json.uri+"?", onSubmit:function(answer) {
 			if(answer) {
 				Ajax.post2JSON("/scripts/file_handler.php", {action:"new", project_id:activeProject.id, uri:newFileName, overwrite:true}, fileCreationCallback);
 			}
-		});
+		}});
 		break;
 
 		default:
@@ -360,11 +359,11 @@ function renameCallback(json) {
 		break;
 
 		case STATUS_FILE_COLLISION:
-		XioPop.confirm("File already exists", "Are you sure you want to overwrite "+json.newUri+"?", function(answer) {
+		XioPop.confirm({title:"File already exists", text:"Are you sure you want to overwrite "+json.newUri+"?", onSubmit:function(answer) {
 			if(answer) {
 				renameFile(json.uri, json.newUri, true);
 			}
-		});
+		}});
 		break;
 
 		default:
@@ -485,7 +484,6 @@ function findFunctions() {
 
 	functions.sort(compare);
 	return functions;
-
 }
 
 

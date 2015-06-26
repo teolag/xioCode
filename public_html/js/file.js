@@ -81,9 +81,9 @@
 				delete files[this.id];
 			} else {
 				var me = this;
-				XioPop.confirm("Unsaved file", "This file has unsaved data, close anyway?", function(answer) {
+				XioPop.confirm({title:"Unsaved file", text:"This file has unsaved data, close anyway?", onSubmit:function(answer) {
 					if(answer) me.close(true);
-				});
+				}});
 			}
 		},
 

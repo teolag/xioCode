@@ -117,13 +117,13 @@
 			console.log("Save As... ");
 			var me = this;
 			file.projectId = this.activeProjectId;
-			XioPop.prompt("Save file as...", "Enter the filename", file.uri, function(newUri) {
+			XioPop.prompt({title:"Save file as...", text:"Enter the filename", value:file.uri, onSubmit:function(newUri) {
 				if(newUri) {
 					me.editor.execCommand("removeTrailingSpaces");
 					file.saveAs(newUri, me.editor.getValue(), false, me.saveFileAsCallback.bind(me));
 					me.updateFileStatus(file);
 				}
-			});
+			}});
 		},
 
 		saveFileAsCallback: function(file, response) {
@@ -139,12 +139,12 @@
 
 				case STATUS_FILE_COLLISION:
 				var me = this;
-				XioPop.confirm("File already exists", "Are you sure you want to overwrite "+response.uri+"?", function(answer) {
+				XioPop.confirm({title:"File already exists", text:"Are you sure you want to overwrite "+response.uri+"?", onSubmit:function(answer) {
 					if(answer) {
 						file.saveAs(response.uri, me.editor.getValue(), true, me.saveFileAsCallback.bind(me));
 						me.updateFileStatus(file);
 					}
-				});
+				}});
 				break;
 
 				default:

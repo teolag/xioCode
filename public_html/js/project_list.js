@@ -160,7 +160,7 @@ var ProjectList = (function() {
 
 			case "delete":
 			var project = projects[projectId];
-			XioPop.confirm("Delete project?", "Are you sure you want to delete project '"+project.name+"'?", function(answer) {
+			XioPop.confirm({title:"Delete project?", text:"Are you sure you want to delete project '"+project.name+"'?", onSubmit:function(answer) {
 				if(answer) {
 					var formData = new FormData();
 					formData.append("project_id", projectId);
@@ -179,11 +179,11 @@ var ProjectList = (function() {
 				} else {
 					console.debug("Delete aborted");
 				}
-			});
+			}});
 			break;
 
 			case "rename":
-			XioPop.prompt("Rename project", "Enter a new name for the project", projects[projectId].name, function(newName) {
+			XioPop.prompt({title:"Rename project", text:"Enter a new name for the project", value:projects[projectId].name, onSubmit:function(newName) {
 				if(newName) {
 					var formData = new FormData();
 					formData.append("new_name", newName);
@@ -201,7 +201,7 @@ var ProjectList = (function() {
 					};
 					xhr.send(formData);
 				}
-			});
+			}});
 			break;
 
 			case "config":
@@ -354,7 +354,7 @@ var ProjectList = (function() {
 	};
 
 	var addNewProject = function() {
-		XioPop.prompt("Enter the project's name", "", "", function(projectName) {
+		XioPop.prompt({title:"Enter the project's name", onSubmit:function(projectName) {
 			if(projectName) {
 				var xhr = new XMLHttpRequest();
 				xhr.open("get", "/scripts/new_project.php?projectName="+projectName, true);
@@ -366,7 +366,7 @@ var ProjectList = (function() {
 				};
 				xhr.send();
 			}
-		});
+		}});
 	};
 
 	var getProject = function(id) {
@@ -421,7 +421,7 @@ var ProjectList = (function() {
 				{id:"OneProject", text:"Create one project including these items"},
 				{id:"SplitProjects", text:"Split up into " + rootEntries.length + " separate projects"}
 			];
-			XioPop.choose("Drop action", rootEntries.length+" items was dropped, what do you want to do with them?", options, chooseCallback);
+			XioPop.choose({title:"Drop action", text:rootEntries.length+" items was dropped, what do you want to do with them?", options:options, onSubmit:chooseCallback});
 
 			function chooseCallback(answer) {
 				console.log("Answer:", answer);

@@ -13,7 +13,7 @@ var codemirrorDefaults = {
 	matchBrackets: true,
 	autoCloseTags: true,
 	autoCloseBrackets: true,
-    autoClearEmptyLines: true,
+	autoClearEmptyLines: true,
 	styleActiveLine: true,
 	indentUnit: 4,
 	indentWithTabs: true,
@@ -117,7 +117,7 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 		editor.replaceRange(codemirrorSnippets[text],start, cur);
 	} else {
 		//TODO: InsertSoftTab to use spaces
-        editor.execCommand(editor.getSelection().length ? "indentMore" : "insertTab");
+		editor.execCommand(editor.getSelection().length ? "indentMore" : "insertTab");
 	}
 };
 
@@ -134,11 +134,11 @@ CodeMirror.commands.newFile = function(editor) {
 
 CodeMirror.commands.jump2Line = function(editor, line) {
 	if(line===undefined) {
-		XioPop.prompt("Jump to line", "Enter the desired line number", "", function(lineNumber) {
+		XioPop.prompt({title:"Jump to line", text:"Enter the desired line number", onSubmit:function(lineNumber) {
 			if(Number(lineNumber) > 0) {
 				CodeMirror.commands.jump2Line(editor, Number(lineNumber)-1);
 			}
-		});
+		}});
 		return;
 	}
 	editor.setCursor(line+100, 0);
@@ -150,9 +150,9 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 
 CodeMirror.commands.removeTrailingSpaces = function(editor) {
 	editor.doc.eachLine(function(line) {
-        line.text = line.text.replace(/\s+$/,"");
+		line.text = line.text.replace(/\s+$/,"");
    	});
-    editor.refresh();
+	editor.refresh();
 };
 
 
@@ -161,9 +161,8 @@ CodeMirror.commands.showAllFunctions = function(editor) {
 
 	console.log(functions);
 
-	XioPop.select(functions, function(f) {
-    	console.log("selected function", f)
-        XioPop.close();
-        CodeMirror.commands.jump2Line(editor, f.line);
-    });
+	XioPop.select({options:functions, onSubmit:function(f) {
+		console.log("selected function", f)
+		CodeMirror.commands.jump2Line(editor, f.line);
+	}});
 };
