@@ -176,6 +176,7 @@ switch($_REQUEST['action']) {
 
 http_response_code(200);
 $response['timer'] = microtime(true)-$startTime;
+header('Content-Type: application/json');
 echo json_encode($response);
 
 

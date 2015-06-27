@@ -388,7 +388,7 @@ var ProjectList = (function() {
 					projects[projectId].last_opened = json.last_opened;
 				}
 			} else {
-				console.warn("could not update last_opened");
+				XioPop.alert({title:"Permission error", text:"Insuffient permission to update project last opened date in project config file."});
 			}
 		});
 	};

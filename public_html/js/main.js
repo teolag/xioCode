@@ -383,15 +383,6 @@ function previewFile(uri) {
 }
 
 
-function errorCallback(e) {
-	if(e.status === 401) {
-		console.warn("You have to login again...");
-		// TODO: relogin without loosing data
-	} else {
-		console.error("Error callback", e);
-	}
-}
-
 
 function setHash(newHash) {
 	if(!newHash) {

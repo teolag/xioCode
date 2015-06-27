@@ -21,17 +21,24 @@ var ProjectConfig = (function() {
 	onSubmit = function(e) {
 		e.preventDefault();
 		console.log("Save project configurations...");
-		Ajax.post("/scripts/project_config.php?action=save", form, onSaveSuccess);
+		Ajax.post2JSON("/scripts/project_config.php?action=save", form, onSaveCallback);
 	},
 
-	onSaveSuccess = function(xhr) {
-		console.log("Project configurations saved!");
-		close();
-		ProjectList.loadProjects();
-	},
+	onSaveCallback = function(data) {
+		switch(data.status) {
+			case STATUS_OK:
+			console.log("Project configurations saved!");
+			close();
+			ProjectList.loadProjects();
+			break;
 
-	onSaveError = function(e) {
-		console.err("Error saving config", e);
+			case STATUS_FILE_COULD_NOT_UPDATE:
+			XioPop.alert({title:"Permission denied", text:"You do not have sufficient permission to update project config file"});
+			break;
+
+			default:
+			XioPop.alert({title:"Error", text:"Unknown error while saving project config"});
+		}
 	},
 
 	tagHandler = function(e) {

@@ -11,35 +11,42 @@ $config = json_decode(file_get_contents($configFile), 1);
 if(isset($_GET['action'])) {
 
 	switch($_GET['action']) {
-	
+
 		case "save":
-		echo "saving...";	
 		foreach($_POST['config'] as $key => $value) {
 			$config[$key] = $value;
 		}
-		print_r($config);
+		$response = array(
+			"status" => STATUS_OK,
+			"message" => "config saved"
+		);
 		break;
-		
-		
+
+
 		case "updateLastOpened":
 		$config["last_opened"] = time();
 		$response = array(
 			"status" => STATUS_OK,
 			"message" => "last opened updated",
 			"project_id" => $_REQUEST['project_id'],
-			"last_opened" => $config["last_opened"]		
-		);	
-		echo json_encode($response);
+			"last_opened" => $config["last_opened"]
+		);
 		break;
-		
-		
+
 		default: die("unkown action");
 	}
-	
-	if(!file_put_contents($configFile, json_encode($config))) {
-		http_response_code(400);
-		die("Could not write to config file: ". $configFile);
-	}	
+
+
+	if(!is_writeable($configFile)) {
+		$response = array(
+			"status" => STATUS_FILE_COULD_NOT_UPDATE,
+			"message" => "config file not writable"
+		);
+	} else {
+		file_put_contents($configFile, json_encode($config));
+	}
+	header('Content-Type: application/json');
+	echo json_encode($response);
 	exit;
 }
 
@@ -81,7 +88,7 @@ function getValue(&$config, $key) {
 		</li>
 		<li>
 			<label for="confTags">Tags:</label>
-			<input type="text" name="tags" id="confTags" />			
+			<input type="text" name="tags" id="confTags" />
 			<ul id="listTags" class="tags"></ul>
 		</li>
 	</ul>
@@ -89,7 +96,7 @@ function getValue(&$config, $key) {
 		<button type="submit">Save</button>
 		<button type="button" id="btnConfigCancel">Cancel</button>
 	</div>
-	
+
 	<?php foreach($tags as $tag) { ?>
 		<input type="hidden" name="config[tags][]" value="<?php echo $tag ?>" />
 	<?php } ?>
