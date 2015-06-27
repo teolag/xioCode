@@ -24,47 +24,51 @@ if(!empty($_POST['prio'])) {
 	if(file_put_contents($todoFile, json_encode($todos))) {
 		$response['status'] = STATUS_OK;
 	} else {
-		$response['status'] = STATUS_TODO_COULD_NOT_BE_SAVED;
+		$response['status'] = STATUS_FILE_COULD_NOT_UPDATE;
 	}
 
 
 } elseif(!empty($_POST['description'])) {
-	if(is_file($todoFile)) {
-		$todos = json_decode(file_get_contents($todoFile), true);
-		if(empty($todos)) {
-			$nextId = 1;
-			$todos = array();
+
+	if(is_writeable($todoFile)) {
+
+		if(is_file($todoFile)) {
+			$todos = json_decode(file_get_contents($todoFile), true);
+			if(empty($todos)) {
+				$nextId = 1;
+				$todos = array();
+			} else {
+				$nextId = key(array_slice($todos, -1, 1, TRUE)) + 1;
+			}
 		} else {
-			$nextId = key(array_slice($todos, -1, 1, TRUE)) + 1;
+			$todos = array();
+			$nextId = 1;
 		}
-	} else {
-		$todos = array();
-		$nextId = 1;
-	}
 
-	$todo = array();
-	if(empty($_POST['todo_id'])) {
-		$response['message'] = "new " . $_POST['type'] . " saved";
-		$todo['created'] = $_POST['ts'];
-		$todoId = $nextId;
-	} else {
-		$todoId = $_POST['todo_id'];
-		$todo = $todos[$todoId];
-		$todo['edited'] = $_POST['ts'];
-		$response['message'] = $_POST['type'] . " saved";
-	}
-	$todo['description'] = $_POST['description'];
-	$todo['type'] = $_POST['type'];
-	$todo['status'] = $_POST['status'];
-	$todos[$todoId] = $todo;
-	$response['todo_id'] = $todoId;
-	$response['todo'] = $todo;
+		$todo = array();
+		if(empty($_POST['todo_id'])) {
+			$response['message'] = "new " . $_POST['type'] . " saved";
+			$todo['created'] = $_POST['ts'];
+			$todoId = $nextId;
+		} else {
+			$todoId = $_POST['todo_id'];
+			$todo = $todos[$todoId];
+			$todo['edited'] = $_POST['ts'];
+			$response['message'] = $_POST['type'] . " saved";
+		}
+		$todo['description'] = $_POST['description'];
+		$todo['type'] = $_POST['type'];
+		$todo['status'] = $_POST['status'];
+		$todos[$todoId] = $todo;
+		$response['todo_id'] = $todoId;
+		$response['todo'] = $todo;
 
 
-	if(file_put_contents($todoFile, json_encode($todos))) {
-		$response['status'] = STATUS_OK;
+		file_put_contents($todoFile, json_encode($todos));
+
 	} else {
-		$response['status'] = STATUS_TODO_COULD_NOT_BE_SAVED;
+		$response["status"] = STATUS_FILE_COULD_NOT_UPDATE;
+		$response["message"] = "todo file not writable";
 	}
 } elseif($_GET['action']==="delete") {
 	$todos = json_decode(file_get_contents($todoFile), true);
@@ -73,7 +77,7 @@ if(!empty($_POST['prio'])) {
 	if(file_put_contents($todoFile, json_encode($todos))) {
 		$response['status'] = STATUS_OK;
 	} else {
-		$response['status'] = STATUS_TODO_COULD_NOT_BE_SAVED;
+		$response['status'] = STATUS_FILE_COULD_NOT_DELETE;
 	}
 	$response['message'] = "delete todo";
 	$response['todo_id'] = $todoId;
@@ -91,6 +95,7 @@ if(!empty($_POST['prio'])) {
 
 
 http_response_code(200);
+header('Content-Type: application/json');
 $response['timer'] = microtime(true)-$startTime;
 echo json_encode($response);
 ?>

@@ -194,8 +194,6 @@ var Todo = (function() {
 		var radioStatusSelected = template.querySelector("input[name=status][value="+settings.status+"]");
 		radioStatusSelected.checked="checked";
 
-
-
 		pop = XioPop.showElement({element:document.importNode(template, true)});
 
 		var form = document.getElementById("formTodo");
@@ -218,9 +216,20 @@ var Todo = (function() {
 	},
 
 	submitCallback = function(json) {
-		console.log("submit callback", json);
-		todos[json.todo_id] = json.todo;
-		updateList();
+		switch(json.status) {
+			case STATUS_OK:
+			console.log("submit callback", json);
+			todos[json.todo_id] = json.todo;
+			updateList();
+			break;
+
+			case STATUS_FILE_COULD_NOT_UPDATE:
+			XioPop.alert({title:"Permission denied", text:"You do not have sufficient permission to update project todo file"});
+			break;
+
+			default:
+			XioPop.alert({title:"Error", text:"Unknown error while saving todo config"});
+		}
 	},
 
 	deleteTodo = function(e) {
