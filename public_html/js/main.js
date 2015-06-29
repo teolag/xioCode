@@ -438,6 +438,7 @@ function getMimeByUri(uri) {
 			case "svg": return "xml";
 		}
 	}
+	if(info.mime==="text/x-sql") return "text/x-sql";
 	return info? info.mode : "";
 }
 
