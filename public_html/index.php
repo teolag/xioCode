@@ -17,7 +17,7 @@ $scope = "profile%20email";
 $googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&amp;redirect_uri=%s&amp;response_type=code&amp;client_id=%s", $scope, $config['oauth2']['redirectUri'], $config['oauth2']['clientId']);
 
 
-
+PatchDB::run("../database/patchdb.sql", $db);
 
 
 ?>
