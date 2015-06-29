@@ -63,9 +63,8 @@ if(!empty($_POST['prio'])) {
 		$response['todo_id'] = $todoId;
 		$response['todo'] = $todo;
 
-
+		$response['status'] = STATUS_OK;
 		file_put_contents($todoFile, json_encode($todos));
-
 	} else {
 		$response["status"] = STATUS_FILE_COULD_NOT_UPDATE;
 		$response["message"] = "todo file not writable";

@@ -25,19 +25,18 @@ input, textarea, select {
 	padding: 0.5em;
 }
 input:focus, textarea:focus, select:focus {
-	outline: 0;
 	border-color: #E79D00;
 }
 
 button {
 	padding: 5px 10px;
-	/*background-color: #bbb;
-	border-radius: 5px;
-	border: 0;*/
+	background-color: #bbb;
+	border: 0;
 	cursor: pointer;
 }
+button:focus,
 button:hover {
-	/*background-color: #FFD697;	*/
+	background-color: #FFD697;
 }
 
 h1 {

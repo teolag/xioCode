@@ -149,14 +149,21 @@
 	};
 
 	var saveCallback = function(callback, response) {
-		if(response.status !== STATUS_OK) {
-			console.warn("Error " + response.status + ": " + response.message);
-			return;
-		}
+		switch(response.status) {
+			case STATUS_OK:
+			this.doc.markClean();
+			this.state = _.STATE_READY;
+			if(callback) callback(this);
+			break;
 
-		this.doc.markClean();
-		this.state = _.STATE_READY;
-		if(callback) callback(this);
+			case STATUS_FILE_COULD_NOT_UPDATE:
+			XioPop.alert({title:"Permission denied", text:"You do not have sufficient permission to update the file"});
+			this.state = _.STATE_DIRTY;
+			break;
+
+			default:
+			XioPop.alert({title:"Error", text:"Unknown error while saving file"});
+		}
 	};
 
 	var saveAsCallback = function(callback, response) {
