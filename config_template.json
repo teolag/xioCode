@@ -7,5 +7,11 @@
 		"username":"code",
 		"password":"password",
 		"salt":"secretsalt"
-	}
+	},
+	 "oauth2":{
+                "clientId": "",
+                "clientSecret": "",
+                "redirectUri": "http://xioCode.domain.se/scripts/oauth2.php"
+        }
+
 }
