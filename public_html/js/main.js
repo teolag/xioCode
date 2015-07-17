@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 	console.log("CodeMirror" , CodeMirror.version, "loaded");
 
-
 	GateKeeper.init(loginCallback, logoutCallback);
 	Preview.init();
 
@@ -43,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 		var date = new Date(e.timeStamp);
 		console.debug(document.hidden ? "borta!" : "tillbaka!", date.toTimeString().substr(0,8));
 	}, false);
-
 
 	h1 = document.querySelector("#header h1");
 	h1.addEventListener("click", function(){setHash()}, false);
@@ -63,14 +61,12 @@ document.addEventListener("DOMContentLoaded", function(e) {
 		dividers[i].addEventListener("mousedown", startDivide, false);
 	}
 
-
 	if(_USER && _USER.username) {
 		GateKeeper.setUser(_USER);
 	} else {
 		GateKeeper.showLogin();
 	}
 }, false);
-
 
 
 function startDivide(e) {
@@ -95,9 +91,7 @@ function startDivide(e) {
 		document.removeEventListener("mousemove", mouseMove);
 		document.removeEventListener("mouseup", mouseUp);
 	}
-
 }
-
 
 
 function loginCallback(user) {
@@ -108,7 +102,6 @@ function loginCallback(user) {
 	ProjectList.loadProjects();
 	readHash();
 }
-
 
 function logoutCallback() {
 	ProjectList.clear();
@@ -127,7 +120,6 @@ function logoutCallback() {
 	oldHash = null;
 	xioDocs = {};
 }
-
 
 function warnBeforeUnload(e) {
 	var n = File.countDirtyFiles();
@@ -381,7 +373,6 @@ function previewFile(uri) {
 		window.open(path, 'code_file_preview');
 	}
 }
-
 
 
 function setHash(newHash) {

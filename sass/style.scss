@@ -1,0 +1,12 @@
+$color-orange: #435873;
+$text-color: #444;
+
+
+html {
+	background-color: $color-orange;
+}
+
+input {
+	font: inherit;
+	color: $text-color;
+}

@@ -189,5 +189,4 @@
 
 		if(callback) callback(this);
 	}
-
-}())
+}());

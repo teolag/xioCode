@@ -30,7 +30,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 		<meta name="theme-color" content="#3d392f">
 
 		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
-		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto%7CInconsolata'  type='text/css'>
+		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto%7CInconsolata' type='text/css'>
 		<link rel="stylesheet" href="http://cdn.xio.se/xioPop/dev/XioPop.css" type="text/css" />
 
 		<link rel="shortcut icon" href="/favicon.ico" />
@@ -38,8 +38,8 @@ PatchDB::run("../database/patchdb.sql", $db);
 		<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
 		<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96">
 
-		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js"></script>
-		<script src="http://cdn.xio.se/AjaXIO/dev/AjaXIO.js"></script>
+		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js" async></script>
+		<script src="http://cdn.xio.se/AjaXIO/dev/AjaXIO.js" async></script>
 	</head>
 	<body<?php echo $loginState ?>>
 		<div id="header">
