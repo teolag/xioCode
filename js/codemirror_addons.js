@@ -104,7 +104,7 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 
 	var c = editor.getSearchCursor(/\s/);
 
-	match = c.matches(true, cur);
+	var match = c.matches(true, cur);
 	console.log("match", match);
 	var start;
 	if(match) {
@@ -112,7 +112,7 @@ CodeMirror.commands.tabWithAutoComplete = function(editor) {
 	} else {
 		start = {line:cur.line, ch:0};
 	}
-	text = editor.getRange(start, cur).trim();
+	var text = editor.getRange(start, cur).trim();
 	if(codemirrorSnippets[text]) {
 		editor.replaceRange(codemirrorSnippets[text],start, cur);
 	} else {
@@ -147,14 +147,12 @@ CodeMirror.commands.jump2Line = function(editor, line) {
 	editor.focus();
 }
 
-
 CodeMirror.commands.removeTrailingSpaces = function(editor) {
 	editor.doc.eachLine(function(line) {
 		line.text = line.text.replace(/\s+$/,"");
    	});
 	editor.refresh();
 };
-
 
 CodeMirror.commands.showAllFunctions = function(editor) {
 	var functions = findFunctions();

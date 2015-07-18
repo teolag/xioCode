@@ -9,17 +9,11 @@ if(Gatekeeper::hasAccess()) {
 	$jsUser = json_encode(Gatekeeper::getUser($db));
 }
 
-
-session_start();
 $token = $_SESSION['token'];
 $scope = "profile%20email";
-
 $googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&amp;redirect_uri=%s&amp;response_type=code&amp;client_id=%s", $scope, $config['oauth2']['redirectUri'], $config['oauth2']['clientId']);
 
-
 PatchDB::run("../database/patchdb.sql", $db);
-
-
 ?>
 <!doctype html>
 <html>
@@ -29,17 +23,29 @@ PatchDB::run("../database/patchdb.sql", $db);
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 		<meta name="theme-color" content="#3d392f">
 
-		<link rel="stylesheet" href="/scripts/minify_css.php" type="text/css" />
-		<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto%7CInconsolata' type='text/css'>
-		<link rel="stylesheet" href="http://cdn.xio.se/xioPop/dev/XioPop.css" type="text/css" />
-
 		<link rel="shortcut icon" href="/favicon.ico" />
 		<link rel="manifest" href="/manifest.json">
 		<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
 		<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96">
 
-		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js" async></script>
-		<script src="http://cdn.xio.se/AjaXIO/dev/AjaXIO.js" async></script>
+		<script>
+			var loadCss = function(href) {
+				var link = document.createElement('link');
+				link.rel = 'stylesheet';
+				link.href = href;
+				document.getElementsByTagName('head')[0].appendChild(link);
+			};
+			requestAnimationFrame(function() {
+				console.log("Load css files")
+				loadCss('http://fonts.googleapis.com/css?family=Roboto%7CInconsolata');
+				loadCss('http://cdn.xio.se/xioPop/dev/XioPop.css');
+				loadCss('http://cdn.xio.se/ColorPicker/dev/ColorPicker.css');
+				loadCss('/css/style.css');
+
+				loadCss('/codemirror/lib/codemirror.css');
+				loadCss('/codemirror/addon/dialog/dialog.css');
+			});
+		</script>
 	</head>
 	<body<?php echo $loginState ?>>
 		<div id="header">
@@ -133,9 +139,15 @@ PatchDB::run("../database/patchdb.sql", $db);
 				<span class="first">xio</span>
 				<span class="second">Code</span>
 			</h1>
-			<?php if(Git::isGit()) : ?>
-			<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", Git::getLastCommitDate()); ?></div>
-			<?php endif; ?>
+
+			<?php
+
+				/*
+				<?php if(Git::isGit()) : ?>
+				<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", Git::getLastCommitDate()); ?></div>
+				<?php endif; ?>
+				*/
+			?>
 
 			<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off">
 				<input type="text" name="code_username" id="inputUsername" placeholder="Username" autofocus />
@@ -180,6 +192,10 @@ PatchDB::run("../database/patchdb.sql", $db);
 			?>
 			_USER = <?php echo $jsUser; ?>;
 		</script>
-		<script src="/scripts/minify_js.php"></script>
+		<script src="/js/codemirror.min.js"></script>
+		<script src="/js/xiocode.min.js"></script>
+		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js"></script>
+		<script src="http://cdn.xio.se/AjaXIO/dev/AjaXIO.js"></script>
+		<script src="http://cdn.xio.se/ColorPicker/dev/ColorPicker.js"></script>
 	</body>
 </html>

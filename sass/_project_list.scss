@@ -1,0 +1,124 @@
+#projectChooser {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	background-color: #eee;
+}
+#projectChooser.hidden {
+	display: none;
+}
+
+#projectChooser .button {
+	width:32px;
+	height:32px;
+	border:0 none;
+	cursor:pointer;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	background-position:center center;
+}
+
+
+
+#projectFilter {
+	padding: 0.5em;
+	flex: 0 0 auto;
+}
+
+#txtProjectFilter {
+	font-weight: bold;
+	color: #444;
+	margin: 0;
+}
+
+#btnNewProject {
+	width: 24px;
+	height: 24px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+#btnNewProject:hover {
+	fill: #bada55;
+}
+
+
+
+
+#projectList {
+	padding: 0.5em;
+	flex: 1;
+	overflow: auto;
+}
+
+#projectList.dropzone {
+	background-color: rgba(186, 218, 85, 0.5);
+
+}
+
+#projectList>ul {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#projectList .project {
+	width: 150px;
+	height: 100px;
+	margin: 0.3em;
+	padding: 0.8em 1em;
+	cursor: pointer;
+	background-color: white;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	display: flex;
+	flex-direction: column;
+}
+#projectList .hidden {
+	display: none;
+}
+
+#projectList .selected {
+	background-color: #bada55;
+	background-color: rgba(186, 218, 85, 0.32);
+}
+
+
+
+#projectList .name {
+	font-weight: bold;
+	color: #8A8A8A;
+	font-size: 1.2em;
+	margin-bottom: 0.5em;
+}
+
+#projectList .description {
+	color: #888;
+	font-size: 0.8em;
+	flex: 1;
+	overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#projectList .functions {
+	display: none;
+	padding: 0;
+	text-align: right;
+}
+#projectList .functions li {
+	display: inline-block;
+}
+
+#projectList .functions li .icon {
+	width: 16px;
+	height: 16px;
+	fill: rgba(0,0,0,0.2);
+	pointer-events: none;
+}
+#projectList .functions li:hover .icon {
+	fill: rgba(0,0,0,0.6);
+}
+#projectList .selected .functions {
+	display: inline;
+}
+
+

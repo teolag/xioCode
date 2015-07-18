@@ -1,0 +1,26 @@
+textarea, input, button, select {
+	color: inherit;
+	font: inherit;
+	box-sizing: border-box;
+}
+
+input, textarea, select {
+	border: 1px solid #bbb;
+	padding: 0.5em;
+}
+
+input:focus, textarea:focus, select:focus {
+	border-color: #E79D00;
+}
+
+button {
+	padding: 5px 10px;
+	background-color: #bbb;
+	border: 0;
+	cursor: pointer;
+
+	&:focus,
+	&:hover {
+		background-color: #FFD697;
+	}
+}

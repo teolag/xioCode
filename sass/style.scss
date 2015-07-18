@@ -1,12 +1,18 @@
-$color-orange: #435873;
-$text-color: #444;
+$color-orange: #435473;
+$text-color: #666;
 
 
-html {
-	background-color: $color-orange;
-}
+@import "main";
+@import "input";
+@import "login";
+@import "tab_bar";
+@import "user_menu";
+@import "project_config";
+@import "project_list";
+@import "file_list";
+@import "todo";
+@import "codemirror";
 
-input {
-	font: inherit;
-	color: $text-color;
-}
+@import "mobile";
+
+

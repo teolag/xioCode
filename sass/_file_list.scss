@@ -1,0 +1,138 @@
+#fileBrowser {
+	width: 220px;
+	display: flex;
+	flex-direction: column;
+}
+
+#fileList {
+	background-color: #eee;
+	border:1px solid #ccc;
+	margin: 0;
+	overflow: auto;
+	padding: 0.3em;
+	flex: 1;
+}
+#projectArea.compact #fileList {
+	display: none;
+}
+
+#fileList ul{
+	list-style:none;
+	padding: 0;
+	margin-bottom: 0.3em;
+}
+#fileList>ul{
+	margin: 0;
+}
+
+#fileList ul ul{
+	display: none;
+	margin-left: 1.3em;
+}
+
+#fileList li {
+	cursor: pointer;
+	white-space: nowrap;
+}
+#fileList li.hidden {
+	display: none;
+}
+
+
+#fileList li.selected .file {
+	background-color: #d2d2d2;
+}
+
+#fileList li.rightClicked .file {
+	background-color: #bada55;
+}
+
+#fileList li.changed .filename {
+	text-decoration:underline;
+}
+
+#fileList li .file {
+	display: flex;
+	align-items: center;
+	padding: 2px;
+	margin-top: 1px;
+}
+
+#fileList li svg {
+	flex: 0 0 20px;
+	height: 20px;
+	margin-right: 0.2em;
+	fill: #777;
+}
+#fileList li .filename {
+	font-size: 0.8em;
+	flex: 1 0 auto;
+}
+
+
+
+#fileList.dropTo, #fileList li.dropTo {
+	background-color: rgba(186, 218, 85, 0.5);
+	border-radius: 0.5em;
+}
+
+
+
+#fileListRightClickMenu {
+	position: absolute;
+	box-shadow: 1px 2px 7px 0px rgba(0,0,0,0.2);
+	border-radius: 0.2em;
+	background-color: #fff;
+	padding: 0.2em;
+	z-index: 10;
+	font-size: 0.9em;
+}
+#fileListRightClickMenu.root li.fileOnly {
+	display: none;
+}
+
+#fileListRightClickMenu ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#fileListRightClickMenu li {
+	border-bottom: 1px solid #eee;
+	padding: 0.2em 0.5em;
+	cursor: pointer;
+}
+
+#fileListRightClickMenu li:hover {
+	background-color: #bada55;
+}
+
+#fileList .spinner {
+	margin-left: 0.5em;
+	font-size: 1.2em;
+	display: inline-block;
+	line-height: 1;
+	height: 1em;
+	padding: 0;
+	-webkit-animation: anim-rotate 2s infinite linear;
+	animation: anim-rotate 2s infinite linear;
+}
+#fileList .spinner:before {
+	width: auto;
+	font-size: 1em;
+}
+
+
+#fileList li.open>div>svg {
+	display: none;
+}
+#fileList li.open>div>svg.open {
+	display: block;
+}
+#fileList li>div>svg.open {
+	display: none;
+}
+
+#fileList li svg.file-phpp {
+	fill: #669;
+}

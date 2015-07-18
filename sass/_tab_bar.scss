@@ -1,0 +1,54 @@
+.tabBar {
+	padding: 0;
+	margin: 0 0 0 0.3em;
+	display: flex;
+	flex-direction: row;
+	flex: 1;
+	overflow: hidden;
+}
+.tabBar>li {
+	display: flex;
+	align-items: center;
+	padding: 0.1em 0.8em 0 0.8em;
+	background-color: #d5ddd5;
+	margin-right: 4px;
+	border-radius: 5px 5px 0 0;
+	cursor: pointer;
+	color: #222;
+	font-size: 0.8em;
+	min-width: 60px;
+}
+.tabBar>li.selected {
+	cursor: default;
+	background-color: #E2CFA7;
+}
+.tabBar>li .filename {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1;
+}
+.tabBar>li.loading .filename {
+	font-style: italic;
+	color: #888;
+}
+.tabBar>li.saving .close,
+.tabBar>li.loading .close {
+	-webkit-animation: anim-rotate 4s linear infinite;
+    -moz-animation: anim-rotate 4s linear infinite;
+    animation: anim-rotate 4s linear infinite;
+}
+.tabBar>li.changed .filename {
+	text-decoration: underline;
+}
+.tabBar>li .close {
+	fill: rgba(0,0,0,0.3);
+	width: 10px;
+	height: 10px;
+	margin-left: 0.8em;
+	display: block;
+}
+.tabBar>li .close:hover {
+	fill: rgba(0,0,0,0.8);
+	cursor: pointer;
+}

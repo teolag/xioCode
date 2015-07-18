@@ -1,0 +1,62 @@
+#userMenu:hover>div {
+	color: #bada55;
+	background-color: #666;
+}
+#userMenu .button {
+	cursor: default;
+	background-color: #999;
+	padding: 0.2em 0.5em;
+	color: #333;
+	border-radius: 0.3em;
+}
+#userMenu .button span {
+	vertical-align: middle;
+}
+#userMenu .button .icon {
+	width: 14px;
+	height: 14px;
+	vertical-align: middle;
+	fill: #333;
+}
+#userMenu:hover .button .icon {
+	fill: #bada55;
+}
+
+#userMenu>div:before{
+	padding-right: 0.5em;
+}
+#userMenu:hover ul {
+	display: block;
+}
+#userMenu ul {
+	display: none;
+	margin: 0;
+	padding: 0;
+	background-color: #333;
+	font-size: 0.8em;
+	position: absolute;
+	z-index: 8;
+	right: 0;
+}
+#userMenu ul li:before{
+	padding-right: 0.5em;
+}
+#userMenu ul li{
+	padding: 4px 10px;
+	border-bottom: 1px solid #444;
+	cursor: pointer;
+}
+#userMenu ul li:hover{
+	background-color: #444;
+	color: #bada55;
+}
+#userMenu li .icon {
+	width: 16px;
+	height: 16px;
+	fill: #888;
+	margin-right: 0.5em;
+	vertical-align: text-bottom;
+}
+#userMenu li:hover .icon {
+	fill: #bada55;
+}

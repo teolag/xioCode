@@ -1,0 +1,219 @@
+html {
+	font-size: 15px;
+	font-family: 'Roboto', sans-serif;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	color: $text-color;
+	background-color: #fff;
+	overflow: hidden;
+}
+
+
+
+
+ul li {
+	list-style-type: none;
+}
+
+
+
+
+
+
+h1 {
+	font-size: 1.3em;
+	display: flex;
+	align-items: center;
+}
+h1 svg {
+	margin-right: 0.5em;
+	width: 20px;
+	height: 20px;
+}
+h1 .first {
+	color: #999;
+}
+h1 .second {
+	color: #E79D00;
+}
+
+
+#header {
+	background-color: #444;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	color: #888;
+	padding: 0.3em;
+}
+
+#header h1 {
+	cursor: pointer;
+	margin: 0;
+	padding: 0 0.5em;
+}
+
+#header #pageTitle {
+	font-size: 1.2em;
+	text-align: center;
+	flex: 1;
+}
+
+
+#projectToolbar {
+	margin-right: 0.5em;
+	display: flex;
+}
+#projectToolbar.disabled .icon {
+	fill: rgba(255,255,255,0.2);
+	cursor: default;
+}
+
+
+
+ul.tags {
+	margin: 0;
+	padding: 0;
+}
+
+ul.tags li {
+	display: inline-block;
+	padding: 0.3em 0.8em;
+	background-color: #DBDBDB;
+	border-radius: 0.5em;
+	margin: 0.2em;
+	font-size: 0.7em;
+	color: #333;
+}
+
+
+
+#projectArea {
+	display: flex;
+	flex-direction: row;
+	flex: 1;
+	padding: 0.2em 0.5em 0.5em;
+}
+#projectArea.hidden {
+	display: none;
+}
+
+.pane {
+
+}
+.divider {
+	width: 0.5em;
+	cursor: ew-resize;
+}
+
+.xiopop {
+	z-index: 6;
+}
+
+
+
+
+.codeEditor {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+.codeEditor .header {
+	display: flex;
+	flex-direction: row;
+}
+.toolbar {
+	margin: 0;
+	padding: 0;
+	flex: 0 0 auto;
+	display: flex;
+}
+.toolbar li {
+	cursor: pointer;
+	margin: 0.1em;
+}
+.toolbar li.disabled,
+.toolbar.disabled li {
+	pointer-events: none;
+	cursor: default;
+}
+.toolbar li.disabled .icon {
+	fill: #ddd;
+}
+.toolbar li .icon {
+	width: 20px;
+	height: 20px;
+	fill: #888;
+	display: block;
+	pointer-events: none;
+}
+.toolbar li:hover .icon {
+	fill: #bada55;
+}
+
+
+
+
+
+
+@-webkit-keyframes anim-rotate {
+	0% { -webkit-transform: rotate(0); }
+	100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes anim-rotate {
+	0% { transform: rotate(0); }
+	100% { transform: rotate(360deg); }
+}
+
+
+.hidden {
+	display:none;
+}
+
+
+
+
+
+
+/*************************** Live preview *****************************/
+#preview {
+	flex: 1;
+	padding: 0.5em;
+
+}
+
+#previewFrame {
+	background-color: #fff;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+}
+
+
+
+
+
+/*************************** Selectable list ***************************/
+ul.selectableList {
+	margin:0;
+	padding: 0;
+}
+
+ul.selectableList li {
+	cursor: pointer;
+	padding: 3px;
+}
+
+ul.selectableList li:hover {
+	background-color: #ddd;
+
+}
+

@@ -114,7 +114,7 @@ var GateKeeper = (function() {
   			top = (screen.height/2)-(h/2),
 			options = 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left;
   		window.open(url, title, options);
-	};
+	},
 
 	googleLoginCallback = function(data) {
 		setUser(data.user);

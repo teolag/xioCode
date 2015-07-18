@@ -1,0 +1,54 @@
+.cm-s-xio .cm-keyword {color: #9040CF;}
+.cm-s-xio .cm-atom {color: #219;}
+.cm-s-xio .cm-number {color: #164;}
+.cm-s-xio .cm-def {color: #00f;}
+.cm-s-xio .cm-variable {color: black;}
+.cm-s-xio .cm-variable-2 {color: #05a;}
+.cm-s-xio .cm-variable-3 {color: #085;}
+.cm-s-xio .cm-property {color: black;}
+.cm-s-xio .cm-operator {color: black;}
+.cm-s-xio .cm-comment {color: #409C3D;}
+.cm-s-xio .cm-string {color: #4686CC;}
+.cm-s-xio .cm-string-2 {color: #f50;}
+.cm-s-xio .cm-meta {color: #555;}
+.cm-s-xio .cm-qualifier {color: #555;}
+.cm-s-xio .cm-builtin {color: #4702EA;}
+.cm-s-xio .cm-bracket {color: #997;}
+.cm-s-xio .cm-tag {color: #170;}
+.cm-s-xio .cm-attribute {color: #00c;}
+.cm-s-xio .cm-header {color: blue;}
+.cm-s-xio .cm-quote {color: #090;}
+.cm-s-xio .cm-hr {color: #999;}
+.cm-s-xio .cm-link {color: #00c;}
+
+
+
+.CodeMirror {
+	border: 1px solid #ccc;
+	font-size: 1em;
+	font-family: 'Inconsolata', sans-serif;
+}
+.cm-s-default {
+	background: #fff;
+}
+.CodeMirror-activeline-background {
+	background-color: rgba(150, 150, 150, 0.1);
+}
+.CodeMirror-focused .cm-matchhighlight {
+	background-color: rgba(150, 150, 150, 0.2);
+}
+.CodeMirror-focused .CodeMirror-selected {
+	background: pink;
+}
+.CodeMirror-matchingbracket {
+}
+.CodeMirror-nonmatchingbracket {
+	border-bottom: 1px solid red;
+}
+.cm-searching {
+	background: rgba(255, 212, 121, 0.4);
+}
+.cm-tab {
+	border-right: 1px solid #D0EBF1;
+	margin-left: -1px;
+}
