@@ -1,6 +1,10 @@
 {
 	"project_uri":"/var/www/xioCode/public_html/projects/",
 	"project_url":"http://xioCode.domain.se/projects/",
+	"class_paths":{
+		"DatabasePDO":"/git/DatabasePDO/DatabasePDO.php",
+		"PHPMailer":"/git/PHPMailer/class.phpmailer.php"
+	},
 	"database":{
 		"server":"localhost",
 		"name":"code",
@@ -8,10 +12,9 @@
 		"password":"password",
 		"salt":"secretsalt"
 	},
-	 "oauth2":{
-                "clientId": "",
-                "clientSecret": "",
-                "redirectUri": "http://xioCode.domain.se/scripts/oauth2.php"
-        }
-
+	"oauth2":{
+		"clientId": "",
+		"clientSecret": "",
+		"redirectUri": "http://xioCode.domain.se/scripts/oauth2.php"
+    }
 }

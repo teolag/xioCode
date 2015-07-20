@@ -1,9 +1,11 @@
 var XI = (function() {
+	var debug = true;
 
 	var actions = {},
 	listeners = [],
 
 	fire = function(action) {
+		if(debug) console.log("Fire "+action);
 		actions[action] = true;
 		testAll(action);
 	},
@@ -16,6 +18,7 @@ var XI = (function() {
 		var i = listeners.length;
 		while(i--) {
 			if(test(listeners[i],firedAction)) {
+				if(debug) console.log("All actions fired for", listeners[i]);
 				listeners[i].callback();
 				if(!listeners[i].keep) {
 					listeners.splice(i,1);

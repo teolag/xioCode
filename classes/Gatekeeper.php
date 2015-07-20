@@ -1,17 +1,20 @@
 <?php
 class Gatekeeper {
-	const SALT = "d!g2%o#68AA34r296";
-
 	private static $username;
 	private static $userId;
+	private static $salt;
 
 	private static function getFromSession() {
-		if(isset($_SESSION['user_id']) && $_SESSION['check']==sha1($_SESSION['username'] . $_SESSION['user_id'] . self::SALT)) {
+		if(isset($_SESSION['user_id']) && $_SESSION['check']==sha1($_SESSION['username'] . $_SESSION['user_id'] . self::$salt)) {
 			self::$username=$_SESSION['username'];
 			self::$userId=$_SESSION['user_id'];
 		} else {
 			self::$userId = 0;
 		}
+	}
+
+	public static function setSalt($salt) {
+		self::$salt = $salt;
 	}
 
 	public static function hasAccess() {
@@ -41,7 +44,7 @@ class Gatekeeper {
 	}
 
 	public static function checkCredentials($username, $password, DatabasePDO $db) {
-		$userId = $db->getValue("SELECT user_id FROM users WHERE username=? AND password=? LIMIT 1", array($username, sha1(self::SALT.$password)));
+		$userId = $db->getValue("SELECT user_id FROM users WHERE username=? AND password=? LIMIT 1", array($username, sha1(self::$salt.$password)));
 		return self::login($userId, $db);
 	}
 
@@ -55,7 +58,7 @@ class Gatekeeper {
 		if($valid_ip==1) {
 			$_SESSION['user_id'] = $user['user_id'];
 			$_SESSION['username'] = $user['name'];
-			$_SESSION['check'] = sha1($user['name'] . $user['user_id'] . self::SALT);
+			$_SESSION['check'] = sha1($user['name'] . $user['user_id'] . self::$salt);
 			return $user['user_id'];
 		} else {
 			$mail = new PHPMailer(true); // the true param means it will throw exceptions on errors, which we need to catch
@@ -83,7 +86,7 @@ class Gatekeeper {
 
 	public static function changePassword($newPass, $db) {
 		if(!isset(self::$userId)) self::getFromSession();
-		$change = $db->update("UPDATE users SET password=? WHERE user_id=? LIMIT 1", array(sha1(self::SALT.$newPass), self::$userId));
+		$change = $db->update("UPDATE users SET password=? WHERE user_id=? LIMIT 1", array(sha1(self::$salt.$newPass), self::$userId));
 		return $change;
 	}
 }
