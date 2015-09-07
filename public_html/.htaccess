@@ -6,7 +6,7 @@ php_flag html_errors on
 <ifmodule mod_expires.c>
 	<Filesmatch "\.(jpg|jpeg|png|gif|svg|js|css|swf|ico|woff|mp3)$">
 		ExpiresActive on
-		ExpiresDefault "access plus 2 months"
+		ExpiresDefault "access plus 12 months"
 	</Filesmatch>
 </ifmodule>
 

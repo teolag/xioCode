@@ -78,11 +78,11 @@ module.exports = function(grunt) {
 			js: {
 				files: jsFiles,
 				tasks: ['uglify:xiocode']
-			},
+			}/*,
 			codemirror: {
 				files: codemirrorJS,
 				tasks: ['uglify:codemirror']
-			}
+			}*/
 		}
 	});
 	grunt.loadNpmTasks('grunt-contrib-sass');
