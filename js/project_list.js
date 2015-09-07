@@ -4,7 +4,10 @@ var ProjectList = (function() {
 	var projectList, txtProjectFilter, btnNewProject, listProjectOrderBy;
 	var tags, listTags;
 
-	XI.listen("DOMContentLoaded", function(e) {
+	XI.listen("DOMContentLoaded", initProjectList);
+	XI.listen(['projectsLoaded', 'DOMContentLoaded', 'orderProjects'], updateProjectsList, true);
+
+	function initProjectList() {
 		console.log("Init ProjectList");
 		projectList = document.getElementById('projectList');
 		projectList.addEventListener("click", clickHandler, false);
@@ -26,7 +29,7 @@ var ProjectList = (function() {
 
 		listProjectOrderBy = document.getElementById("listProjectOrderBy");
 		listProjectOrderBy.addEventListener("change", selectOrderBy, false);
-	});
+	};
 
 	var loadProjects = function() {
 		Ajax.getJSON("/scripts/get_projects.php", null, function(json) {
@@ -38,7 +41,7 @@ var ProjectList = (function() {
 		});
 	};
 
-	XI.listen(['projectsLoaded', 'DOMContentLoaded', 'orderProjects'], function(){
+	function updateProjectsList() {
 		printProjects();
 
 		filterProjects();
@@ -50,7 +53,7 @@ var ProjectList = (function() {
             document.title = pageTitle + " - " + activeProject.name;
             title.textContent = activeProject.name;
         }
-	}, true);
+	};
 
 
 
@@ -375,6 +378,8 @@ var ProjectList = (function() {
 	var clear = function() {
 		projects = null;
 		projectList.innerHTML = "";
+		XI.reset("projectsLoaded");
+		XI.reset("orderProjects");
 	};
 
 	var updateLastOpened = function(projectId) {

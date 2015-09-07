@@ -25,7 +25,7 @@ var XI = (function() {
 				if(!name) name = "Anonymous function";
 				else name = "function '" + name + "'";
 
-				if(debug) console.debug("All conditions met for " + name);
+				if(debug) console.debug("All conditions met for " + name, listeners[i].conditions);
 				listeners[i].callback();
 				if(!listeners[i].keep) {
 					listeners.splice(i,1);
@@ -41,6 +41,7 @@ var XI = (function() {
 		var listener = {conditions:conditions, callback:callback, keep:keep};
 
 		if(test(listener)) {
+			if(debug) console.debug("All conditions was already met for " + name, listeners[i].conditions);
 			listener.callback();
 			return true;
 		} else {

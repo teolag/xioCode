@@ -23,6 +23,7 @@ var h1, fileToolbar, projectToolbar, userMenu;
 
 document.addEventListener("DOMContentLoaded", function(e) {
 
+	XI.enableDebug();
 	XI.fire("DOMContentLoaded");
 
 	console.log("CodeMirror" , CodeMirror.version, "loaded");

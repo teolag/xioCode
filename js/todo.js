@@ -4,7 +4,7 @@ var Todo = (function() {
 	list, listDone, dragElem, dragUp, dragY,
 	projectId, todos, pop,
 
-	init = function() {
+	initTodo = function initTodo() {
 		btnAddFeature = document.getElementById("btnAddFeature");
 		btnAddFeature.addEventListener("click", addFeature, false);
 
@@ -259,7 +259,7 @@ var Todo = (function() {
 		}
 	};
 
-	XI.listen("DOMContentLoaded", init);
+	XI.listen("DOMContentLoaded", initTodo);
 	XI.listen(["DOMContentLoaded","todosLoaded"], updateList, true);
 
 	return {
