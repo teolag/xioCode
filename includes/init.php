@@ -33,15 +33,18 @@ define("STATUS_AUTH_INCORRECT_USER", 2203);
 
 
 $db = new DatabasePDO($config['database']['server'], $config['database']['username'], $config['database']['password'], $config['database']['name']);
+Gatekeeper::setSalt($config['database']['salt']);
+
 
 function __autoload($className) {
+	global $config;
 	switch($className) {
 		case "DatabasePDO":
-		$file = "/git/DatabasePDO/DatabasePDO.php";
+		$file = $config['class_paths']['DatabasePDO'];
 		break;
 
 		case "PHPMailer":
-		$file = "/git/PHPMailer/class.phpmailer.php";
+		$file = $config['class_paths']['PHPMailer'];
 		break;
 
 		default:
@@ -49,7 +52,7 @@ function __autoload($className) {
 	}
 
 	if(is_file($file)) require($file);
-	else die("Class not found: " . $file);
+	else die("Class '".$className."' not found: " . $file);
 }
 
 

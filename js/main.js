@@ -115,9 +115,7 @@ function logoutCallback() {
 	}
 
 	activeProject = null;
-	activeFile = null;
 	oldHash = null;
-	xioDocs = {};
 }
 
 function warnBeforeUnload(e) {

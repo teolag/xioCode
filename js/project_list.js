@@ -31,7 +31,7 @@ var ProjectList = (function() {
 	var loadProjects = function() {
 		Ajax.getJSON("/scripts/get_projects.php", null, function(json) {
 			projects = json;
-			console.log("%i projects loaded", Object.keys(projects).length);
+			console.log("%i projects loaded", Object.keys(projects).length, projects);
 			getUniqueTags();
 
 			XI.fire('projectsLoaded');
@@ -64,14 +64,13 @@ var ProjectList = (function() {
 	};
 
 	var setOrderBy = function(column, dir) {
-		if(projectOrder===column && projectOrderDir === dir) return;
+		if(projectOrder!==column || projectOrderDir !== dir) {
+			projectOrder = column;
+			projectOrderDir = dir;
 
-		projectOrder = column;
-		projectOrderDir = dir;
-
-		var option = listProjectOrderBy.querySelector("option[data-order='"+projectOrder+"'][data-order_dir='"+projectOrderDir+"']");
-		if(option) option.selected="true";
-
+			var option = listProjectOrderBy.querySelector("option[data-order='"+projectOrder+"'][data-order_dir='"+projectOrderDir+"']");
+			if(option) option.selected="true";
+		}
 		XI.fire("orderProjects");
 	};
 
@@ -103,12 +102,9 @@ var ProjectList = (function() {
 
 
     var printProjects = function() {
-
 		var sel = projectList.querySelector(".selected");
-
 		var projectIds = Object.keys(projects);
 		projectIds = sortProjects(projectIds, projectOrder);
-
 
         var ul = document.createElement("ul");
 		projectIds.forEach(function(id, i) {
@@ -325,7 +321,7 @@ var ProjectList = (function() {
 			//Select first project
 			sel = projectList.querySelector(".project");
 			deselectAll();
-			sel.classList.add("selected");
+			if(sel) sel.classList.add("selected");
 			return true;
 		}
 		return false;

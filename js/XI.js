@@ -1,10 +1,12 @@
 var XI = (function() {
+	var debug = true;
 
 	var actions = {},
 	listeners = [],
 	debug=false,
 
 	fire = function(action) {
+		if(debug) console.log("Fire "+action);
 		actions[action] = true;
 		if(debug) console.debug("XI.fire", action);
 		testAll(action);

@@ -1,7 +1,6 @@
 var jsFiles = [
 	'js/XI.js',
 	'js/file.js',
-	'js/main.js',
 	'js/file_list.js',
 	'js/gatekeeper.js',
 	'js/preview.js',
@@ -10,9 +9,10 @@ var jsFiles = [
 	'js/tab.js',
 	'js/tab_bar.js',
 	'js/todo.js',
-	'js/xiocode.js',
 	'js/code_editor.js',
-	'js/codemirror_addons.js'
+	'js/codemirror_addons.js',
+	'js/xiocode.js',
+	'js/main.js'
 ];
 
 var codemirrorJS = [
@@ -47,6 +47,17 @@ module.exports = function(grunt) {
 			dist: {
 				files: {
 					'public_html/css/style.css' : 'sass/style.scss'
+				}
+			}
+		},
+		concat: {
+			xiocode: {
+				options: {
+					banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd HH:MM:ss") %> */\n',
+					sourceMap: false
+				},
+				files: {
+					'public_html/js/xiocode.min.js': jsFiles,
 				}
 			}
 		},
@@ -88,5 +99,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.registerTask('default',['uglify:xiocode', 'sass', 'watch']);
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.registerTask('default',['uglify:xiocode', 'concat:xiocode', 'sass', 'watch']);
 }
