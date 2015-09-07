@@ -53,10 +53,9 @@ if(isset($_GET['code'])) {
 	$googleUser = json_decode($result);
 
 	// GET USER INFO FROM DB
-	$user = $db->getRow("SELECT user_id, username, email FROM users WHERE google_id=?", array($googleUser->sub));
-
-
+	$user = $db->getValue("SELECT user_id FROM users WHERE google_id=?", array($googleUser->sub));
 	$userId = Gatekeeper::login($user['user_id'], $db);
+	$user = Gatekeeper::getUser($db);
 
 	$data = array(
 		"status" => 100,
