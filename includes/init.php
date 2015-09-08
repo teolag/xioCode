@@ -33,7 +33,7 @@ define("STATUS_AUTH_INCORRECT_USER", 2203);
 
 
 $db = new DatabasePDO($config['database']['server'], $config['database']['username'], $config['database']['password'], $config['database']['name']);
-Gatekeeper::setSalt($config['database']['salt']);
+Gatekeeper::setSalt(SALT);
 
 
 function __autoload($className) {

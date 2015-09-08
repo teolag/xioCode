@@ -3,27 +3,13 @@ http_response_code(200);
 $action = $_GET['action'];
 $actionFile = "../api/" . $action . ".php";
 
-$config = json_decode(file_get_contents("../config.json"),1) or die("Could not decode json");
-define("PROJECT_FOLDER", $config['project_url']);
-define("PROJECT_PATH", $config['project_uri']);
-define("SALT", $config['database']['salt']);
-define("PROJECT_CONFIG_FILE", "xiocode.properties");
-define("PROJECT_TODO_FILE", "xiocode.todo");
-
-
-require("../classes/Gatekeeper.php");
-Gatekeeper::setSalt(SALT);
+require("../includes/init.php");
 
 $response = array();
 $response['action'] = $action;
 
 
-session_start();
 if(Gatekeeper::hasAccess()) {
-	require("/git/DatabasePDO/DatabasePDO.php");
-
-	$db = new DatabasePDO($config['database']['server'], $config['database']['username'], $config['database']['password'], $config['database']['name']);
-
 	if(file_exists($actionFile)) {
 		require $actionFile;
 	} else {

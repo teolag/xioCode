@@ -1,5 +1,4 @@
 <?php
-
 class ProjectHandler {
 
 	public static function getProjectsForUser(&$db, $userId) {
@@ -27,6 +26,13 @@ class ProjectHandler {
 		}
 		return $projects;
 	}
-}
 
+	public static function deleteProject($projectId, $userId) {
+		$projectDir = realpath(PROJECT_PATH . $projectId);
+		if(is_dir($projectDir)) {
+			rrmdir($projectDir);
+		}
+	}
+
+}
 ?>

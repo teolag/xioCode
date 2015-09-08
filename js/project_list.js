@@ -124,7 +124,9 @@ var ProjectList = (function() {
 
 		if(sel) {
 			var id = sel.dataset.project_id;
-			projectList.querySelector("li[data-project_id="+id+"]").classList.add("selected");
+			var li = projectList.querySelector("li[data-project_id="+id+"]");
+			if(li) li.classList.add("selected");
+			else selectNextVisible();
 		}
 
 		lastSearchString="";
@@ -153,23 +155,13 @@ var ProjectList = (function() {
 		switch(action) {
 
 			case "delete":
-			var project = projects[projectId];
+			var project = XioCode.getProject(projectId);
 			XioPop.confirm({title:"Delete project?", text:"Are you sure you want to delete project '"+project.name+"'?", onSubmit:function(answer) {
 				if(answer) {
-					var formData = new FormData();
-					formData.append("project_id", projectId);
-					var xhr = new XMLHttpRequest();
-					xhr.open('POST', "/scripts/delete_project.php", true);
-					xhr.onload = function(e) {
-						var xhr = e.target;
-						if(xhr.status===200) {
-							console.log("Project deleted");
-							XioCode.loadProjects();
-						} else {
-							console.err("Error deleting project", xhr);
-						}
-					};
-					xhr.send(formData);
+					Ajax.post2JSON("/api/delete_project", {projectId: projectId}, function(data) {
+						console.log("Project deleted");
+						XioCode.loadProjects();
+					});
 				} else {
 					console.debug("Delete aborted");
 				}
