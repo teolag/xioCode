@@ -117,7 +117,7 @@ var Todo = (function() {
 
 
 
-	updateList = function() {
+	updateList = function updateTodoList() {
 		list.innerHTML="";
 		listDone.innerHTML="";
 

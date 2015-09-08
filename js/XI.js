@@ -6,8 +6,11 @@ var XI = (function() {
 	debug=false,
 
 	fire = function(action) {
+		if(debug) {
+			var exists = actions[action]!==undefined;
+			console.debug("XI.fire '"+ action + "'" + (exists? " again":""));
+		}
 		actions[action] = true;
-		if(debug) console.debug("XI.fire", action);
 		testAll(action);
 	},
 

@@ -24,8 +24,8 @@ var codemirrorDefaults = {
 	extraKeys: {
 		"Tab"			: "tabWithAutoComplete",
 		"Shift-Tab"		: "indentLess",
-		"Ctrl-D" 		: "removeLines",
-		"Cmd-D" 		: "removeLines",
+		"Ctrl-D" 		: "deleteLine",
+		"Cmd-D" 		: "deleteLine",
 		"Ctrl-N" 		: "newFile",
 		"Cmd-N" 		: "newFile",
 		"Ctrl-S" 		: "shortcutSave",
@@ -47,10 +47,6 @@ var codemirrorDefaults = {
 		"Ctrl-B"		: "removeTrailingSpaces"
 	}
 };
-
-
-
-
 
 
 
@@ -80,14 +76,6 @@ CodeMirror.commands.duplicateRow = function(editor, up) {
 			editor.replaceRange("\n"+text, {line:start.line-1});
 		}
 	}
-};
-
-CodeMirror.commands.removeLines = function(editor) {
-	var startLine = editor.getCursor("start").line;
-	var endLine = editor.getCursor("end").line;
-	var pos = editor.getCursor();
-	editor.replaceRange("", {line:startLine,ch:0}, {line:endLine+1,ch:0});
-	editor.setCursor(pos);
 };
 
 CodeMirror.commands.selectLines = function(editor) {
