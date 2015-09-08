@@ -14,6 +14,9 @@ var XioCode = (function(){
 	panes = {},
 
 
+	projects = {},
+
+
 	initWorkspace = function() {
 		if(workspaceInitiated) return;
 
@@ -52,10 +55,28 @@ var XioCode = (function(){
 		activeCodeEditor = ce;
 	},
 
+	setHeader = (function(text) {
+		var title = document.getElementById("pageTitle");
 
+		return function(text) {
+			title.textContent = text;
+		}
+	}()),
 
+	getProjects = function() {
+		return projects;
+	},
+	getProject = function(projectId) {
+		return projects[projectId];
+	},
 
-
+	loadProjects = function() {
+		Ajax.getJSON("/api/get_my_projects", null, function(data) {
+			projects = data.projects;
+			console.log("%i projects loaded", Object.keys(projects).length, projects);
+			XI.fire('projectsLoaded');
+		});
+	},
 
 	openProject = function(projectId) {
 		activeProjectId = projectId;
@@ -63,17 +84,29 @@ var XioCode = (function(){
 	};
 
 
-
-
-
-
 	return {
 		getActiveProjectId: getActiveProjectId,
 		getActiveCodeEditor: getActiveCodeEditor,
 		setActiveCodeEditor: setActiveCodeEditor,
-
+		setHeader: setHeader,
+		loadProjects: loadProjects,
+		getProjects: getProjects,
+		getProject: getProject,
 		openProject: openProject,
 		getPanes: getPanes
-	}
-
+	};
 }());
+
+
+
+(function() {
+	var h1 = document.querySelector("#header h1");
+	h1.addEventListener("click", headerClick, false);
+	function headerClick() {
+		setHash();
+	}
+}());
+
+XioCode.bollar = ["boll1", "boll3", "golfbollen"];
+
+

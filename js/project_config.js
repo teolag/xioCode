@@ -29,7 +29,7 @@ var ProjectConfig = (function() {
 			case STATUS_OK:
 			console.log("Project configurations saved!");
 			close();
-			ProjectList.loadProjects();
+			XioCode.loadProjects();
 			break;
 
 			case STATUS_FILE_COULD_NOT_UPDATE:

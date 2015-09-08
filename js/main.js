@@ -12,13 +12,12 @@ if (!DEBUG_MODE_ON) {
 
 var activeProject;
 var pageTitle;
-var title;
 var hoverTimer;
 var fileToBeLoaded;
 var oldHash;
 
 var username;
-var h1, fileToolbar, projectToolbar, userMenu;
+var fileToolbar, projectToolbar, userMenu;
 
 
 document.addEventListener("DOMContentLoaded", function(e) {
@@ -32,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	Preview.init();
 
 	pageTitle = document.title;
-	title = document.getElementById("pageTitle");
 	console.log("Init " + pageTitle);
 
 	window.addEventListener("resize", fixLayout, false);
@@ -49,9 +47,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 			GateKeeper.checkAccess();
 		}
 	}, false);
-
-	h1 = document.querySelector("#header h1");
-	h1.addEventListener("click", function(){setHash()}, false);
 
 	projectToolbar = document.querySelector("#projectToolbar");
 	projectToolbar.addEventListener("click", projectToolbarHandler, false);
@@ -105,7 +100,7 @@ function loginCallback(user) {
 	username.textContent = user.username;
 
     ProjectList.setOrderBy(user.projects_order_by, user.projects_order_dir);
-	ProjectList.loadProjects();
+	XioCode.loadProjects();
 	readHash();
 }
 
@@ -262,7 +257,7 @@ function openProject(id) {
 		activeProject = ProjectList.getProject(id);
 		activeProject.id = id;
 		document.title = pageTitle + " - " + activeProject.name;
-		title.textContent = activeProject.name;
+		XioCode.setHeader(activeProject.name);
 	}
 
 	for(var i=0; i<XioCode.getPanes().length; i++) {
@@ -417,7 +412,7 @@ function chooseProject() {
 	document.getElementById("projectChooser").classList.remove("hidden");
 	document.getElementById("projectArea").classList.add("hidden");
 
-	title.textContent = "My projects";
+	XioCode.setHeader("My projects");
 	activeProject = null;
 	document.title = pageTitle;
 	txtProjectFilter.focus();
@@ -433,7 +428,7 @@ function getMimeByUri(uri) {
 			case "svg": return "xml";
 		}
 	}
-	if(info.mime==="text/x-sql") return "text/x-sql";
+	if(info && info.mime==="text/x-sql") return "text/x-sql";
 	return info? info.mode : "";
 }
 

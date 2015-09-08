@@ -31,28 +31,21 @@ var ProjectList = (function() {
 		listProjectOrderBy.addEventListener("change", selectOrderBy, false);
 	};
 
-	var loadProjects = function() {
-		Ajax.getJSON("/scripts/get_projects.php", null, function(json) {
-			projects = json;
-			console.log("%i projects loaded", Object.keys(projects).length, projects);
-			getUniqueTags();
-
-			XI.fire('projectsLoaded');
-		});
-	};
 
 	function updateProjectsList() {
+		getUniqueTags();
 		printProjects();
-
 		filterProjects();
 
+		/*
 		if(activeProject) {
             var pId = activeProject.id
             activeProject = projects[pId];
             activeProject.id = pId;
             document.title = pageTitle + " - " + activeProject.name;
-            title.textContent = activeProject.name;
+            XioCode.setHeader(activeProject.name);
         }
+		*/
 	};
 
 
@@ -105,6 +98,8 @@ var ProjectList = (function() {
 
 
     var printProjects = function() {
+		var projects = XioCode.getProjects();
+
 		var sel = projectList.querySelector(".selected");
 		var projectIds = Object.keys(projects);
 		projectIds = sortProjects(projectIds, projectOrder);
@@ -169,7 +164,7 @@ var ProjectList = (function() {
 						var xhr = e.target;
 						if(xhr.status===200) {
 							console.log("Project deleted");
-							loadProjects();
+							XioCode.loadProjects();
 						} else {
 							console.err("Error deleting project", xhr);
 						}
@@ -280,8 +275,8 @@ var ProjectList = (function() {
 
 	function sortProjects(projectIds) {
 		projectIds.sort(function(id1,id2) {
-			var p1 = projects[id1];
-			var p2 = projects[id2];
+			var p1 = XioCode.getProject(id1);
+			var p2 = XioCode.getProject(id2);
 
 			switch(projectOrder) {
 				case "name":
@@ -360,7 +355,7 @@ var ProjectList = (function() {
 
 				xhr.onload = function(e) {
 					if(e.target.status===200) {
-						loadProjects();
+						XioCode.loadProjects();
 					}
 				};
 				xhr.send();
@@ -471,7 +466,6 @@ var ProjectList = (function() {
 		clear: clear,
 		setOrderBy: setOrderBy,
 		getProject: getProject,
-		loadProjects: loadProjects,
 		updateLastOpened: updateLastOpened
 	};
 })();
