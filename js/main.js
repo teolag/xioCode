@@ -41,7 +41,13 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 	document.addEventListener("visibilitychange", function(e) {
 		var date = new Date(e.timeStamp);
-		console.debug(document.hidden ? "borta!" : "tillbaka!", date.toTimeString().substr(0,8));
+
+		if(document.hidden) {
+			console.log("Hejdå", date.toTimeString().substr(0,8));
+		} else {
+			console.log("Välkommen tillbaka", date.toTimeString().substr(0,8));
+			GateKeeper.checkAccess();
+		}
 	}, false);
 
 	h1 = document.querySelector("#header h1");

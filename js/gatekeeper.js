@@ -126,6 +126,7 @@ var GateKeeper = (function() {
 		showLogin: showLogin,
 		logout: logout,
 		setUser: setUser,
+		checkAccess: checkAccess,
 		googleLoginCallback: googleLoginCallback
 	}
 }());
