@@ -4,6 +4,7 @@ var DEBUG_MODE_ON=true;
 var KEY_ENTER = 13;
 var KEY_UP = 38;
 var KEY_DOWN = 40;
+var KEY_O = 79;
 
 if (!DEBUG_MODE_ON) {
     console = console || {};
@@ -28,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 	console.log("CodeMirror" , CodeMirror.version, "loaded");
 
 	GateKeeper.init(loginCallback, logoutCallback);
-	Preview.init();
 
 	pageTitle = document.title;
 	console.log("Init " + pageTitle);
@@ -244,7 +244,6 @@ function fixLayout() {
 function openProject(id) {
 	console.log("Open project", id);
 
-	FileList.clear();
 	FileList.setProjectId(id);
 	ProjectList.updateLastOpened(id);
 	Todo.loadAll(id);
@@ -469,46 +468,30 @@ function findFunctions() {
 }
 
 
-function toHumanReadableFileSize(bytes, si) {
-	var unit = si ? 1000 : 1024;
-    if (bytes < unit) return bytes + " bytes";
-    var exp = Math.floor(Math.log(bytes) / Math.log(unit));
-    var pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-	var val = bytes/Math.pow(unit, exp);
-    return val.toFixed(1) + " " + pre + "B";
-}
+
+(function() {
+	document.addEventListener("keydown", keyHandler, false);
+	function keyHandler(e) {
+		console.log("key down", e);
 
 
-function toHumanReadableDateTime(ts) {
-	if(!ts) return "";
-	var ts = new Date(ts);
-	var now = new Date();
-	var time = ts.toTimeString().substr(0,5);
-	var date = ts.toISOString().substr(0,10);
+		if(e.altKey && e.keyCode==KEY_O) {
+			var options = [];
+			var projects = XioCode.getProjects();
+			var projectIds = Object.keys(projects);
+			for(var ii=0, ll=projectIds.length; ii<ll; ii++) {
+				if(projectIds[ii]===activeProject.id) continue;
+				var project = projects[projectIds[ii]];
+				options.push({value: projectIds[ii], text: project.name});
+			}
+			e.preventDefault();
+			XioPop.select({title:"Jump to project", options: options, onSubmit: jumpToProject});
 
-	var diff = ts - now;
-	var yesterday = new Date();
-	yesterday.setDate(yesterday.getDate() - 1);
-
-	if(diff<24*60*60*1000 && now.getDate()===ts.getDate()) {
-		return "Today " + time;
-	} else if(diff<2*24*60*60*1000 && yesterday.getDate()===ts.getDate()) {
-		return "Yesterday " + time;
+		}
 	}
-	return date + " " + time;
-}
+	function jumpToProject(item) {
+		console.log("select", item);
+		openProject(item.value);
+	}
+}());
 
-
-function isNumeric(n) {
-	return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
-
-function clone(obj) {
-    if (null == obj || "object" != typeof obj) return obj;
-    var copy = obj.constructor();
-    for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-    }
-    return copy;
-}

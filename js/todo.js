@@ -107,6 +107,7 @@ var Todo = (function() {
 	},
 
 	loadAll = function(pId) {
+		if(pId===projectId) return;
 		projectId = pId;
 		clear();
 		Ajax.getJSON("/scripts/todo_handler.php", {project_id:projectId, action:"getAll"}, function(json) {

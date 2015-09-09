@@ -11,9 +11,8 @@ var XioCode = (function(){
 	activeProjectId = null,
 	activeCodeEditor = null,
 	workspaceInitiated = false,
+
 	panes = {},
-
-
 	projects = {},
 
 
@@ -35,7 +34,6 @@ var XioCode = (function(){
 		];
 		activeCodeEditor = panes[0].codeEditor;
 		workspaceInitiated = true;
-
 	},
 
 
@@ -106,7 +104,3 @@ var XioCode = (function(){
 		setHash();
 	}
 }());
-
-XioCode.bollar = ["boll1", "boll3", "golfbollen"];
-
-

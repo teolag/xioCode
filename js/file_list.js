@@ -23,6 +23,9 @@ var FileList = (function() {
 	var setProjectId = function(newProjectId) {
 		if(!fileList) init();
 
+		if(newProjectId===projectId) return;
+
+		clear();
 		projectId = newProjectId;
 		console.debug("FileList: ProjectId set to " + newProjectId);
 

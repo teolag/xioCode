@@ -1,18 +1,5 @@
 var jsFiles = [
-	'js/XI.js',
-	'js/file.js',
-	'js/file_list.js',
-	'js/gatekeeper.js',
-	'js/preview.js',
-	'js/project_config.js',
-	'js/project_list.js',
-	'js/tab.js',
-	'js/tab_bar.js',
-	'js/todo.js',
-	'js/code_editor.js',
-	'js/codemirror_addons.js',
-	'js/xiocode.js',
-	'js/main.js'
+	'js/*'
 ];
 
 var codemirrorJS = [

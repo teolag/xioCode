@@ -5,16 +5,13 @@ var Preview = (function() {
 	visible=false,
 	refreshOnSave=false,
 
-	init = function() {
+	init = function initPreview() {
 		console.log("Init preview");
 		container = document.getElementById("preview");
 		frame = document.getElementById("previewFrame");
-
 		window.addEventListener("resize", fixLayout, false);
-
 		hide();
 	},
-
 
 	show = function() {
 		visible=true;
@@ -53,9 +50,9 @@ var Preview = (function() {
 		frame.style.height=(container.offsetHeight-15)+"px";
 	};
 
+	XI.listen("DOMContentLoaded", init);
 
 	return {
-		init: init,
 		fixLayout: fixLayout,
 		show: show,
 		hide: hide,
