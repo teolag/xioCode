@@ -252,8 +252,9 @@ function openProject(id) {
 	XioCode.openProject(id);
 
 	//set active project if project is loaded
-	if(ProjectList.getProject(id)) {
-		activeProject = ProjectList.getProject(id);
+	var project = XioCode.getProject(id);
+	if(project) {
+		activeProject = project;
 		activeProject.id = id;
 		document.title = pageTitle + " - " + activeProject.name;
 		XioCode.setHeader(activeProject.name);
@@ -275,7 +276,7 @@ function openProject(id) {
 
 
 function previewProject(id) {
-	var url = ProjectList.getProject(id).run_url;
+	var url = XioCode.getProject(id).run_url;
 	if(!url) {
 		url = projectsURL + id + "/";
 	}

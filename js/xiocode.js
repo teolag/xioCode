@@ -64,9 +64,13 @@ var XioCode = (function(){
 	getProjects = function() {
 		return projects;
 	},
-	getProject = function(projectId) {
-		return projects[projectId];
+	getProject = function(id) {
+		if(projects && projects.hasOwnProperty(id)) {
+			return projects[id];
+		}
+		return false;
 	},
+
 
 	loadProjects = function() {
 		Ajax.getJSON("/api/get_my_projects", null, function(data) {

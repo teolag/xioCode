@@ -1,6 +1,6 @@
 var ProjectList = (function() {
 
-	var projects, projectOrder="name", projectOrderDir="asc", lastSearchString;
+	var projectOrder="name", projectOrderDir="asc", lastSearchString;
 	var projectList, txtProjectFilter, btnNewProject, listProjectOrderBy;
 	var tags, listTags;
 
@@ -71,6 +71,7 @@ var ProjectList = (function() {
 	};
 
 	var getUniqueTags = function() {
+		var projects = XioCode.getProjects();
 		tags = [];
 		for (var pId in projects) {
 			if (projects.hasOwnProperty(pId)) {
@@ -151,11 +152,11 @@ var ProjectList = (function() {
 			p = p.parentElement;
 		}
 		var projectId = p.dataset.project_id;
+		var project = XioCode.getProject(projectId);
 
 		switch(action) {
 
 			case "delete":
-			var project = XioCode.getProject(projectId);
 			XioPop.confirm({title:"Delete project?", text:"Are you sure you want to delete project '"+project.name+"'?", onSubmit:function(answer) {
 				if(answer) {
 					Ajax.post2JSON("/api/delete_project", {projectId: projectId}, function(data) {
@@ -169,7 +170,7 @@ var ProjectList = (function() {
 			break;
 
 			case "rename":
-			XioPop.prompt({title:"Rename project", text:"Enter a new name for the project", value:projects[projectId].name, onSubmit:function(newName) {
+			XioPop.prompt({title:"Rename project", text:"Enter a new name for the project", value:project.name, onSubmit:function(newName) {
 				if(newName) {
 					var formData = new FormData();
 					formData.append("new_name", newName);
@@ -239,6 +240,7 @@ var ProjectList = (function() {
 
 
 	function filterProjects(e) {
+		var projects = XioCode.getProjects();
 		if(!projects) return;
 
 		var searchString = txtProjectFilter.value.toLowerCase();
@@ -355,25 +357,17 @@ var ProjectList = (function() {
 		}});
 	};
 
-	var getProject = function(id) {
-		if(projects && projects.hasOwnProperty(id)) {
-			return projects[id];
-		}
-		return false;
-	};
-
 	var clear = function() {
-		projects = null;
 		projectList.innerHTML = "";
-		XI.reset("projectsLoaded");
 		XI.reset("orderProjects");
 	};
 
 	var updateLastOpened = function(projectId) {
 		Ajax.post2JSON("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, function(json) {
 			if(json.status===STATUS_OK) {
-				if(projects && projects.hasOwnProperty(projectId)) {
-					projects[projectId].last_opened = json.last_opened;
+				var project = XioCode.getProject(projectId);
+				if(project) {
+					project.last_opened = json.last_opened;
 				}
 			} else {
 				XioPop.alert({title:"Permission error", text:"Insuffient permission to update project last opened date in project config file."});
@@ -457,7 +451,6 @@ var ProjectList = (function() {
 	return {
 		clear: clear,
 		setOrderBy: setOrderBy,
-		getProject: getProject,
 		updateLastOpened: updateLastOpened
 	};
 })();
