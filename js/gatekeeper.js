@@ -10,9 +10,6 @@ var GateKeeper = (function() {
 
 	btnGoogleLogin,
 
-
-
-
 	init = function(callbackLogin, callbackLogout) {
 		onLoginCallback = callbackLogin;
 		onLogoutCallback = callbackLogout;
@@ -72,7 +69,7 @@ var GateKeeper = (function() {
 	logout = function() {
 		Ajax.post("/scripts/gatekeeper.php?action=logout");
 		clearInterval(checkAccessInterval);
-
+		user = null;
 		if(onLogoutCallback) onLogoutCallback();
 
 		showLogin();
@@ -90,11 +87,18 @@ var GateKeeper = (function() {
 
 	checkAccess = function() {
 		console.log(new Date().toTimeString().substr(0,5), "Access check");
-		Ajax.getJSON("/scripts/gatekeeper.php", {action: "check", user_id: user.user_id}, function(json) {
+		var userId = user ? user.user_id : 0
+		Ajax.getJSON("/scripts/gatekeeper.php", {action: "check", user_id: userId}, function(json) {
 			if(json.status !== STATUS_OK) {
-				console.warn(json.message);
-				console.debug("Force logout");
-				logout();
+				if(user) {
+					console.warn(json.message);
+					console.debug("Force logout");
+					logout();
+				}
+			} else {
+				if(!user) {
+					setUser(json.user);
+				}
 			}
 		});
 	},

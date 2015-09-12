@@ -32,15 +32,16 @@ switch($_GET['action']) {
 		$response['message'] = "not logged in";
 	} else {
 		if(empty($expectedUserId)) {
-			$response['status'] = STATUS_AUTH_UNKNOWN_CURRENT_USER;
-			$response['message'] = "cannot confirm current user";
+			$response['status'] = STATUS_OK;
+			$response['message'] = "Found a logged in session";
+			$response['user'] = Gatekeeper::getUser($db);
 		} else {
 			if($expectedUserId==$actualUserId) {
 				$response['status'] = STATUS_OK;
 				$response['message'] = "logged in with id: " . $actualUserId;
 			} else {
 				$response['status'] = STATUS_AUTH_INCORRECT_USER;
-				$response['message'] = "you are not logged in with id: " . $actualUserId;
+				$response['message'] = "you are not logged in as userId: " . $actualUserId;
 			}
 		}
 	}
