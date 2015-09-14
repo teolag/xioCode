@@ -20,17 +20,21 @@ var XI = (function() {
 	},
 
 	testAll = function(firedAction) {
-		var i = listeners.length;
-		while(i--) {
+		for(var i=0; i<listeners.length; i++) {
 			if(test(listeners[i], firedAction)) {
-				var name = listeners[i].callback.name;
-				if(!name) name = "Anonymous function";
-				else name = "function '" + name + "'";
+				var listener = listeners[i];
 
-				if(debug) console.debug("All conditions met for " + name, listeners[i].conditions);
-				listeners[i].callback();
-				if(!listeners[i].keep) {
+				if(debug) {
+					var name = listener.callback.name;
+					if(!name) name = "Anonymous function";
+					else name = "function '" + name + "'";
+					console.debug("All conditions met for " + name, listener.conditions);
+				}
+
+				listener.callback();
+				if(!listener.keep) {
 					listeners.splice(i,1);
+					i--;
 				}
 			}
 		}
@@ -41,9 +45,10 @@ var XI = (function() {
 			conditions = [conditions];
 		}
 		var listener = {conditions:conditions, callback:callback, keep:keep};
+		if(debug) console.debug("Add listener for", conditions, callback.name);
 
 		if(test(listener)) {
-			if(debug) console.debug("All conditions was already met for " + name, listeners[i].conditions);
+			if(debug) console.debug("All conditions was already met for " + callback.name, conditions);
 			listener.callback();
 			return true;
 		} else {
@@ -61,7 +66,7 @@ var XI = (function() {
 
 	test = function(listener, firedAction) {
 		var conds = listener.conditions;
-		if(conds.indexOf(firedAction)===-1) return false
+		if(firedAction && conds.indexOf(firedAction)===-1) return false
 
 		for(var i=0; i<conds.length; i++) {
 			var condition = conds[i];
