@@ -30,7 +30,7 @@ h1 .first {
   color: #999; }
 
 h1 .second {
-  color: #E79D00; }
+  color: #FF9900; }
 
 #header {
   background-color: #444;
@@ -163,61 +163,63 @@ ul.selectableList li:hover {
 textarea, input, button, select {
   color: inherit;
   font: inherit;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border-radius: 0.2rem;
+  margin: 0.2rem; }
 
 input, textarea, select {
-  border: 1px solid #bbb;
-  padding: 0.5em; }
+  border: 1px solid #d4d4d4; }
 
 input:focus, textarea:focus, select:focus {
-  border-color: #E79D00; }
+  border-color: #E79D00;
+  background-color: #eee; }
 
 button {
-  padding: 5px 10px;
-  background-color: #dddddd;
-  border: 0;
-  cursor: pointer; }
+  background-color: #FF9900;
+  cursor: pointer;
+  color: #FFE6B2;
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.3);
+  border: 1px solid #D48309; }
   button:focus, button:hover {
-    background-color: #FFD697; }
+    background-color: #FFBA28;
+    color: #FFF; }
 
-#login {
+.login-box {
   text-align: center;
   position: absolute;
   left: 50%;
   top: 45%;
   background-color: #fff;
-  width: 300px;
-  height: 170px;
+  width: 30rem;
   border-radius: 2px;
-  margin-left: -150px;
-  margin-top: -85px;
+  margin-left: -15rem;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   z-index: 11; }
+  .login-box h1 {
+    margin-bottom: 0;
+    justify-content: center;
+    font-size: 2rem; }
+    .login-box h1 .icon {
+      width: 1em;
+      height: 1em;
+      margin-right: 0.3rem; }
+    .login-box h1 span {
+      font-size: 0.8em; }
+  .login-box .version {
+    font-size: 0.7em;
+    color: #999;
+    margin-bottom: 1em; }
+  .login-box form {
+    display: flex;
+    margin: 0 2rem; }
+  .login-box input {
+    flex: 1 1 auto; }
+  .login-box button {
+    flex: 0 0 auto; }
 
-body.authorized #login {
+body.authorized .login-box {
   display: none; }
-
-#login h1 {
-  margin-bottom: 0;
-  justify-content: center; }
-
-#login .version {
-  font-size: 0.7em;
-  color: #999;
-  margin-bottom: 1em; }
-
-#login input {
-  padding: 8px 10px;
-  margin: 9px 4px;
-  width: 100px;
-  border-radius: 2px;
-  border: 1px solid #bbb;
-  background-color: #eee;
-  color: #444; }
-
-#login button {
-  display: block;
-  margin: 10px auto; }
 
 .door {
   position: fixed;
@@ -241,23 +243,23 @@ body.authorized #login {
 body.authorized div.door {
   width: 0; }
 
-@-webkit-keyframes shake {
-  0% {
-    -webkit-transform: translate(0, 0); }
-  25% {
-    -webkit-transform: translate(-10px, 0); }
-  50% {
-    -webkit-transform: translate(0, 0); }
-  75% {
-    -webkit-transform: translate(10px, 0); }
-  100% {
-    -webkit-transform: translate(0, 0); } }
 .shake {
   -webkit-animation-name: shake;
   -webkit-animation-duration: 200ms;
   -webkit-animation-iteration-count: 3;
   -webkit-animation-timing-function: linear; }
 
+@keyframes shake {
+  0% {
+    -webkit-transform: translate(0, 0); }
+  25% {
+    -webkit-transform: translate(-1rem, 0); }
+  50% {
+    -webkit-transform: translate(0, 0); }
+  75% {
+    -webkit-transform: translate(1rem, 0); }
+  100% {
+    -webkit-transform: translate(0, 0); } }
 .tabBar {
   padding: 0;
   margin: 0 0 0 0.3em;

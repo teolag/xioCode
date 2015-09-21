@@ -27,6 +27,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 		<link rel="manifest" href="/manifest.json">
 		<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
 		<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96">
+		<style>body {display: none}</style>
 
 		<script>
 			var loadCss = function(href) {
@@ -40,7 +41,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 				loadCss('http://fonts.googleapis.com/css?family=Roboto%7CInconsolata');
 				loadCss('http://cdn.xio.se/xioPop/dev/XioPop.css');
 				loadCss('http://cdn.xio.se/ColorPicker/dev/ColorPicker.css');
-				loadCss('/css/style.css');
+				//loadCss('/css/style.css');
 
 				loadCss('/codemirror/lib/codemirror.css');
 				loadCss('/codemirror/addon/dialog/dialog.css');
@@ -133,7 +134,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 		<div class="door left <?php echo $doorState; ?>"></div>
 		<div class="door right <?php echo $doorState; ?>"></div>
 
-		<div id="login">
+		<div class="login-box">
 			<h1>
 				<svg class="icon logo"><use xlink:href="/icons.svg#icon-logo" /></svg>
 				<span class="first">xio</span>
@@ -149,9 +150,9 @@ PatchDB::run("../database/patchdb.sql", $db);
 				*/
 			?>
 
-			<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off">
+			<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off" class="login">
 				<input type="text" name="code_username" id="inputUsername" placeholder="Username" autofocus />
-				<input type="password" name="code_password" id="inputPassword" placeholder="Password" /><br />
+				<input type="password" name="code_password" id="inputPassword" placeholder="Password" />
 				<button id="btnLogin" type="submit">Login</button>
 			</form>
 

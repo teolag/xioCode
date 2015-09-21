@@ -14,7 +14,7 @@ var GateKeeper = (function() {
 		onLoginCallback = callbackLogin;
 		onLogoutCallback = callbackLogout;
 
-		loginBox = document.getElementById("login");
+		loginBox = document.querySelector(".login-box");
 
 		frmLogin = document.getElementById("loginForm");
 		frmLogin.addEventListener("submit", loginRequest, false);
@@ -46,7 +46,7 @@ var GateKeeper = (function() {
 		}
 		else {
 			console.warn("Incorrect login or password");
-			loginBox.className="";
+			loginBox.classList.remove("shake");
 			setTimeout(function(){
 				loginBox.classList.add("shake");
 			},1);
