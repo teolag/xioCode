@@ -22,4 +22,4 @@ ErrorDocument 404 /error.php
 
 RewriteEngine on
 RewriteRule ^api/(.*) api.php?action=$1 [L,QSA]
-
+RewriteRule ^css/(.*)\.css$ /sass/sass.php/$1.scss [L,QSA]

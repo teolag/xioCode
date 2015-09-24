@@ -360,6 +360,7 @@ var ProjectList = (function() {
 	var clear = function() {
 		projectList.innerHTML = "";
 		XI.reset("orderProjects");
+		XI.reset("projectsLoaded");
 	};
 
 	var updateLastOpened = function(projectId) {

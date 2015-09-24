@@ -41,7 +41,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 				loadCss('http://fonts.googleapis.com/css?family=Roboto%7CInconsolata');
 				loadCss('http://cdn.xio.se/xioPop/dev/XioPop.css');
 				loadCss('http://cdn.xio.se/ColorPicker/dev/ColorPicker.css');
-				//loadCss('/css/style.css');
+				loadCss('/css/style.css');
 
 				loadCss('/codemirror/lib/codemirror.css');
 				loadCss('/codemirror/addon/dialog/dialog.css');
