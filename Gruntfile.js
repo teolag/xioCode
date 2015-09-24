@@ -30,13 +30,6 @@ var codemirrorJS = [
 module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		sass: {
-			dist: {
-				files: {
-					'public_html/css/style.css' : 'sass/style.scss'
-				}
-			}
-		},
 		concat: {
 			xiocode: {
 				options: {
@@ -69,10 +62,6 @@ module.exports = function(grunt) {
 			}
 		},
 		watch: {
-			css: {
-				files: '**/*.scss',
-				tasks: ['sass']
-			},
 			js: {
 				files: jsFiles,
 				tasks: ['concat:xiocode']
@@ -83,9 +72,8 @@ module.exports = function(grunt) {
 			}*/
 		}
 	});
-	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.registerTask('default',[/*'uglify:xiocode',*/ 'concat:xiocode', 'sass', 'watch']);
+	grunt.registerTask('default',[/*'uglify:xiocode',*/ 'concat:xiocode', 'watch']);
 }
