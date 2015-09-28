@@ -89,8 +89,8 @@ var XioCode = (function(){
 			if(project) {
 				project.last_opened = json.lastOpened;
 			}
-			document.title = pageTitle + " - " + project.name;
-			XioCode.setHeader(project.name);
+			document.title = pageTitle + " - " + json.project.name;
+			XioCode.setHeader(json.project.name);
 		});
 	};
 

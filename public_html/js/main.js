@@ -250,15 +250,6 @@ function openProject(id) {
 	activeProject = {'id':id};
 	XioCode.openProject(id);
 
-	//set active project if project is loaded
-	var project = XioCode.getProject(id);
-	if(project) {
-		activeProject = project;
-		activeProject.id = id;
-		document.title = pageTitle + " - " + activeProject.name;
-		XioCode.setHeader(activeProject.name);
-	}
-
 	for(var i=0; i<XioCode.getPanes().length; i++) {
 		var pane = XioCode.getPanes()[i];
 		if(pane.type === 10) {

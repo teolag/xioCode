@@ -14,8 +14,7 @@ file_put_contents($configFile, json_encode($config));
 
 
 $response["message"] = "last opened updated";
-$response["project_id"] = $projectId;
-$response["last_opened"] = $config["last_opened"];
+$response["lastOpened"] = $config["last_opened"];
 $response["project"] = ProjectHandler::getProject($db, $projectId, $userId);
 
 

@@ -309,6 +309,24 @@ var ProjectList = (function() {
 		return false;
 	};
 
+	var addNewProject = function() {
+		XioPop.prompt({title:"Enter the project's name", onSubmit:function(projectName) {
+			Ajax.post2JSON("/api/create_project", {name: projectName}, newProjectCallback);
+		}});
+	};
+	var newProjectCallback = function(data) {
+		XioCode.loadProjects();
+		setHash(data.projectId);
+	};
+
+
+	var clear = function() {
+		projectList.innerHTML = "";
+		XI.reset("orderProjects");
+		XI.reset("projectsLoaded");
+	};
+
+
 	var dropHandler = function(e) {
 		switch(e.type) {
 
@@ -328,29 +346,6 @@ var ProjectList = (function() {
 			handleDroppedItems(items);
 			break;
 		}
-
-	};
-
-	var addNewProject = function() {
-		XioPop.prompt({title:"Enter the project's name", onSubmit:function(projectName) {
-			if(projectName) {
-				var xhr = new XMLHttpRequest();
-				xhr.open("get", "/scripts/new_project.php?projectName="+projectName, true);
-
-				xhr.onload = function(e) {
-					if(e.target.status===200) {
-						XioCode.loadProjects();
-					}
-				};
-				xhr.send();
-			}
-		}});
-	};
-
-	var clear = function() {
-		projectList.innerHTML = "";
-		XI.reset("orderProjects");
-		XI.reset("projectsLoaded");
 	};
 
 	var handleDroppedItems = function(items) {
