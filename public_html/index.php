@@ -28,7 +28,6 @@ PatchDB::run("../database/patchdb.sql", $db);
 		<link rel="icon" type="image/png" href="/img/favicon-32x32.png" sizes="32x32">
 		<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96">
 		<style>body {display: none}</style>
-
 		<script>
 			var loadCss = function(href) {
 				var link = document.createElement('link');
@@ -193,6 +192,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 			?>
 			_USER = <?php echo $jsUser; ?>;
 		</script>
+		<script src="/js/XI.js"></script>
 		<script src="/js/codemirror.min.js"></script>
 		<script src="/js/xiocode.min.js"></script>
 		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js"></script>

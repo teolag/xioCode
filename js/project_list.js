@@ -5,7 +5,7 @@ var ProjectList = (function() {
 	var tags, listTags;
 
 	XI.listen("DOMContentLoaded", initProjectList);
-	XI.listen(['projectsLoaded', 'DOMContentLoaded', 'orderProjects'], updateProjectsList, true);
+	XI.listen(['projectsLoaded', 'DOMContentLoaded', 'orderProjects', 'projectsListVisible'], updateProjectsList, true);
 
 	function initProjectList() {
 		console.log("Init ProjectList");
@@ -36,16 +36,6 @@ var ProjectList = (function() {
 		getUniqueTags();
 		printProjects();
 		filterProjects();
-
-		/*
-		if(activeProject) {
-            var pId = activeProject.id
-            activeProject = projects[pId];
-            activeProject.id = pId;
-            document.title = pageTitle + " - " + activeProject.name;
-            XioCode.setHeader(activeProject.name);
-        }
-		*/
 	};
 
 
@@ -363,19 +353,6 @@ var ProjectList = (function() {
 		XI.reset("projectsLoaded");
 	};
 
-	var updateLastOpened = function(projectId) {
-		Ajax.post2JSON("/scripts/project_config.php?action=updateLastOpened", {project_id: projectId}, function(json) {
-			if(json.status===STATUS_OK) {
-				var project = XioCode.getProject(projectId);
-				if(project) {
-					project.last_opened = json.last_opened;
-				}
-			} else {
-				XioPop.alert({title:"Permission error", text:"Insuffient permission to update project last opened date in project config file."});
-			}
-		});
-	};
-
 	var handleDroppedItems = function(items) {
 		console.log("dropped items:", items);
 
@@ -452,6 +429,5 @@ var ProjectList = (function() {
 	return {
 		clear: clear,
 		setOrderBy: setOrderBy,
-		updateLastOpened: updateLastOpened
 	};
 })();

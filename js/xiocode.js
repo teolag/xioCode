@@ -83,6 +83,15 @@ var XioCode = (function(){
 	openProject = function(projectId) {
 		activeProjectId = projectId;
 		initWorkspace();
+
+		Ajax.getJSON("/api/open_project", {project_id: projectId}, function(json) {
+			var project = getProject(projectId);
+			if(project) {
+				project.last_opened = json.lastOpened;
+			}
+			document.title = pageTitle + " - " + project.name;
+			XioCode.setHeader(project.name);
+		});
 	};
 
 

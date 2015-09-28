@@ -245,7 +245,6 @@ function openProject(id) {
 	console.log("Open project", id);
 
 	FileList.setProjectId(id);
-	ProjectList.updateLastOpened(id);
 	Todo.loadAll(id);
 
 	activeProject = {'id':id};
@@ -268,7 +267,7 @@ function openProject(id) {
 	}
 
 	projectToolbar.classList.remove("disabled");
-
+	XI.reset('projectsListVisible');
 	document.getElementById("projectChooser").classList.add("hidden");
 	document.getElementById("projectArea").classList.remove("hidden");
 	fixLayout();
@@ -416,6 +415,7 @@ function chooseProject() {
 	activeProject = null;
 	document.title = pageTitle;
 	txtProjectFilter.focus();
+	XI.fire('projectsListVisible');
 }
 
 

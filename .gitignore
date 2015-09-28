@@ -2,7 +2,7 @@ config.json
 .DS_Store
 node_modules/
 public_html/projects
-public_html/sass/.sass-cache/
+public_html/sass/scss-cache
 public_html/scripts/export.zip
 public_html/scripts/style.mini.*
 public_html/scripts/js.mini.*

@@ -23,6 +23,7 @@ if(isset($_GET['action'])) {
 		break;
 
 
+		/*
 		case "updateLastOpened":
 		$config["last_opened"] = time();
 		$response = array(
@@ -32,8 +33,9 @@ if(isset($_GET['action'])) {
 			"last_opened" => $config["last_opened"]
 		);
 		break;
+		*/
 
-		default: die("unkown action");
+		default: die("unkown action: " . $_GET['action']);
 	}
 
 
