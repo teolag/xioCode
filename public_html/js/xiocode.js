@@ -72,8 +72,8 @@ var XioCode = (function(){
 	},
 
 
-	loadProjects = function() {
-		Ajax.getJSON("/api/get_my_projects", null, function(data) {
+	loadProjects = function(force) {
+		Ajax.getJSON("/api/get_my_projects", force? {t:+new Date()}:null, function(data) {
 			projects = data.projects;
 			console.log("%i projects loaded", Object.keys(projects).length, projects);
 			XI.fire('projectsLoaded');

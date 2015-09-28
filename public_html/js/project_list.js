@@ -150,8 +150,8 @@ var ProjectList = (function() {
 			XioPop.confirm({title:"Delete project?", text:"Are you sure you want to delete project '"+project.name+"'?", onSubmit:function(answer) {
 				if(answer) {
 					Ajax.post2JSON("/api/delete_project", {projectId: projectId}, function(data) {
-						console.log("Project deleted");
-						XioCode.loadProjects();
+						console.log("Project '"+projectId+"' deleted");
+						XioCode.loadProjects(true);
 					});
 				} else {
 					console.debug("Delete aborted");
