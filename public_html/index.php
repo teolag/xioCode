@@ -192,9 +192,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 			?>
 			_USER = <?php echo $jsUser; ?>;
 		</script>
-		<script src="/js/XI.js"></script>
-		<script src="/js/codemirror.min.js"></script>
-		<script src="/js/xiocode.min.js"></script>
+		<script src="/scripts/minify_js.php"></script>
 		<script src="http://cdn.xio.se/xioPop/dev/XioPop.js"></script>
 		<script src="http://cdn.xio.se/AjaXIO/dev/AjaXIO.js"></script>
 		<script src="http://cdn.xio.se/ColorPicker/dev/ColorPicker.js"></script>
