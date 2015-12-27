@@ -21,7 +21,6 @@ var codemirrorDefaults = {
 	smartIndent: true,
 	theme: 'xio',
 	highlightSelectionMatches: {showToken: /\w/},
-	globalVars: true,
 	extraKeys: {
 		"Tab"			: "tabWithAutoComplete",
 		"Shift-Tab"		: "indentLess",
@@ -39,8 +38,8 @@ var codemirrorDefaults = {
 		"Cmd-Alt-Up" 	: "duplicateRowUp",
 		"Cmd-I" 		: "selectLines",
 		"Ctrl-I" 		: "selectLines",
-		"Cmd-L" 		: "jump2Line",
-		"Ctrl-L" 		: "jump2Line",
+		"Cmd-L" 		: "jumpToLine",
+		"Ctrl-L" 		: "jumpToLine",
 		"Cmd-O" 		: "showAllFunctions",
 		"Ctrl-O" 		: "showAllFunctions",
 		"Ctrl-Q"		: "toggleComment",
@@ -121,21 +120,6 @@ CodeMirror.commands.newFile = function(editor) {
 	console.log("Ctrl/Cmd+n pressed, new file...");
 	unloadFile();
 };
-
-CodeMirror.commands.jump2Line = function(editor, line) {
-	if(line===undefined) {
-		XioPop.prompt({title:"Jump to line", text:"Enter the desired line number", onSubmit:function(lineNumber) {
-			if(Number(lineNumber) > 0) {
-				CodeMirror.commands.jump2Line(editor, Number(lineNumber)-1);
-			}
-		}});
-		return;
-	}
-	editor.setCursor(line+100, 0);
-	editor.setCursor(line-10, 0);
-	editor.setCursor(line, 0);
-	editor.focus();
-}
 
 CodeMirror.commands.removeTrailingSpaces = function(editor) {
 	editor.doc.eachLine(function(line) {
