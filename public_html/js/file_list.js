@@ -389,9 +389,12 @@ var FileList = (function() {
 			break;
 
 			case "saveAs":
-			XioPop.prompt({title:"Save as", text:"Enter the new name of the file/folder", value:filename, onSubmit:function(newName) {
-				if(newName) {
-					saveFileAs(newName, false);
+			XioPop.prompt({title:"Save as", text:"Enter the new name of the file/folder", value:uri, onSubmit:function(newPath) {
+				if(newPath) {
+					console.log("save as", newPath);
+					Ajax.post2JSON("/api/copy_file", {projectId:projectId, path:path, newPath:newPath}, function(data) {
+						console.log("File saved", data);
+					});
 				}
 			}});
 			break;
