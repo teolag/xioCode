@@ -44,6 +44,7 @@ PatchDB::run("../database/patchdb.sql", $db);
 
 				loadCss('/codemirror/lib/codemirror.css');
 				loadCss('/codemirror/addon/dialog/dialog.css');
+				loadCss('/codemirror/addon/hint/show-hint.css');
 			});
 		</script>
 	</head>

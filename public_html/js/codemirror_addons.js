@@ -21,6 +21,7 @@ var codemirrorDefaults = {
 	smartIndent: true,
 	theme: 'xio',
 	highlightSelectionMatches: {showToken: /\w/},
+	globalVars: true,
 	extraKeys: {
 		"Tab"			: "tabWithAutoComplete",
 		"Shift-Tab"		: "indentLess",
@@ -44,7 +45,8 @@ var codemirrorDefaults = {
 		"Ctrl-O" 		: "showAllFunctions",
 		"Ctrl-Q"		: "toggleComment",
 		"Cmd-Q"			: "toggleComment",
-		"Ctrl-B"		: "removeTrailingSpaces"
+		"Ctrl-B"		: "removeTrailingSpaces",
+		"Ctrl-Space"	: "autocomplete"
 	}
 };
 

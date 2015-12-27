@@ -22,9 +22,12 @@ $files[] = "../codemirror/addon/mode/multiplex.js";
 $files[] = "../codemirror/addon/search/match-highlighter.js";
 $files[] = "../codemirror/addon/search/search.js";
 $files[] = "../codemirror/addon/search/searchcursor.js";
+$files[] = "../codemirror/addon/search/jump-to-line.js";
 $files[] = "../codemirror/addon/selection/active-line.js";
 $files[] = "../codemirror/addon/comment/comment.js";
 $files[] = "../codemirror/addon/comment/continuecomment.js";
+$files[] = "../codemirror/addon/hint/show-hint.js";
+$files[] = "../codemirror/addon/hint/javascript-hint.js";
 $files[] = "../codemirror/keymap/sublime.js";
 
 
