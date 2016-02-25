@@ -3,6 +3,8 @@ define("ROOT", realpath($_SERVER["DOCUMENT_ROOT"]."/..")."/");
 require_once "/git/scssphp/scss.inc.php";
 
 
+//must update style.scss file to update style.css
+
 $scss = new scssc();
 $scss->setFormatter("scss_formatter_compressed");
 

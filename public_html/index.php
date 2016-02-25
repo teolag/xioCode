@@ -9,9 +9,12 @@ if(Gatekeeper::hasAccess()) {
 	$jsUser = json_encode(Gatekeeper::getUser($db));
 }
 
-$token = $_SESSION['token'];
-$scope = "profile%20email";
-$googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&amp;redirect_uri=%s&amp;response_type=code&amp;client_id=%s", $scope, $config['oauth2']['redirectUri'], $config['oauth2']['clientId']);
+$useGoogleLogin = isset($config['oauth2']);
+if($useGoogleLogin) {
+	$token = $_SESSION['token'];
+	$scope = "profile%20email";
+	$googleLoginURL = sprintf("https://accounts.google.com/o/oauth2/auth?scope=%s&amp;redirect_uri=%s&amp;response_type=code&amp;client_id=%s", $scope, $config['oauth2']['redirectUri'], $config['oauth2']['clientId']);
+}
 
 PatchDB::run("../database/patchdb.sql", $db);
 ?>
@@ -134,29 +137,34 @@ PatchDB::run("../database/patchdb.sql", $db);
 		<div class="door left <?php echo $doorState; ?>"></div>
 		<div class="door right <?php echo $doorState; ?>"></div>
 
-		<div class="login-box">
-			<h1>
-				<svg class="icon logo"><use xlink:href="/icons.svg#icon-logo" /></svg>
-				<span class="first">xio</span>
-				<span class="second">Code</span>
-			</h1>
+		<div class="login-area">
+			<div class="login-box">
+				<h1>
+					<svg class="icon logo"><use xlink:href="/icons.svg#icon-logo" /></svg>
+					<span class="first">xio</span>
+					<span class="second">Code</span>
+				</h1>
 
-			<?php
+				<?php
 
-				/*
-				<?php if(Git::isGit()) : ?>
-				<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", Git::getLastCommitDate()); ?></div>
-				<?php endif; ?>
-				*/
-			?>
+					/*
+					<?php if(Git::isGit()) : ?>
+					<div class="version"><?php echo Git::getCurrentBranch() . " " . date("ymd.Hi", Git::getLastCommitDate()); ?></div>
+					<?php endif; ?>
+					*/
+				?>
 
-			<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off" class="login">
-				<input type="text" name="code_username" id="inputUsername" placeholder="Username" autofocus />
-				<input type="password" name="code_password" id="inputPassword" placeholder="Password" />
-				<button id="btnLogin" type="submit">Login</button>
-			</form>
+				<form action="/scripts/login.php" method="post" id="loginForm" autocomplete="off" class="login">
+					<input type="text" name="code_username" id="inputUsername" placeholder="Username" autofocus />
+					<input type="password" name="code_password" id="inputPassword" placeholder="Password" />
+					<br>
+					<button id="btnLogin" class="login-button" type="submit">Login</button>
+				</form>
 
-			<button id="btnGoogleLogin" data-url="<?php echo $googleLoginURL; ?>">Login with Google</button>
+				<?php if($useGoogleLogin) { ?>
+					<button id="btnGoogleLogin" type="button" class="login-google-button" data-url="<?php echo $googleLoginURL; ?>">Login with Google</button>
+				<?php } ?>
+			</div>
 		</div>
 
 		<div id="imagePreview" class="hidden">

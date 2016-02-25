@@ -24,7 +24,7 @@ var GateKeeper = (function() {
 		txtPassword = frmLogin.elements.code_password;
 
 		btnGoogleLogin = document.getElementById("btnGoogleLogin");
-		btnGoogleLogin.addEventListener("click", loginUsingGoogle, false);
+		if(btnGoogleLogin) btnGoogleLogin.addEventListener("click", loginUsingGoogle, false);
 	},
 
 	loginRequest = function(e) {
