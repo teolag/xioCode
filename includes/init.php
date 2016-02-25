@@ -47,6 +47,11 @@ function __autoload($className) {
 		$file = $config['class_paths']['PHPMailer'];
 		break;
 
+		case "scssc":
+		case "scss_server":
+		$file = $config['class_paths']['SCSS'];
+		break;
+
 		default:
 		$file = ROOT."classes/" . $className.".php";
 	}

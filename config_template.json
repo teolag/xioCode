@@ -3,7 +3,8 @@
 	"project_url":"http://xioCode.domain.se/projects/",
 	"class_paths":{
 		"DatabasePDO":"/git/DatabasePDO/DatabasePDO.php",
-		"PHPMailer":"/git/PHPMailer/class.phpmailer.php"
+		"PHPMailer":"/git/PHPMailer/class.phpmailer.php",
+		"SCSS":"/git/scssphp/scss.inc.php"
 	},
 	"database":{
 		"server":"localhost",

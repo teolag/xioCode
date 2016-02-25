@@ -1,6 +1,6 @@
 <?php
-define("ROOT", realpath($_SERVER["DOCUMENT_ROOT"]."/..")."/");
-require_once "/git/scssphp/scss.inc.php";
+
+require("../../includes/init.php");
 
 
 //must update style.scss file to update style.css
