@@ -111,7 +111,7 @@ ul.tags li {
 
 }
 .divider {
-	width: 0.5em;
+	flex: 0 0 0.5em;
 	cursor: ew-resize;
 }
 
@@ -124,8 +124,7 @@ ul.tags li {
 
 .codeEditor {
 	flex: 1;
-	display: flex;
-	flex-direction: column;
+	overflow: hidden;
 }
 .codeEditor .header {
 	display: flex;

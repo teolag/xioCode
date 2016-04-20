@@ -85,7 +85,7 @@ function startDivide(e) {
 
 	function mouseMove(e) {
 		var dx = (pos==="right")? -e.movementX : e.movementX;
-		subject.style.width = (subject.offsetWidth+dx) + "px";
+		subject.style.flex = "0 0 " + (subject.offsetWidth+dx) + "px";
 		console.log("move", subject, e);
 	}
 
